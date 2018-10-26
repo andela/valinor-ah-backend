@@ -1,16 +1,15 @@
-var chai = require('chai');
-var chaiHttp = require('chai-http');
-var server = require('../index');
-var should = chai.should();
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../index';
 
 chai.use(chaiHttp);
 
-describe('Users', function() {
-  it('should GET a list of ALL users', function(done) {
+chai.should();
+
+describe('Example Node Server', () => {
+  it('should return 200', (done) => {
     chai.request(server)
-      .get('/users')
-      .end(function(err, res){
-        should.not.exist(err);
+      .get('/', (res) => {
         res.should.have.status(200);
         done();
       });
