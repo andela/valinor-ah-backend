@@ -7,10 +7,11 @@ chai.use(chaiHttp);
 chai.should();
 
 describe('Example Node Server', () => {
-  it('should return 200', (done) => {
+  it('should return 404', (done) => {
     chai.request(server)
-      .get('/', (res) => {
-        res.should.have.status(200);
+      .get('/')
+      .end((err, res) => {
+        res.should.have.status(404);
         done();
       });
   });

@@ -1,3 +1,6 @@
+import sendVerification from '../../server/helpers/sendVerification';
+import verifyUser from '../../server/controllers/verifyUser';
+
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const passport = require("passport");
@@ -83,5 +86,26 @@ router.post("/users", function(req, res, next) {
         })
         .catch(next);
 });
+
+// this POST route sends the user a verification email
+// this will be refactored into the sign up route
+router.post('/users/sendVerification', async (req, res, next) => {
+  const user = req.body;
+  const verificationToken = await sendVerification(user);
+  if (verificationToken instanceof Error) {
+    // an error has occurred while generating the token
+    const error = verificationToken;
+    return next(error);
+  }
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'mail sent',
+    verificationToken,
+  });
+});
+
+// this route verifies the user's email
+router.get('/users/verify', verifyUser);
 
 module.exports = router;

@@ -7,13 +7,15 @@
     "node": "10.11.0"
   },
   "scripts": {
-    "test": "mocha test --require babel-core/register --require babel-polyfill --exit --timeout 20000",
+    "test": "mocha test  --require babel-core/register --require babel-polyfill --exit --timeout 5000 ./test/**/**/*.test.js",
+    "start:dev": "nodemon index.js --exec babel-node",
     "start": "babel-node index.js",
     "build": "babel server -d dist"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "body-parser": "^1.18.3",
@@ -40,13 +42,14 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
     "eslint": "^5.7.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",
-    "chai": "^4.2.0",
-    "chai-http": "^4.2.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.5"
   }
 }
