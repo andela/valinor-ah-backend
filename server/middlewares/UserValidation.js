@@ -84,6 +84,30 @@ class UserValidation {
         }
       }));
   }
-}
 
+  /**
+    * @description - This method checks if a user enters an email and password.
+    * @param {object} req - The request object bearing the email.
+    * @param {object} res - The response object sent to the next middleware.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateUserLogin(req, res, next) {
+    const { email, password } = req.body;
+    const errors = {};
+    const returnError = () => res.status(422).json({
+      errors
+    });
+    if (email && password) return next();
+    if (!email && !password) {
+      errors.email = ['please enter email'];
+      errors.password = ['please enter password'];
+    }
+    if (!email) errors.email = ['please enter email'];
+    if (!password) errors.password = ['please enter password'];
+    return returnError();
+  }
+}
 export default UserValidation;

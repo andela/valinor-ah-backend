@@ -6,6 +6,7 @@ chai.should();
 
 chai.use(chaiHttp);
 const signupUrl = '/api/v1/users/signup';
+const loginUrl = '/api/v1/users/login';
 
 describe('Test default route', () => {
   it('Should return 200 for the default route', (done) => {
@@ -16,6 +17,7 @@ describe('Test default route', () => {
         done();
       });
   });
+
   it('Undefined Routes Should Return 404', (done) => {
     chai.request(app)
       .post('/another/undefined/route')
@@ -28,6 +30,7 @@ describe('Test default route', () => {
       });
   });
 });
+
 describe('/users/signup', () => {
   it('should create new user', (done) => {
     chai.request(app)
@@ -49,4 +52,90 @@ describe('/users/signup', () => {
         done();
       });
   });
+});
+
+describe('Testing Login feature -Integration testing', () => {
+  it(
+    'should display error message if user logs in with empty fields',
+    (done) => {
+      chai.request(app)
+        .post(loginUrl)
+        .send({
+          email: '',
+          password: ''
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(422);
+          res.body.should.be.eql({
+            errors: {
+              email: ['please enter email'],
+              password: ['please enter password']
+            }
+          });
+        });
+      done();
+    }
+  );
+
+  it(
+    'should display error message if user fails to enter password',
+    (done) => {
+      chai.request(app)
+        .post(loginUrl)
+        .send({
+          email: 'augustineezinwa@gmail.com',
+          password: ''
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(422);
+          res.body.should.be.eql({
+            errors: {
+              password: ['please enter password']
+            }
+          });
+        });
+      done();
+    }
+  );
+
+  it(
+    'should display error message if user logs in with invalid credentials',
+    (done) => {
+      chai.request(app)
+        .post(loginUrl)
+        .send({
+          email: 'augustineezinwa@gmail.com',
+          password: 'fishdonek4'
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(401);
+          res.body.should.be.eql({
+            errors: {
+              message: ['Invalid email or password']
+            }
+          });
+        });
+      done();
+    }
+  );
+
+  it(
+    'should log in a user',
+    (done) => {
+      chai.request(app)
+        .post(loginUrl)
+        .send({
+          email: 'solomon.sulaiman@andela.com',
+          password: 'solomon123'
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be.eql('you are logged in');
+          res.body.user.email.should.be.eql('solomon.sulaiman@andela.com');
+          res.body.user.token.should.be.a('string');
+        });
+      done();
+    }
+  );
 });
