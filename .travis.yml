@@ -1,8 +1,11 @@
 language: node_js
 node_js:
   - "stable"
+services:
+  - postgresql
 cache:
   directories:
     - "node_modules"
 script:
   - npm run coveralls
+  
