@@ -9,7 +9,8 @@ chai.should();
 describe('Example Node Server', () => {
   it('should return 200', (done) => {
     chai.request(server)
-      .get('/', (res) => {
+      .get('/api/v1')
+      .end((err,res) => {
         res.should.have.status(200);
         done();
       });
