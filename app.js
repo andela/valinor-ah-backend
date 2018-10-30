@@ -5,7 +5,6 @@ import winston from 'winston';
 import dotenv from 'dotenv';
 import routes from './routes';
 
-
 const app = express();
 
 dotenv.config();

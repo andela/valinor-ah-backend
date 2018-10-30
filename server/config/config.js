@@ -12,11 +12,7 @@ export default {
     dialect: 'postgres',
   },
   test: {
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE_TEST,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    use_env_variable: process.env.DB_DATABASE_TEST_URL,
     dialect: 'postgres',
   },
   production: {
@@ -24,4 +20,3 @@ export default {
     dialect: 'postgres',
   },
 };
-

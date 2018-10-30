@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt-nodejs';
 import models from '../models';
-import createToken from '../helpers/CreateToken';
+import createToken from '../helpers/createToken';
 
 const { User } = models;
 
