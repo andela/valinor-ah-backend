@@ -49,4 +49,17 @@ describe('/users/signup', () => {
         done();
       });
   });
+  it('should create new user', (done) => {
+    chai.request(app)
+      .post(signupUrl)
+      .send({
+        fullName: 'Solomon Kingsley',
+        password: 'solomon123',
+      })
+      .end((err, res) => {
+        res.should.have.status(422);
+        res.body.should.be.a('object');
+        done();
+      });
+  });
 });

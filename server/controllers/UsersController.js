@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt-nodejs';
 import models from '../models';
 import createToken from '../helpers/createToken';
+import sendEmail from '../helpers/sendEmail';
+import verifyEmailMessage from '../helpers/verifyEmailMessage';
 
 const { User } = models;
 
@@ -24,6 +26,10 @@ class UsersController {
         fullName,
         email,
         password: hashedPassword
+      })
+      .then((user) => {
+        sendEmail(user, verifyEmailMessage);
+        return user;
       })
       .then(user => res.status(201).json({
         status: 'success',
