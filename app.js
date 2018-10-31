@@ -3,6 +3,7 @@ import logger from 'morgan';
 import bodyParser from 'body-parser';
 import winston from 'winston';
 import dotenv from 'dotenv';
+import validator from 'express-validator';
 import routes from './routes';
 
 const app = express();
@@ -14,7 +15,7 @@ const port = process.env.PORT || 3000;
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
+app.use(validator());
 app.use(routes);
 
 // / catch 404 and forward to error handler
