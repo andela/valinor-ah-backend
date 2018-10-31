@@ -2,10 +2,11 @@ language: node_js
 node_js:
   - "stable"
 services:
-  - postgresql
+  - postgresql 
 cache:
   directories:
     - "node_modules"
+before_script:
+  - npm run db-init-test
 script:
   - npm run coveralls
-  

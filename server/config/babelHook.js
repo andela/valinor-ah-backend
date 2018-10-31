@@ -1,3 +1,3 @@
 require('babel-core/register');
 
-module.exports = require('./config');
+module.exports = require('./config').default;
