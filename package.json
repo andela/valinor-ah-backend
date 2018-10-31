@@ -8,8 +8,9 @@
   },
   "scripts": {
     "test": "mocha test --require babel-core/register --require babel-polyfill --exit --timeout 5000 ./test/**/**/*.test.js",
-    "start": "npm run build && node dist/app.js",
+    "start": "npm run clean && npm run build && node dist/app.js",
     "build": "babel . --ignore node_modules,test,coverage,dist ../valinor-ah-backend -d dist/",
+    "clean": "rm -rf dist && mkdir dist",
     "cover": "./node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha ./test -- --exit",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
