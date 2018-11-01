@@ -28,22 +28,22 @@ class UsersController {
         password: hashedPassword
       })
       .then((user) => {
-        sendEmail(user, verifyEmailMessage);
-        return user;
+        const token = createToken(user.id, lifeSpan);
+        sendEmail(user, verifyEmailMessage(token));
+        res.status(201).json({
+          status: 'success',
+          message: 'New user created successfully',
+          user: {
+            id: user.id,
+            fullName,
+            email,
+            confirmEmail: user.confirmEmail,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            token,
+          }
+        });
       })
-      .then(user => res.status(201).json({
-        status: 'success',
-        message: 'New user created successfully',
-        user: {
-          id: user.id,
-          fullName: user.fullName,
-          email: user.email,
-          confirmEmail: user.confirmEmail,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-          token: createToken(user.id, lifeSpan),
-        }
-      }))
       .catch(err => res.status(500)
         .json({
           error: {

@@ -38,6 +38,19 @@ app.use((err, req, res, next) => {
   next();
 });
 
+// production error handler
+// no stacktraces leaked to user
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({
+    errors: {
+      message: err.message,
+      error: {}
+    }
+  });
+  next();
+});
+
 app.listen(port, () => {
   winston.log('info', `App listening at localhost:${port}`);
 });
