@@ -13,7 +13,7 @@ const { User } = models;
  * @param  {function} done The next function
  * @returns {object} undefined
  */
-export const facebookCallback = (accessToken, refreshToken, profile, done) => {
+const facebookCallback = (accessToken, refreshToken, profile, done) => {
   const {
     id, emails, name, photos
   } = profile;
@@ -33,13 +33,17 @@ export const facebookCallback = (accessToken, refreshToken, profile, done) => {
         confirmEmail: true
       }
     })
-    .spread((user, created) => {
-      const {
-        id, fullName, email, confirmEmail, avatarUrl, facebookId
-      } = user.dataValues;
+    .spread((user) => {
       const userInfo = {
-        id, fullName, email, confirmEmail, avatarUrl, facebookId
+        id: user.dataValues.id,
+        fullName: user.dataValues.fullName,
+        email: user.dataValues.email,
+        confirmEmail: user.dataValues.confirmEmail,
+        avatarUrl: user.dataValues.avatarUrl,
+        facebookId: user.dataValues.facebookId
       };
       return done(null, userInfo);
     });
 };
+
+export default facebookCallback;

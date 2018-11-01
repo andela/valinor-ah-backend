@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import dotenv from 'dotenv';
 
-import { facebookCallback } from '../helpers/passportCallback';
+import facebookCallback from '../helpers/facebookCallback';
 import models from '../models';
 
 const { User } = models;
@@ -27,10 +27,15 @@ const facebookOptions = {
 };
 passport.use(new FacebookStrategy(facebookOptions, facebookCallback));
 
-export const facebookRoutes = {
-  authenticate: () => passport.authenticate('facebook', { session: true, scope: ['email'] }),
+const facebookPassportRoutes = {
+  authenticate: () => passport.authenticate('facebook', {
+    session: true,
+    scope: ['email']
+  }),
   callback: () => passport.authenticate('facebook', {
     successRedirect: '/api/v1/auth/facebook/success',
     failureRedirect: '/api/v1/auth/facebook/failure'
   })
 };
+
+export default facebookPassportRoutes;

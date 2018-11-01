@@ -1,11 +1,12 @@
 import express from 'express';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
-import winston from 'winston';
 import dotenv from 'dotenv';
+import winston from 'winston';
 import validator from 'express-validator';
 import passport from 'passport';
 import session from 'express-session';
+
 import routes from './routes';
 
 const app = express();
@@ -48,8 +49,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(port, () => winston.log('info',
-  `App listening at localhost:${port}`));
+// eslint-disable-next-line max-len
+app.listen(port, () => winston.log('info', `App listening at localhost:${port}`));
 
 
 export default app;
