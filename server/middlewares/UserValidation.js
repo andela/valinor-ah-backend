@@ -1,6 +1,6 @@
-import models from '../models';
+import checkEmail from '../helpers/checkEmail';
 
-const { User } = models;
+const message = [];
 /**
  * @class ValidationHelper
  * @description Helps perform validations on user request body.
@@ -16,20 +16,52 @@ class UserValidation {
     * @static
     */
   static validateUserSignUp(req, res, next) {
-    let { fullName } = req.body;
-    const { avatarUrl, bio } = req.body;
-    req.checkBody('fullName', 'full name is too long').isLength({ max: 40 });
+    UserValidation.validateFullName(req);
+    UserValidation.validateEmail(req);
+    UserValidation.validatePassword(req);
+    UserValidation.sendFormattedError(req, res, next);
+  }
+
+  /**
+    * @description - This method validates the email
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateEmail(req) {
     req.checkBody('email', 'please enter email').exists();
     req.checkBody('email', 'please enter a valid email').isEmail();
+  }
+
+  /**
+    * @description - This method validates the password
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validatePassword(req) {
     req.checkBody('password', 'please enter password').exists();
     req.checkBody('password', 'password must be at least 8 characters')
       .isLength({ min: 8 });
     req.checkBody('password', 'password must contain a letter and number')
       .matches(/^((?=.*\d))(?=.*[a-zA-Z])/);
-    if (avatarUrl) req.checkBody('avatarUrl', 'avatarUrl is invalid').isURL();
-    if (bio) req.checkBody('bio', 'bio is too long').isLength({ max: 200 });
-    const errors = req.validationErrors();
-    const message = [];
+    req.checkBody('password', 'password must not contain space')
+      .matches(/^\S*$/);
+  }
+
+  /**
+    * @description - This method validates the fullName
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateFullName(req) {
+    message.length = 0;
+    let { fullName } = req.body;
+    req.checkBody('fullName', 'full name is too long').isLength({ max: 40 });
     fullName = fullName === undefined ? '' : fullName;
     const [firstName, ...lastName] = fullName.toString().trim().split(' ');
     if (lastName.join(' ').trim().includes(' ')) {
@@ -38,18 +70,38 @@ class UserValidation {
     if (!/^[a-zA-Z-]+$/.test(firstName)
     || !/^[a-zA-Z-]+$/.test(lastName.join(''))) {
       message.push('Invalid full name');
-      message.push('please enter first name and last name separated by space');
+      message
+        .push('please enter first name and last name separated by space');
     }
-    if (!errors && !message.length) {
-      req.body.fullName = `${firstName} ${lastName.join('')}`;
-      return next();
+    req.body.fullName = `${firstName} ${lastName.join('')}`;
+  }
+
+  /**
+    * @description - This method sends the error in the suggested json format.
+    * @param {object} req - The request object to be validated.
+    * @param {object} res - Th response object.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf UserValidation
+    * @static
+    */
+  static sendFormattedError(req, res, next) {
+    const newErrors = req.validationErrors();
+    const errors = {};
+    if (message.length) {
+      errors.fullName = [];
+      errors.fullName.push(...message);
     }
-    if (errors) errors.forEach(err => message.push(err.msg));
-    return res.status(422).json({
-      errors: {
-        message
-      }
-    });
+    if (newErrors) {
+      newErrors.forEach((x) => {
+        errors[`${x.param}`] = [];
+      });
+      newErrors.forEach((err) => {
+        if (errors[`${err.param}`]) { errors[`${err.param}`].push(err.msg); }
+      });
+    }
+    if (newErrors || message.length) return res.status(422).json({ errors });
+    if (!newErrors && !message.length) return next();
   }
 
   /**
@@ -63,23 +115,19 @@ class UserValidation {
     */
   static checkExistingEmail(req, res, next) {
     const { email } = req.body;
-    return User.findOne({
-      where: {
-        email
-      }
-    })
-      .then((foundEmail) => {
-        if (foundEmail) {
+    checkEmail(email)
+      .then((emailFound) => {
+        if (!emailFound) return next();
+        if (emailFound) {
           return res.status(409).json({
             errors: {
-              message: ['email is already in use']
+              email: ['email is already in use']
             }
           });
         }
-        if (!foundEmail) return next();
       })
       .catch(err => res.status(500).json({
-        errors: {
+        error: {
           message: ['error reading user table', `${err}`]
         }
       }));
