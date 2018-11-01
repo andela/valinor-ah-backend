@@ -16,9 +16,9 @@ import {
   userDataWithNumericName,
   userDataWithShortPassword,
   userDataWithInvalidDataTypes,
-  userDataWithVeryLongBio,
   userDataWithThreeNames,
   userDataWithAnExistingEmail,
+  userDataWithWhiteSpacedPassword,
 } from '../../../mockdata/userMockData';
 
 chai.use(chaiHttp);
@@ -34,7 +34,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'Invalid full name',
               'please enter first name and last name separated by space'
             ]
@@ -52,7 +52,7 @@ describe('User signup validation unit tests', () => {
         .end((err, res) => {
           res.body.should.be.eql({
             errors: {
-              message: [
+              fullName: [
                 'Invalid full name',
                 'please enter first name and last name separated by space'
               ]
@@ -69,7 +69,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'Invalid full name',
               'please enter first name and last name separated by space'
             ]
@@ -85,7 +85,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'full name is too long'
             ]
           }
@@ -100,7 +100,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'Invalid full name',
               'please enter first name and last name separated by space'
             ]
@@ -116,7 +116,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            password: [
               'password must contain a letter and number'
             ]
           }
@@ -133,7 +133,7 @@ describe('User signup validation unit tests', () => {
         .end((err, res) => {
           res.body.should.be.eql({
             errors: {
-              message: [
+              password: [
                 'password must be at least 8 characters'
               ]
             }
@@ -149,7 +149,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            password: [
               'password must be at least 8 characters',
               'password must contain a letter and number'
             ]
@@ -165,7 +165,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            email: [
               'please enter a valid email'
             ]
           }
@@ -180,7 +180,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            email: [
               'please enter a valid email'
             ]
           }
@@ -195,8 +195,10 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            email: [
               'please enter a valid email',
+            ],
+            password: [
               'password must contain a letter and number'
             ]
           }
@@ -211,10 +213,14 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'Invalid full name',
               'please enter first name and last name separated by space',
+            ],
+            email: [
               'please enter a valid email',
+            ],
+            password: [
               'password must contain a letter and number',
             ]
           }
@@ -229,10 +235,14 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'Invalid full name',
               'please enter first name and last name separated by space',
+            ],
+            email: [
               'please enter a valid email',
+            ],
+            password: [
               'password must be at least 8 characters',
               'password must contain a letter and number',
             ]
@@ -248,7 +258,7 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'You entered more than two names',
             ]
           }
@@ -263,10 +273,14 @@ describe('User signup validation unit tests', () => {
       .end((err, res) => {
         res.body.should.be.eql({
           errors: {
-            message: [
+            fullName: [
               'Invalid full name',
               'please enter first name and last name separated by space',
+            ],
+            email: [
               'please enter a valid email',
+            ],
+            password: [
               'password must be at least 8 characters',
               'password must contain a letter and number',
             ]
@@ -276,18 +290,15 @@ describe('User signup validation unit tests', () => {
       });
   });
   it(
-    'should return error if bio field or avataUrl is > 150 characters',
+    'should return error if password contains white space',
     (done) => {
       chai.request(app)
         .post(signupUrl)
-        .send(userDataWithVeryLongBio)
+        .send(userDataWithWhiteSpacedPassword)
         .end((err, res) => {
           res.body.should.be.eql({
             errors: {
-              message: [
-                'avatarUrl is invalid',
-                'bio is too long',
-              ]
+              password: ['password must not contain space']
             }
           });
           done();
@@ -303,7 +314,7 @@ describe('User signup validation unit tests', () => {
         .end((err, res) => {
           res.body.should.be.eql({
             errors: {
-              message: [
+              email: [
                 'email is already in use',
               ]
             }
