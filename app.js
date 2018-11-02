@@ -35,12 +35,12 @@ app.use((err, req, res, next) => {
       error: err
     }
   });
-  next(err);
+  next();
 });
 
 // production error handler
 // no stacktraces leaked to user
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
     errors: {
@@ -48,10 +48,12 @@ app.use((err, req, res) => {
       error: {}
     }
   });
+  next();
 });
 
 app.listen(port, () => {
   winston.log('info', `App listening at localhost:${port}`);
 });
+
 
 export default app;

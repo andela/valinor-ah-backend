@@ -38,5 +38,5 @@ node_modules
 
 dist
 sendgrid.env
-
+coverage
 .nyc_output

@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt-nodejs';
 import models from '../models';
 import createToken from '../helpers/createToken';
+import sendEmail from '../helpers/sendEmail';
+import verifyEmailMessage from '../helpers/verifyEmailMessage';
 
 const { User } = models;
 
@@ -25,19 +27,23 @@ class UsersController {
         email,
         password: hashedPassword
       })
-      .then(user => res.status(201).json({
-        status: 'success',
-        message: 'New user created successfully',
-        user: {
-          id: user.id,
-          fullName: user.fullName,
-          email: user.email,
-          confirmEmail: user.confirmEmail,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-          token: createToken(user.id, lifeSpan),
-        }
-      }))
+      .then((user) => {
+        const token = createToken(user.id, lifeSpan);
+        sendEmail(user, verifyEmailMessage(token));
+        res.status(201).json({
+          status: 'success',
+          message: 'New user created successfully',
+          user: {
+            id: user.id,
+            fullName,
+            email,
+            confirmEmail: user.confirmEmail,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            token,
+          }
+        });
+      })
       .catch(err => res.status(500)
         .json({
           error: {
