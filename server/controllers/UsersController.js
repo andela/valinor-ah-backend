@@ -1,8 +1,15 @@
 import bcrypt from 'bcrypt-nodejs';
+import { Op } from 'sequelize';
+import cloudinary from 'cloudinary';
+import winston from 'winston';
+
 import models from '../models';
-import createToken from '../helpers/createToken';
 import sendEmail from '../helpers/sendEmail';
 import verifyEmailMessage from '../helpers/verifyEmailMessage';
+import { createToken } from '../helpers/tokenUtils';
+import cloudinaryConfig from '../config/cloudinaryConfig';
+
+cloudinary.config(cloudinaryConfig);
 
 const { User } = models;
 
@@ -100,6 +107,74 @@ class UsersController {
           message: ['error reading user table', `${error}`]
         }
       }));
+  }
+
+  /**
+   * This controller updates a users profile
+   * @param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @returns {void}
+   */
+  static async updateProfile(req, res, next) {
+    // check if request token id matches id of account to be updated
+    const { userId } = req.params;
+    const { id } = res.locals.payload;
+    if (id !== parseInt(userId, 10)) {
+      const error = new Error('can\'t update another user\'s profile');
+      error.status = 403;
+      return next(error);
+    }
+
+    // check if user exists
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        const error = new Error('user not found');
+        error.status = 404;
+        return next(error);
+      }
+    } catch (error) {
+      return next(error);
+    }
+
+    // check that the request body contains only valid columns
+    const updateData = req.body;
+    const profileFields = [
+      'fullName',
+      'email',
+      'bio',
+      'avatarUrl',
+      'location',
+      'facebookUrl',
+      'twitterUrl',
+    ];
+    const updateFields = Object.keys(updateData);
+    updateFields.forEach((field) => {
+      if (profileFields.indexOf(field) < 0) {
+        const error = new Error(`user column '${field}' does not exist`);
+        error.status = 422;
+        return next(error);
+      }
+    });
+
+    // function to update the user profile
+    const updateProfile = async () => {
+      try {
+        const rowCount = await User.update(updateData, {
+          where: { id: { [Op.eq]: userId } }
+        });
+        if (rowCount > 0) {
+          return res.status(200).json({
+            status: 'success',
+            message: `${rowCount[0]} user profile updated successfully`,
+          });
+        }
+      } catch (error) {
+        return next(error);
+      }
+    };
+    updateProfile();
   }
 }
 
