@@ -1,5 +1,7 @@
 import express from 'express';
+import path from 'path';
 
+import verifyJWT from '../../server/middlewares/verifyJWT';
 import UserValidation from '../../server/middlewares/UserValidation';
 import UserController from '../../server/controllers/UsersController';
 import facebookPassportRoutes from '../../server/config/facebookPassportRoutes';
@@ -7,9 +9,15 @@ import facebookPassportRoutes from '../../server/config/facebookPassportRoutes';
 const {
   validateUserSignUp,
   checkExistingEmail,
-  validateUserLogin
+  validateUserLogin,
 } = UserValidation;
-const { userLogin, signUp } = UserController;
+
+const {
+  userLogin,
+  signUp,
+  updateProfile,
+} = UserController;
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -33,5 +41,8 @@ router.get('/auth/facebook', facebookPassportRoutes.authenticate());
 
 // facebook callback route
 router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
+
+// update profile route
+router.patch('/users/:userId', verifyJWT, updateProfile);
 
 export default router;

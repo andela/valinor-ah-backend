@@ -37,7 +37,20 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    twitterUrl: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    facebookUrl: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    location: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
   });
+
   User.associate = (models) => {
     const { Article } = models;
     User.hasMany(Article, {

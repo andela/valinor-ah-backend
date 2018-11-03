@@ -1,12 +1,23 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
 import app from '../../../app';
+import { createToken } from '../../../server/helpers/tokenUtils';
 
 chai.should();
 
 chai.use(chaiHttp);
 const signupUrl = '/api/v1/users/signup';
 const loginUrl = '/api/v1/users/login';
+
+const updateData = {
+  fullName: 'Tani Morgana',
+  email: 't.morgan@gmail.com',
+  bio: 'I am a girl that does magic tricks',
+  avatarUrl: 'https://www.hahafakeurl.com',
+  location: 'Lekki, England',
+  facebookUrl: 'https://www.hahafakefacebookurl.com',
+  twitterUrl: 'https://www.hahafaketwitterurl.com'
+};
 
 describe('Test default route', () => {
   it('Should return 200 for the default route', (done) => {
@@ -151,4 +162,210 @@ describe('Testing Login feature -Integration testing', () => {
       done();
     }
   );
+});
+
+// USER PROFILE UPDATE TEST SUITE
+describe('Update user profile', () => {
+  const userData = {};
+  before((done) => {
+    // Sign up a user and get the id and token returned
+    chai.request(app)
+      .post(signupUrl)
+      .send({
+        fullName: 'Not Tani',
+        email: 'n.tani@whowa.com',
+        password: 'ntanirfsee4',
+      })
+      .end((err, res) => {
+        userData.id = res.body.user.id;
+        userData.token = res.body.user.token;
+        done();
+      });
+  });
+
+  // try to update the user with no token
+  describe('with no token provided', () => {
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${userData.id}`)
+        .send(updateData)
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 401', () => {
+      resData.status.should.equal(401);
+    });
+    it('should return a failure message', () => {
+      resData.body.status.should.equal('failure');
+      resData.body.errors.message.should.equal('no token provided');
+    });
+  });
+
+  // update another user's account
+  describe('with another user\'s account', () => {
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${userData.id + 1}`)
+        .set('authorization', userData.token)
+        .send(updateData)
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 403', () => {
+      resData.status.should.equal(403);
+    });
+    it('should return a descriptive error message', () => {
+      resData.body.status.should.equal('failure');
+      resData.body.errors.message.should
+        .equal('can\'t update another user\'s profile');
+    });
+  });
+
+  // update the user with Valid data
+  describe('with valid update data', () => {
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${userData.id}`)
+        .set('authorization', userData.token)
+        .send(updateData)
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 200', () => {
+      resData.status.should.equal(200);
+    });
+    it('should update one user profile', () => {
+      resData.body.status.should.equal('success');
+      resData.body.message.should
+        .equal('1 user profile updated successfully');
+    });
+  });
+
+  describe('with non existent user profile column', () => {
+    // clone object and add invalid user column
+    const invalidUpdateData = Object.assign({}, updateData);
+    invalidUpdateData.travis = 'this column doesn\'t exist';
+
+    // fire updateProfile route with new invalid update data
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${userData.id}`)
+        .set('authorization', userData.token)
+        .send(invalidUpdateData)
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 422', () => {
+      resData.status.should.equal(422);
+    });
+    it('return body containing a descriptive failure message', () => {
+      resData.body.status.should.equal('failure');
+      resData.body.errors.message.should
+        .equal('user column \'travis\' does not exist');
+    });
+  });
+
+  describe('with a user that does not exist', () => {
+    // create fake token and try update
+    const fakeId = 400;
+    const fakeToken = createToken(fakeId, 10000);
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${fakeId}`)
+        .set('authorization', fakeToken)
+        .send(updateData)
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 404', () => {
+      resData.status.should.equal(404);
+    });
+    it('return body containing a descriptive failure message', () => {
+      resData.body.status.should.equal('failure');
+      resData.body.errors.message.should
+        .equal('user not found');
+    });
+  });
+
+  describe('with image', function uploadImage() {
+    this.timeout(30000);
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${userData.id}`)
+        .set('authorization', userData.token)
+        .attach('avatar', './mockdata/pngimage.png', 'pngimage.png')
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 200', () => {
+      resData.status.should.equal(200);
+    });
+    it('should update one user profile', () => {
+      resData.body.status.should.equal('success');
+      resData.body.message.should
+        .equal('1 user profile updated successfully');
+    });
+  });
+
+  describe('with svg image', function uploadImage() {
+    this.timeout(30000);
+    const resData = {};
+    before((done) => {
+      chai.request(app)
+        .patch(`/api/v1/users/${userData.id}`)
+        .set('authorization', userData.token)
+        .attach('avatar', './mockdata/svgimage.svg', 'svgimage.svg')
+        .end((err, res) => {
+          resData.status = res.status;
+          resData.body = res.body;
+          done();
+        });
+    });
+
+    // check return status and body
+    it('should return status 422', () => {
+      resData.status.should.equal(422);
+    });
+    it('should update one user profile', () => {
+      resData.body.status.should.equal('failure');
+      resData.body.errors.message.should
+        .equal('Only jpg, jpeg and png files allowed');
+    });
+  });
 });

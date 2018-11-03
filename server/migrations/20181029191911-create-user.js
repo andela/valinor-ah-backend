@@ -42,6 +42,18 @@ export default {
       allowNull: true,
       type: Sequelize.BOOLEAN
     },
+    twitterUrl: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    facebookUrl: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    location: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

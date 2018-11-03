@@ -11,15 +11,17 @@ import swaggerDocument from './swagger.json';
 
 import routes from './routes';
 
-const app = express();
-
 dotenv.config();
 
 const port = process.env.PORT || 3000;
 const options = {
   explorer: true
 };
+const isProduction = process.env.NODE_ENV === 'production';
 
+const app = express();
+
+// TODO: add multer to parse form data
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -64,16 +66,19 @@ app.use((req, res, next) => {
   next(err);
 });
 
-// development error handler
-// will print stacktrace
+// error handler
+// will print stacktrace if not production
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
+    status: 'failure',
     errors: {
       message: err.message,
-      error: err
     }
   });
+  if (!isProduction) {
+    next(err);
+  }
 });
 
 // eslint-disable-next-line max-len
