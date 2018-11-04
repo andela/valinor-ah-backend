@@ -11,16 +11,28 @@ export default {
       type: Sequelize.STRING
     },
     email: {
-      allowNull: false,
+      allowNull: true,
       type: Sequelize.STRING
     },
     password: {
-      allowNull: false,
+      allowNull: true,
       type: Sequelize.STRING
     },
     avatarUrl: {
       allowNull: true,
       type: Sequelize.STRING
+    },
+    facebookId: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    twitterId: {
+      allowNull: true,
+      type: Sequelize.STRING,
+    },
+    googleId: {
+      allowNull: true,
+      type: Sequelize.STRING,
     },
     bio: {
       allowNull: true,
