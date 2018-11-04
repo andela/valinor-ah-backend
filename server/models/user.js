@@ -5,14 +5,26 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     email: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING,
     },
     password: {
-      allowNull: false,
+      allowNull: true,
       type: DataTypes.STRING,
     },
     avatarUrl: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    facebookId: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    twitterId: {
+      allowNull: true,
+      type: DataTypes.STRING,
+    },
+    googleId: {
       allowNull: true,
       type: DataTypes.STRING,
     },
