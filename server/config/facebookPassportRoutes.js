@@ -33,8 +33,8 @@ const facebookPassportRoutes = {
     scope: ['email']
   }),
   callback: () => passport.authenticate('facebook', {
-    successRedirect: '/api/v1/auth/facebook/success',
-    failureRedirect: '/api/v1/auth/facebook/failure'
+    successRedirect: '/',
+    failureRedirect: '/login'
   })
 };
 

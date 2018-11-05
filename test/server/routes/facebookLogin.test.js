@@ -8,8 +8,8 @@ import facebookCallback from '../../../server/helpers/facebookCallback';
 import app from '../../../app';
 
 chai.use(chaiHttp);
-const { should, expect, assert } = chai;
-should();
+
+const should = chai.should();
 
 describe('Test facebook login route', () => {
   before(() => {
@@ -26,7 +26,7 @@ describe('Test facebook login route', () => {
       .get('/api/v1/auth/facebook')
       .end((err, res) => {
         res.should.have.status(200);
-        expect(res.text).to.be.equal('facebook login route called!');
+        res.text.should.be.equal('facebook login route called!');
         done();
       });
   }));
@@ -37,6 +37,6 @@ const facebookCallbackResult = facebookCallback(accessToken, refreshToken, profi
 
 describe('Test facebook callback function', () => {
   it('should return undefined if successful', () => {
-    assert.equal(facebookCallbackResult, undefined);
+    should.equal(facebookCallbackResult, undefined);
   });
 });

@@ -30,6 +30,23 @@ app.use(passport.session());
 
 app.use(routes);
 
+app.get('/', (req, res) => {
+  res.status(200)
+    .json({
+      // eslint-disable-next-line max-len
+      message: 'Welcome to Author\'s Haven Homepage, the community of great authors',
+      status: 200
+    });
+});
+
+app.get('/login', (req, res) => {
+  res.status(200)
+    .json({
+      message: 'Authors\'s Haven login page',
+      status: 200
+    });
+});
+
 // / catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error('Not Found');
