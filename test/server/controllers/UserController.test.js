@@ -1,10 +1,19 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
 import app from '../../../app';
+import createToken from '../../../server/helpers/createToken';
 
 chai.should();
 
 chai.use(chaiHttp);
+
+const forgotPasswordUrl = '/api/v1/users/forgot';
+const resetPasswordUrl = '/api/v1/users/reset';
+const longTime = 6000;
+const shortTime = 1;
+const goodToken = createToken(1, longTime);
+const badToken = createToken(1, shortTime);
+const invalidToken = createToken(30, longTime);
 const signupUrl = '/api/v1/users/signup';
 const loginUrl = '/api/v1/users/login';
 
@@ -151,4 +160,80 @@ describe('Testing Login feature -Integration testing', () => {
       done();
     }
   );
+});
+
+describe('users/forgot', () => {
+  it('should throw error if email is not found', (done) => {
+    chai.request(app)
+      .post(forgotPasswordUrl)
+      .send({ email: 'tersoo@example.com' })
+      .end((err, res) => {
+        res.should.have.status(404);
+        res.body.errors.message.should.be
+          .eql(['No account with that email address exists']);
+        done();
+      });
+  });
+
+  it('should send email successfully', (done) => {
+    chai.request(app)
+      .post(forgotPasswordUrl)
+      .send({ email: 'solomon.sulaiman@andela.com' })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.message.should.be
+          .eql(['Password reset email sent successfully']);
+        done();
+      });
+  });
+});
+
+describe('users/reset/:token', () => {
+  it('should throw error if user is not found', (done) => {
+    chai.request(app)
+      .post(`${resetPasswordUrl}/${invalidToken}`)
+      .send({ password: 'highwater', confirmPassword: 'highwater' })
+      .end((err, res) => {
+        res.status.should.eql(404);
+        res.body.message.should.be
+          .eql(['User not found']);
+        done();
+      });
+  });
+
+  it('should throw error if password verify fails', (done) => {
+    chai.request(app)
+      .post(`${resetPasswordUrl}/${goodToken}`)
+      .send({ password: 'highwater', confirmPassword: 'highwater1' })
+      .end((err, res) => {
+        res.status.should.eql(400);
+        res.body.message.should.be
+          .eql(['Passwords did not match']);
+        done();
+      });
+  });
+
+  it('should update a user password', (done) => {
+    chai.request(app)
+      .post(`${resetPasswordUrl}/${goodToken}`)
+      .send({ password: 'highwater', confirmPassword: 'highwater' })
+      .end((err, res) => {
+        res.status.should.eql(200);
+        res.body.message.should.be
+          .eql(['password reset was successful']);
+        done();
+      });
+  });
+
+  it('should throw error if token is expired', (done) => {
+    chai.request(app)
+      .post(`${resetPasswordUrl}/${badToken}`)
+      .send({ password: 'highwater', confirmPassword: 'highwater' })
+      .end((err, res) => {
+        res.status.should.eql(400);
+        res.body.message.should.be
+          .eql(['Password reset token is invalid or has expired']);
+        done();
+      });
+  });
 });

@@ -7,9 +7,16 @@ import facebookPassportRoutes from '../../server/config/facebookPassportRoutes';
 const {
   validateUserSignUp,
   checkExistingEmail,
-  validateUserLogin
+  validateUserLogin,
+  validateForgot,
+  validateReset
 } = UserValidation;
-const { userLogin, signUp } = UserController;
+const {
+  userLogin,
+  signUp,
+  resetPassword,
+  forgotPassword
+} = UserController;
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -19,19 +26,39 @@ router.get('/', (req, res) => {
       status: 200
     });
 });
+
 router.post(
   '/users/signup',
   validateUserSignUp, checkExistingEmail, signUp
 );
+
 router.post(
   '/users/login',
   validateUserLogin, userLogin
 );
 
+router.post(
+  '/users/forgot',
+  validateForgot,
+  forgotPassword
+);
+
+router.post(
+  '/users/reset/:token',
+  validateReset,
+  resetPassword
+);
+
 // signup or login with facebook
-router.get('/auth/facebook', facebookPassportRoutes.authenticate());
+router.get(
+  '/auth/facebook',
+  facebookPassportRoutes.authenticate()
+);
 
 // facebook callback route
-router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
+router.get(
+  '/auth/facebook/callback',
+  facebookPassportRoutes.callback()
+);
 
 export default router;
