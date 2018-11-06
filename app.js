@@ -6,6 +6,8 @@ import winston from 'winston';
 import validator from 'express-validator';
 import passport from 'passport';
 import session from 'express-session';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.json';
 
 import routes from './routes';
 
@@ -14,11 +16,20 @@ const app = express();
 dotenv.config();
 
 const port = process.env.PORT || 3000;
+const options = {
+  explorer: true
+};
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, options)
+);
 
 app.use(session({
   secret: process.env.SECRET,
@@ -29,7 +40,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(routes);
-
 app.get('/', (req, res) => {
   res.status(200)
     .json({

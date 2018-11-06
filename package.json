@@ -10,7 +10,7 @@
     "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require babel-core/register --require babel-polyfill --exit",
     "start": "npm run clean && npm run build && node dist/app.js",
     "start:dev": "nodemon --exec babel-node app.js",
-    "build": "babel . --ignore node_modules,test,coverage,dist -d dist/",
+    "build": "babel . --ignore node_modules,test,coverage,dist -d dist/ && cp swagger.json dist/",
     "clean": "rm -rf dist && mkdir dist",
     "cover": "./node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- ./test/**/**/* --exit",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
@@ -52,6 +52,7 @@
     "sequelize": "^4.41.0",
     "sequelize-cli": "^5.2.0",
     "slug": "^0.9.1",
+    "swagger-ui-express": "^4.0.1",
     "underscore": "^1.9.1",
     "winston": "^3.1.0"
   },
