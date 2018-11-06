@@ -32,11 +32,10 @@ describe('Test facebook login route', () => {
   }));
 });
 
-// eslint-disable-next-line max-len
-const facebookCallbackResult = facebookCallback(accessToken, refreshToken, profile);
-
-describe('Test facebook callback function', () => {
+describe('Test facebook callback function', (done) => {
   it('should return undefined if successful', () => {
+    // eslint-disable-next-line max-len
+    const facebookCallbackResult = facebookCallback(accessToken, refreshToken, profile, done);
     should.equal(facebookCallbackResult, undefined);
   });
 });
