@@ -56,7 +56,7 @@ class UserValidation {
     * @memberOf UserValidation
     * @static
     */
-  static validateForgot(req, res, next) {
+  static validateForgotPassword(req, res, next) {
     UserValidation.validateEmail(req);
     UserValidation.sendFormattedError(req, res, next);
   }
@@ -70,7 +70,7 @@ class UserValidation {
     * @memberOf UserValidation
     * @static
     */
-  static validateReset(req, res, next) {
+  static validateResetPassword(req, res, next) {
     UserValidation.validatePassword(req);
     UserValidation.sendFormattedError(req, res, next);
   }

@@ -169,8 +169,8 @@ describe('users/forgot', () => {
       .send({ email: 'tersoo@example.com' })
       .end((err, res) => {
         res.should.have.status(404);
-        res.body.errors.message.should.be
-          .eql(['No account with that email address exists']);
+        res.body.errors.message[0].should.be
+          .eql('No account with that email address exists');
         done();
       });
   });
@@ -181,8 +181,9 @@ describe('users/forgot', () => {
       .send({ email: 'solomon.sulaiman@andela.com' })
       .end((err, res) => {
         res.should.have.status(200);
+        res.body.status.should.be.eql('success');
         res.body.message.should.be
-          .eql(['Password reset email sent successfully']);
+          .eql('Password reset email sent successfully');
         done();
       });
   });
@@ -192,11 +193,11 @@ describe('users/reset/:token', () => {
   it('should throw error if user is not found', (done) => {
     chai.request(app)
       .post(`${resetPasswordUrl}/${invalidToken}`)
-      .send({ password: 'highwater', confirmPassword: 'highwater' })
+      .send({ password: 'highwater1', confirmPassword: 'highwater1' })
       .end((err, res) => {
         res.status.should.eql(404);
-        res.body.message.should.be
-          .eql(['User not found']);
+        res.body.errors.message[0].should.be
+          .eql('User not found');
         done();
       });
   });
@@ -204,11 +205,11 @@ describe('users/reset/:token', () => {
   it('should throw error if password verify fails', (done) => {
     chai.request(app)
       .post(`${resetPasswordUrl}/${goodToken}`)
-      .send({ password: 'highwater', confirmPassword: 'highwater1' })
+      .send({ password: 'highwater12', confirmPassword: 'highwater1' })
       .end((err, res) => {
         res.status.should.eql(400);
-        res.body.message.should.be
-          .eql(['Passwords did not match']);
+        res.body.errors.message[0].should.be
+          .eql('Passwords did not match');
         done();
       });
   });
@@ -216,11 +217,11 @@ describe('users/reset/:token', () => {
   it('should update a user password', (done) => {
     chai.request(app)
       .post(`${resetPasswordUrl}/${goodToken}`)
-      .send({ password: 'highwater', confirmPassword: 'highwater' })
+      .send({ password: 'highwater1', confirmPassword: 'highwater1' })
       .end((err, res) => {
         res.status.should.eql(200);
         res.body.message.should.be
-          .eql(['password reset was successful']);
+          .eql('Password reset was successful');
         done();
       });
   });
@@ -228,11 +229,11 @@ describe('users/reset/:token', () => {
   it('should throw error if token is expired', (done) => {
     chai.request(app)
       .post(`${resetPasswordUrl}/${badToken}`)
-      .send({ password: 'highwater', confirmPassword: 'highwater' })
+      .send({ password: 'highwater1', confirmPassword: 'highwater1' })
       .end((err, res) => {
         res.status.should.eql(400);
-        res.body.message.should.be
-          .eql(['Password reset token is invalid or has expired']);
+        res.body.errors.message[0].should.be
+          .eql('Password reset token is invalid or has expired');
         done();
       });
   });

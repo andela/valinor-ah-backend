@@ -8,8 +8,8 @@ const {
   validateUserSignUp,
   checkExistingEmail,
   validateUserLogin,
-  validateForgot,
-  validateReset
+  validateForgotPassword,
+  validateResetPassword
 } = UserValidation;
 const {
   userLogin,
@@ -39,13 +39,13 @@ router.post(
 
 router.post(
   '/users/forgot',
-  validateForgot,
+  validateForgotPassword,
   forgotPassword
 );
 
 router.post(
   '/users/reset/:token',
-  validateReset,
+  validateResetPassword,
   resetPassword
 );
 

@@ -3,9 +3,8 @@ import jwt from 'jsonwebtoken';
 import models from '../models';
 import createToken from '../helpers/createToken';
 import sendEmail from '../helpers/sendEmail';
-import verifyEmailMessage from '../helpers/verifyEmailMessage';
-import resetPasswordEmail from '../helpers/resetPasswordEmail';
-import forgotPasswordEmail from '../helpers/forgotPasswordEmail';
+// eslint-disable-next-line max-len
+import { verifyEmailMessage, resetPasswordEmail, forgotPasswordEmail } from '../helpers/emailTemplates';
 
 const { User } = models;
 
@@ -106,10 +105,10 @@ class UsersController {
   }
 
   /**
- * @description - Reoute handler to send password reset link
+ * @description - Route handler to send password reset link
  * @param {object} req - request object
  * @param {object} res - response object
- * @returns {object} - returns user
+ * @returns {object} - returns object
  */
   static forgotPassword(req, res) {
     const { email } = req.body;
@@ -131,8 +130,8 @@ class UsersController {
 
         const userId = userFound.id;
         const token = createToken(userId, lifeSpan);
-        const forgotUrl = `${req.protocol}://${req.host}/password_reset`
-        + `/${token}`;
+        // eslint-disable-next-line max-len
+        const forgotUrl = `${req.protocol}://${req.get('host')}/api/v1/users/reset/${token}`;
 
         const user = {
           id: userId,
@@ -146,15 +145,14 @@ class UsersController {
 
         res.status(200).send({
           status: 'success',
-          message: ['Password reset email sent successfully'],
-          token
+          message: 'Password reset email sent successfully'
         });
       })
       .catch((err) => {
         res.status(500)
           .json({
             error: {
-              message: err.message,
+              message: [err.message]
             },
           });
       });
@@ -164,7 +162,7 @@ class UsersController {
    * @description - Route handler to reset user password
    * @param {object} req - request object
    * @param {object} res - response object
-   * @returns {object} - returns user
+   * @returns {object} - returns object
    */
   static resetPassword(req, res) {
     const { password, confirmPassword } = req.body;
@@ -174,8 +172,9 @@ class UsersController {
       jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
           return res.status(400).send({
-            status: 'failure',
-            message: ['Password reset token is invalid or has expired']
+            errors: {
+              message: ['Password reset token is invalid or has expired']
+            }
           });
         }
 
@@ -189,16 +188,15 @@ class UsersController {
           .then((user) => {
             if (!user) {
               return res.status(404).send({
-                status: 'failure',
-                message: ['User not found'],
+                errors: {
+                  message: ['User not found']
+                }
               });
             }
 
             const hashedPassword = bcrypt.hashSync(`${password}`);
 
-            user.update(
-              { password: hashedPassword }
-            )
+            user.update({ password: hashedPassword })
               .then(() => {
                 const message = resetPasswordEmail();
 
@@ -207,13 +205,7 @@ class UsersController {
 
                 res.status(200).send({
                   status: 'success',
-                  message: ['password reset was successful'],
-                  user: {
-                    id: user.id,
-                    fullName: user.fullName,
-                    email: user.email,
-                    bio: user.bio
-                  }
+                  message: 'Password reset was successful'
                 });
               })
               .catch((err) => {
@@ -228,8 +220,8 @@ class UsersController {
       });
     } else {
       return res.status(400).send({
-        status: 'failure',
-        message: ['Passwords did not match']
+        errors:
+        { message: ['Passwords did not match'] }
       });
     }
   }
