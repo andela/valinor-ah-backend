@@ -16,7 +16,7 @@ const verifyEmailMessage = (token) => {
     `<div style="height: 20em, background-color: #E6FFED; 
       border: 1px solid black; padding: 0.5em;">
         <p>
-          <a href="http://localhost:3001/api/test/verify?token=${token}">
+          <a href="http://localhost:3001/api/v1/users/verify?token=${token}">
           <strong>
             CLICK HERE!
           </strong>

@@ -5,7 +5,7 @@ import cloudinary from 'cloudinary';
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
 import verifyEmailMessage from '../helpers/verifyEmailMessage';
-import { createToken } from '../helpers/tokenUtils';
+import { createToken, verifyToken } from '../helpers/tokenUtils';
 import cloudinaryConfig from '../config/cloudinaryConfig';
 
 cloudinary.config(cloudinaryConfig);
@@ -178,6 +178,57 @@ class UsersController {
       }
     };
     updateProfile();
+  }
+
+  /**
+  * @description - This method logs in user and return a token.
+  * @param {object} req - The request object bearing the email and password.
+  * @param {object} res - The response object that is returned as json.
+  * @returns {object} - The json object with message.
+  * @memberOf UserController
+  * @static
+  */
+  static verifyUser(req, res) {
+    const { token } = req.query;
+    const { id } = verifyToken(token);
+    User
+      .findByPk(id)
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({
+            errors: {
+              message: 'user does not exist'
+            }
+          });
+        } if (user.confirmEmail !== false) {
+          return res.status(403).json({
+            errors: {
+              message: 'user already verified'
+            }
+          });
+        }
+        User
+          .update(
+            { confirmEmail: true },
+            { where: { id } }
+          )
+          .then(() => res.status(200).json({
+            status: 'success',
+            message: 'user successfully verified'
+          }))
+          .catch(err => res.status(500)
+            .json({
+              error: {
+                message: err.message,
+              }
+            }));
+      })
+      .catch(err => res.status(500)
+        .json({
+          error: {
+            message: err.message,
+          }
+        }));
   }
 }
 
