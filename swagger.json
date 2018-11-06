@@ -1,0 +1,145 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "This is a documentation for the Authors Haven API. The api is located at https://",
+      "version": "0.0.1",
+      "title": "Authors Haven API",
+      "contact": {
+        "email": "abiodun.abudu@gmail.com"
+      },
+      "license": {
+        "name": "MIT",
+        "url": "https://github.com/swagger-api/swagger-ui/blob/master/LICENSE"
+      }
+    },
+    "host": "valinor-ah-backend-staging.herokuapp.com",
+    "basePath": "/api/v1",
+    "produces": ["application/json"],
+    "tags": [
+      {
+        "name": "root",
+        "description": "The root path"
+      },
+      {
+        "name": "users",
+        "description": "The users of Author's Haven"
+      },
+      {
+        "name": "articles",
+        "description": "The articles in Author's Haven"
+      },
+      {
+        "name": "comments",
+        "description": "The comments of articles in Author's Haven"
+      }
+    ],
+    "schemes": [
+      "https"
+    ],
+    "paths":{
+      "/users/signup": {
+          "post": {
+            "tags": [
+                "users"
+            ],
+            "description": "Create a new account for the user",
+            "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "User object that needs to be added",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                      "fullname": {
+                          "type": "string"
+                      },
+                      "email": {
+                          "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      }
+                  },
+                  "example": {
+                        "fullname": "abiodun abudu",
+                        "email": "abiodun.abudu@andela.com",
+                        "password": "!Sulaiman124"
+                  }
+              }
+            }
+          ],
+            "responses": {
+                 "201": {
+                    "description": "New user created successfully",
+                    "schema": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                                 "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "user": {
+                                "type": "object"
+                            }
+                          }
+                    }
+                 }
+            }
+        }
+      },
+      "/users/login": {
+          "post": {
+            "tags": [
+                "users"
+            ],
+            "description": "Log in an existing user",
+            "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "User object",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                      "email": {
+                          "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      }
+                  },
+                  "example": {
+                        "email": "abiodun.abudu@andela.com",
+                        "password": "!Sulaiman124"
+                  }
+              }
+            }
+          ],
+            "responses": {
+                 "200": {
+                    "description": "you are logged in",
+                    "schema": {
+                          "type": "object",
+                          "properties": {
+                            "status": {
+                                 "type": "string"
+                            },
+                            "message": {
+                                "type": "string"
+                            },
+                            "user": {
+                                "type": "object"
+                            }
+                          }
+                    }
+                 }
+            }
+        }
+      }
+    }
+}
