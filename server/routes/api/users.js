@@ -11,11 +11,11 @@ const {
   validateUserLogin,
   validateUserUpdate,
 } = UserValidation;
-
 const {
   userLogin,
   signUp,
-  updateProfile,
+  verifyUser,
+  updateProfile
 } = UserController;
 
 const router = express.Router();
@@ -35,6 +35,8 @@ router.post(
   '/users/login',
   validateUserLogin, userLogin
 );
+
+router.get('/users/verify', verifyUser);
 
 // signup or login with facebook
 router.get('/auth/facebook', facebookPassportRoutes.authenticate());

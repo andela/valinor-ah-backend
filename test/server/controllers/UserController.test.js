@@ -1,5 +1,6 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
+
 import app from '../../../app';
 import { createToken } from '../../../server/helpers/tokenUtils';
 
@@ -96,8 +97,8 @@ describe('Testing Login feature -Integration testing', () => {
               password: ['please enter password']
             }
           });
+          done();
         });
-      done();
     }
   );
 
@@ -117,8 +118,8 @@ describe('Testing Login feature -Integration testing', () => {
               password: ['please enter password']
             }
           });
+          done();
         });
-      done();
     }
   );
 
@@ -138,8 +139,8 @@ describe('Testing Login feature -Integration testing', () => {
               message: ['Invalid email or password']
             }
           });
+          done();
         });
-      done();
     }
   );
 
@@ -158,8 +159,64 @@ describe('Testing Login feature -Integration testing', () => {
           res.body.message.should.be.eql('you are logged in');
           res.body.user.email.should.be.eql('solomon.sulaiman@andela.com');
           res.body.user.token.should.be.a('string');
+          done();
         });
-      done();
+    }
+  );
+});
+
+describe('verify email link', () => {
+  let token;
+  let token2;
+  before(() => {
+    token = createToken(1, '24h');
+    token2 = createToken(9, '24h');
+  });
+  it(
+    'should verify a user',
+    (done) => {
+      chai.request(app)
+        .get(`/api/v1/users/verify?token=${token}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.deep.equal({
+            status: 'success',
+            message: 'user successfully verified'
+          });
+          done();
+        });
+    }
+  );
+  it(
+    'should fail to verify an unregistered user',
+    (done) => {
+      chai.request(app)
+        .get(`/api/v1/users/verify?token=${token2}`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.deep.equal({
+            errors: {
+              message: 'user does not exist'
+            }
+          });
+          done();
+        });
+    }
+  );
+  it(
+    'should fail to verify an already verified user',
+    (done) => {
+      chai.request(app)
+        .get(`/api/v1/users/verify?token=${token}`)
+        .end((err, res) => {
+          res.should.have.status(403);
+          res.body.should.deep.equal({
+            errors: {
+              message: 'user already verified'
+            }
+          });
+          done();
+        });
     }
   );
 });
