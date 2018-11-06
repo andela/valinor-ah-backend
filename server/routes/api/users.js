@@ -4,6 +4,7 @@ import UserValidation from '../../middlewares/UserValidation';
 import UserController from '../../controllers/UsersController';
 import facebookPassportRoutes from '../../config/facebookPassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
+import twitterPassportRoutes from '../../config/twitterPassportRoutes';
 
 const {
   validateUserSignUp,
@@ -50,5 +51,11 @@ router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
 
 // update profile route
 router.patch('/users/:userId', verifyToken, validateUserUpdate, updateProfile);
+
+// route for twitter authentication and login
+router.get('/auth/twitter', twitterPassportRoutes.authenticate());
+
+// handle the callback after twitter has authenticated the user
+router.get('/auth/twitter/callback', twitterPassportRoutes.callback());
 
 export default router;

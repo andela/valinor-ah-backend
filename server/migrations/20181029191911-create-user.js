@@ -7,7 +7,7 @@ export default {
       type: Sequelize.INTEGER
     },
     fullName: {
-      allowNull: false,
+      allowNull: true,
       type: Sequelize.STRING
     },
     roleId: {

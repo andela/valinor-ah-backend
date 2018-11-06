@@ -1,3 +1,4 @@
+
 export const profile = {
   id: 92647913649816349,
   emails: [{
@@ -12,5 +13,5 @@ export const profile = {
   }]
 };
 
-export const accessToken = 'khgsda6d8tyi3bu97bfepiohnfl2n3pf0hoql.23 fnkiu3g';
-export const refreshToken = 'khsgad63iy789r32vyf923fv23o0fig2o3f';
+export const accessToken = '201934290-7d9fQUAPSFniOXmvcFRXqfHUTKSWeIg6JlY6Z4Vg';
+export const refreshToken = 'PeKbqpDgt6kjX98ptSZYueGRIDILe4tMmAbch95YlNwhK';
