@@ -37,6 +37,12 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-  }, {});
+  });
+  User.associate = (models) => {
+    const { Article } = models;
+    User.hasMany(Article, {
+      foreignKey: 'userId'
+    });
+  };
   return User;
 };
