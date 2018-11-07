@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt-nodejs';
 import { Op } from 'sequelize';
 import cloudinary from 'cloudinary';
-import winston from 'winston';
 
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
@@ -150,13 +149,17 @@ class UsersController {
       'twitterUrl',
     ];
     const updateFields = Object.keys(updateData);
-    updateFields.forEach((field) => {
-      if (profileFields.indexOf(field) < 0) {
-        const error = new Error(`user column '${field}' does not exist`);
-        error.status = 422;
-        return next(error);
-      }
-    });
+    try {
+      updateFields.forEach((field) => {
+        if (profileFields.indexOf(field) < 0) {
+          const error = new Error(`user column '${field}' does not exist`);
+          error.status = 422;
+          throw error;
+        }
+      });
+    } catch (err) {
+      return next(err);
+    }
 
     // function to update the user profile
     const updateProfile = async () => {

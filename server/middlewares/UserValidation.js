@@ -23,6 +23,75 @@ class UserValidation {
   }
 
   /**
+    * @description - This method validates the user update body.
+    * @param {object} req - The request object to be validated.
+    * @param {object} res - Th response object to be validated.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateUserUpdate(req, res, next) {
+    if (req.body.fullName) {
+      UserValidation.validateFullName(req);
+    }
+    if (req.body.email) {
+      UserValidation.validateEmail(req);
+    }
+    if (req.body.bio) {
+      UserValidation.validateBio(req);
+    }
+    if (req.body.avatarUrl) {
+      UserValidation.validateUrl(req, 'avatarUrl');
+    }
+    if (req.body.facebookUrl) {
+      UserValidation.validateUrl(req, 'facebookUrl');
+    }
+    if (req.body.twitterUrl) {
+      UserValidation.validateUrl(req, 'twitterUrl');
+    }
+    if (req.body.location) {
+      UserValidation.validateLocation(req);
+    }
+    UserValidation.sendFormattedError(req, res, next);
+  }
+
+  /**
+    * @description - This method validates the avatarUrl
+    * @param {object} req - The request object
+    * @param {object} fieldName - The url field name
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateUrl(req, fieldName) {
+    req.checkBody(fieldName, `invalid ${fieldName}`).isURL();
+  }
+
+  /**
+    * @description - This method validates the bio
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateBio(req) {
+    req.checkBody('bio', 'bio must not exceed 200 characters')
+      .isLength({ max: 200 });
+  }
+
+  /**
+    * @description - This method validates the location
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateLocation(req) {
+    req.checkBody('location', 'location may only contain letters').isAlpha();
+  }
+
+  /**
     * @description - This method validates the email
     * @param {object} req - The request object
     * @returns {null} - returns nothing

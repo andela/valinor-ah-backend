@@ -13,8 +13,8 @@ const updateData = {
   fullName: 'Tani Morgana',
   email: 't.morgan@gmail.com',
   bio: 'I am a girl that does magic tricks',
-  avatarUrl: 'https://www.hahafakeurl.com',
-  location: 'Lekki, England',
+  avatarUrl: 'https://www.hahafakeurl.com/',
+  location: 'England',
   facebookUrl: 'https://www.hahafakefacebookurl.com',
   twitterUrl: 'https://www.hahafaketwitterurl.com'
 };
@@ -212,7 +212,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${userData.id + 1}`)
+        .patch(`/api/v1/users/${userData.id + 5}`)
         .set('authorization', userData.token)
         .send(updateData)
         .end((err, res) => {
@@ -314,58 +314,6 @@ describe('Update user profile', () => {
       resData.body.status.should.equal('failure');
       resData.body.errors.message.should
         .equal('user not found');
-    });
-  });
-
-  describe('with image', function uploadImage() {
-    this.timeout(30000);
-    const resData = {};
-    before((done) => {
-      chai.request(app)
-        .patch(`/api/v1/users/${userData.id}`)
-        .set('authorization', userData.token)
-        .attach('avatar', './mockdata/pngimage.png', 'pngimage.png')
-        .end((err, res) => {
-          resData.status = res.status;
-          resData.body = res.body;
-          done();
-        });
-    });
-
-    // check return status and body
-    it('should return status 200', () => {
-      resData.status.should.equal(200);
-    });
-    it('should update one user profile', () => {
-      resData.body.status.should.equal('success');
-      resData.body.message.should
-        .equal('1 user profile updated successfully');
-    });
-  });
-
-  describe('with svg image', function uploadImage() {
-    this.timeout(30000);
-    const resData = {};
-    before((done) => {
-      chai.request(app)
-        .patch(`/api/v1/users/${userData.id}`)
-        .set('authorization', userData.token)
-        .attach('avatar', './mockdata/svgimage.svg', 'svgimage.svg')
-        .end((err, res) => {
-          resData.status = res.status;
-          resData.body = res.body;
-          done();
-        });
-    });
-
-    // check return status and body
-    it('should return status 422', () => {
-      resData.status.should.equal(422);
-    });
-    it('should update one user profile', () => {
-      resData.body.status.should.equal('failure');
-      resData.body.errors.message.should
-        .equal('Only jpg, jpeg and png files allowed');
     });
   });
 });

@@ -1,5 +1,4 @@
 import express from 'express';
-import path from 'path';
 
 import verifyJWT from '../../server/middlewares/verifyJWT';
 import UserValidation from '../../server/middlewares/UserValidation';
@@ -10,6 +9,7 @@ const {
   validateUserSignUp,
   checkExistingEmail,
   validateUserLogin,
+  validateUserUpdate,
 } = UserValidation;
 
 const {
@@ -43,6 +43,6 @@ router.get('/auth/facebook', facebookPassportRoutes.authenticate());
 router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
 
 // update profile route
-router.patch('/users/:userId', verifyJWT, updateProfile);
+router.patch('/users/:userId', verifyJWT, validateUserUpdate, updateProfile);
 
 export default router;
