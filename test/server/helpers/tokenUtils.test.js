@@ -1,7 +1,6 @@
 import chai from 'chai';
 import {
   createToken,
-  verifyToken,
 } from '../../../server/middlewares/tokenUtils';
 
 chai.should();

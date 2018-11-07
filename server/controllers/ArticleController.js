@@ -1,3 +1,5 @@
+import uniqueSlug from 'unique-slug';
+import slugify from 'slugify';
 import Sequelize from 'sequelize';
 
 import models from '../models';
@@ -50,9 +52,9 @@ class ArticleController {
   }
 
   /**
-   * controller to create an article
-   * @param {object} req
-   * @param {object} res
+   * controller to fetch all articles
+   * @param {object} req - express request object
+   * @param {object} res - express response object
    * @returns {void}
    */
   static fetchAllArticles(req, res) {
@@ -80,6 +82,42 @@ class ArticleController {
             message: [err.message]
           }
         }));
+  }
+
+  /**
+   * controller to create an article
+   * @param {object} req - express request object
+   * @param {object} res - express response object
+   * @returns {void}
+   */
+  static createArticle(req, res) {
+    const {
+      title,
+      description,
+      body,
+    } = req.body;
+    const userId = req.userData.id;
+    const slug = `${slugify(title.toLowerCase())}-${uniqueSlug()}`;
+
+    Article.create({
+      title,
+      slug,
+      description,
+      body,
+      userId,
+    }).then((article) => {
+      const articleData = article.dataValues;
+      res.status(201).json({
+        status: 'success',
+        article: articleData,
+      });
+    }).catch((err) => {
+      res.status(500).json({
+        error: {
+          message: err.message,
+        },
+      });
+    });
   }
 }
 

@@ -15,7 +15,7 @@ chai.use(chaiHttp);
 const should = chai.should();
 
 describe('Test Google login route', function google() {
-  this.timeout(4000);
+  this.timeout(5000);
   before((done) => {
     nock('https://www.google.com/')
       .filteringPath(() => '/api/v1/auth/google')

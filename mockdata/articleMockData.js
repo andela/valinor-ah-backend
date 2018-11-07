@@ -11,3 +11,15 @@ export const articleWithInValidData = {
   description: 'This is my story at the beach',
   body: 'Once upon a time in Mexico.. there was ...',
 };
+
+export const articleInputValid = {
+  title: 'How to write you name',
+  description: 'This article talks about how to write your name',
+  body: 'let\'s talk about names, what is your name?',
+};
+
+
+export const articleInputNoTitle = {
+  description: 'This article talks about how to write your name',
+  body: 'let\'s talk about names, what is your name?',
+};
