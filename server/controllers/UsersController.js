@@ -35,7 +35,14 @@ class UsersController {
       })
       .then((user) => {
         const token = createToken(user.id, lifeSpan);
-        sendEmail(user, verifyEmailMessage(token));
+        sendEmail(
+          user,
+          verifyEmailMessage(
+            token,
+            req.protocol,
+            // req.headers.host
+          )
+        );
         res.status(201).json({
           status: 'success',
           message: 'New user created successfully',
@@ -53,8 +60,8 @@ class UsersController {
       })
       .catch(err => res.status(500)
         .json({
-          error: {
-            message: err.message,
+          errors: {
+            message: [err.message]
           },
         }));
   }
@@ -101,9 +108,9 @@ class UsersController {
           });
         }
       })
-      .catch(error => res.status(500).json({
+      .catch(err => res.status(500).json({
         errors: {
-          message: ['error reading user table', `${error}`]
+          message: [err.message]
         }
       }));
   }
@@ -194,16 +201,10 @@ class UsersController {
     User
       .findByPk(id)
       .then((user) => {
-        if (!user) {
-          return res.status(404).json({
-            errors: {
-              message: 'user does not exist'
-            }
-          });
-        } if (user.confirmEmail !== false) {
+        if (user.confirmEmail) {
           return res.status(403).json({
             errors: {
-              message: 'user already verified'
+              message: ['user already verified']
             }
           });
         }
@@ -218,15 +219,15 @@ class UsersController {
           }))
           .catch(err => res.status(500)
             .json({
-              error: {
-                message: err.message,
+              errors: {
+                message: [err.message]
               }
             }));
       })
-      .catch(err => res.status(500)
+      .catch(() => res.status(404)
         .json({
-          error: {
-            message: err.message,
+          errors: {
+            message: ['user does not exist']
           }
         }));
   }
