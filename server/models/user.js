@@ -44,5 +44,9 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
   };
+  User.associate = (models) => {
+    const { Role } = models;
+    User.belongsTo(Role, { foreignKey: 'roleId' });
+  };
   return User;
 };

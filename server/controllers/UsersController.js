@@ -36,6 +36,7 @@ class UsersController {
           user: {
             id: user.id,
             fullName,
+            roleId: user.roleId,
             email,
             confirmEmail: user.confirmEmail,
             createdAt: user.createdAt,
@@ -78,7 +79,8 @@ class UsersController {
         if (bcrypt.compareSync(password, userFound.password)) {
           const {
             id,
-            fullName
+            fullName,
+            roleId
           } = userFound;
           const lifeSpan = 60 * 60 * 24;
           return res.status(200).json({
@@ -87,6 +89,7 @@ class UsersController {
             user: {
               fullName,
               email,
+              roleId,
               token: createToken(id, lifeSpan)
             }
           });

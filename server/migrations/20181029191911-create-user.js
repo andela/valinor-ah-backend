@@ -10,6 +10,15 @@ export default {
       allowNull: false,
       type: Sequelize.STRING
     },
+    roleId: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      defaultValue: 3,
+      references: {
+        model: 'Roles',
+        key: 'id'
+      }
+    },
     email: {
       allowNull: true,
       type: Sequelize.STRING
