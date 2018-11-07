@@ -1,13 +1,22 @@
 import express from 'express';
 
+import { verifyToken } from '../../middlewares/tokenUtils';
 import ArticleController from '../../controllers/ArticleController';
+import ArticleValidation from '../../middlewares/ArticleValidation';
 
-const router = express.Router();
+const articles = express.Router();
 
-const { fetchAllArticles, getAnArticle } = ArticleController;
+const { validateArticleInput } = ArticleValidation;
+const {
+  createArticle,
+  getAnArticle,
+  fetchAllArticles,
+} = ArticleController;
 
-router.get('/articles/:slug', getAnArticle);
+articles.post('/articles', verifyToken, validateArticleInput, createArticle);
 
-router.get('/articles', fetchAllArticles);
+articles.get('/articles/:slug', getAnArticle);
 
-export default router;
+articles.get('/articles', fetchAllArticles);
+
+export default articles;
