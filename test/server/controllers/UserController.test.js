@@ -165,7 +165,7 @@ describe('Testing Login feature -Integration testing', () => {
   );
 });
 
-describe('verify email link', () => {
+describe('Verify user email via link', () => {
   let token;
   let token2;
   before(() => {
@@ -196,7 +196,7 @@ describe('verify email link', () => {
           res.should.have.status(404);
           res.body.should.deep.equal({
             errors: {
-              message: 'user does not exist'
+              message: ['user does not exist']
             }
           });
           done();
@@ -212,7 +212,7 @@ describe('verify email link', () => {
           res.should.have.status(403);
           res.body.should.deep.equal({
             errors: {
-              message: 'user already verified'
+              message: ['user already verified']
             }
           });
           done();

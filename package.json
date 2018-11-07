@@ -18,6 +18,7 @@
     "db-migrate": "sequelize db:migrate",
     "db-undo-migrate": "sequelize db:migrate:undo:all",
     "db-role-seed": "sequelize db:seed:all",
+    "db-init-test": "sequelize db:migrate:undo:all --env test && sequelize db:migrate --env test",
     "db-init-test-dev": "sequelize db:migrate:undo:all --env development && sequelize db:migrate --env development"
   },
   "author": "Andela Simulations Programme",
