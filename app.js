@@ -7,7 +7,7 @@ import validator from 'express-validator';
 import passport from 'passport';
 import session from 'express-session';
 
-import routes from './routes';
+import routes from './server/routes';
 
 const app = express();
 
