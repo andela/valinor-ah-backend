@@ -5,7 +5,7 @@ import cloudinary from 'cloudinary';
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
 import verifyEmailMessage from '../helpers/verifyEmailMessage';
-import { createToken, verifyToken } from '../helpers/tokenUtils';
+import { createToken } from '../middlewares/tokenUtils';
 import cloudinaryConfig from '../config/cloudinaryConfig';
 
 cloudinary.config(cloudinaryConfig);
@@ -40,7 +40,7 @@ class UsersController {
           verifyEmailMessage(
             token,
             req.protocol,
-            // req.headers.host
+            req.headers.host
           )
         );
         res.status(201).json({
@@ -196,8 +196,7 @@ class UsersController {
   * @static
   */
   static verifyUser(req, res) {
-    const { token } = req.query;
-    const { id } = verifyToken(token);
+    const { id } = req.userData;
     User
       .findByPk(id)
       .then((user) => {

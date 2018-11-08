@@ -8,22 +8,15 @@ dotenv.config();
  */
 
 const verifyEmailMessage = (token, protocol, address) => {
-  const err = {};
+  const err = { errors: {} };
   if (token === undefined || token.trim() === '') {
-    err.token = ['No token provided'];
+    err.errors.token = ['please provide a token'];
   } if (protocol === undefined || protocol.trim() === '') {
-    err.protocol = ['please provide a protocol'];
+    err.errors.protocol = ['please provide a protocol'];
   } if (address === undefined || address.trim() === '') {
-    err.address = ['please provide an address'];
-  }
-  console.log('err============+>', err);
-  console.log('err,keys============+>', Object.keys(err));
-  console.log('err,length============+>', Object.keys(err).length);
-  if (Object.keys(err).length > 0) {
-    const error = new Error(JSON.stringify(err));
-    error.status = 422;
-    console.log('error============>', error);
-    return error;
+    err.errors.address = ['please provide an address'];
+  } if (Object.keys(err.errors).length > 0) {
+    return err;
   }
   return {
     subject: 'Welcome to Author\'s Haven! Please Confirm your email',
