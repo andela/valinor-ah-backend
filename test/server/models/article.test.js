@@ -10,10 +10,6 @@ const { Article } = models;
 chai.should();
 
 describe('Testing article models - unit tests', () => {
-  before((done) => {
-    Article.destroy({ where: {} });
-    done();
-  });
   it(
     'should return created Article model upon article creation',
     (done) => {

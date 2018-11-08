@@ -2,7 +2,7 @@ import chaiHttp from 'chai-http';
 import chai from 'chai';
 
 import app from '../../../app';
-import { createToken } from '../../../server/helpers/tokenUtils';
+import { createToken } from '../../../server/middlewares/tokenUtils';
 
 chai.should();
 

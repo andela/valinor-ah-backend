@@ -3,7 +3,7 @@ import express from 'express';
 import UserValidation from '../../middlewares/UserValidation';
 import UserController from '../../controllers/UsersController';
 import facebookPassportRoutes from '../../config/facebookPassportRoutes';
-import verifyJWT from '../../middlewares/verifyJWT';
+import { verifyToken } from '../../middlewares/tokenUtils';
 
 const {
   validateUserSignUp,
@@ -36,7 +36,7 @@ router.post(
   validateUserLogin, userLogin
 );
 
-router.get('/users/verify', verifyUser);
+router.get('/users/verify', verifyToken, verifyUser);
 
 // signup or login with facebook
 router.get('/auth/facebook', facebookPassportRoutes.authenticate());
