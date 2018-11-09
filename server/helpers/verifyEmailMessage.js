@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
 /**
  * @description verifyEmailMessage contains the email message template
  * @param {string} token - The token generated for the user
@@ -5,9 +8,10 @@
  */
 
 const verifyEmailMessage = (token) => {
-  if (token === undefined || token === '') {
-    const err = new Error('token is invalid');
-    err.status = 401;
+  const err = { errors: {} };
+  if (token === undefined || token.trim() === '') {
+    err.errors.token = ['please provide a token'];
+  } if (Object.keys(err.errors).length > 0) {
     return err;
   }
   return {
@@ -16,7 +20,7 @@ const verifyEmailMessage = (token) => {
     `<div style="height: 20em, background-color: #E6FFED; 
       border: 1px solid black; padding: 0.5em;">
         <p>
-          <a href="http://localhost:3001/api/test/verify?token=${token}">
+          <a href="${process.env.API_BASE_URL}/users/verify?token=${token}">
           <strong>
             CLICK HERE!
           </strong>

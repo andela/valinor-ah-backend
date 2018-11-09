@@ -53,6 +53,7 @@ export default (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     const { Article, ArticleLike, Role } = models;
+
     User.hasMany(Article, {
       foreignKey: 'userId'
     });

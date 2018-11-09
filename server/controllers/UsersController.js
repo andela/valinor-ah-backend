@@ -5,7 +5,7 @@ import cloudinary from 'cloudinary';
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
 import verifyEmailMessage from '../helpers/verifyEmailMessage';
-import { createToken } from '../helpers/tokenUtils';
+import { createToken } from '../middlewares/tokenUtils';
 import cloudinaryConfig from '../config/cloudinaryConfig';
 
 cloudinary.config(cloudinaryConfig);
@@ -35,7 +35,10 @@ class UsersController {
       })
       .then((user) => {
         const token = createToken(user.id, lifeSpan);
-        sendEmail(user, verifyEmailMessage(token));
+        sendEmail(
+          user,
+          verifyEmailMessage(token)
+        );
         res.status(201).json({
           status: 'success',
           message: 'New user created successfully',
@@ -53,8 +56,8 @@ class UsersController {
       })
       .catch(err => res.status(500)
         .json({
-          error: {
-            message: err.message,
+          errors: {
+            message: [err.message]
           },
         }));
   }
@@ -101,9 +104,9 @@ class UsersController {
           });
         }
       })
-      .catch(error => res.status(500).json({
+      .catch(err => res.status(500).json({
         errors: {
-          message: ['error reading user table', `${error}`]
+          message: [err.message]
         }
       }));
   }
@@ -118,7 +121,7 @@ class UsersController {
   static async updateProfile(req, res, next) {
     // check if request token id matches id of account to be updated
     const { userId } = req.params;
-    const { id } = res.locals.payload;
+    const { id } = req.userData;
     if (id !== parseInt(userId, 10)) {
       const error = new Error('can\'t update another user\'s profile');
       error.status = 403;
@@ -178,6 +181,50 @@ class UsersController {
       }
     };
     updateProfile();
+  }
+
+  /**
+  * @description - This method logs in user and return a token.
+  * @param {object} req - The request object bearing the email and password.
+  * @param {object} res - The response object that is returned as json.
+  * @returns {object} - The json object with message.
+  * @memberOf UserController
+  * @static
+  */
+  static verifyUser(req, res) {
+    const { id } = req.userData;
+    User
+      .findByPk(id)
+      .then((user) => {
+        if (user.confirmEmail) {
+          return res.status(403).json({
+            errors: {
+              message: ['user already verified']
+            }
+          });
+        }
+        User
+          .update(
+            { confirmEmail: true },
+            { where: { id } }
+          )
+          .then(() => res.status(200).json({
+            status: 'success',
+            message: 'user successfully verified'
+          }))
+          .catch(err => res.status(500)
+            .json({
+              errors: {
+                message: [err.message]
+              }
+            }));
+      })
+      .catch(() => res.status(404)
+        .json({
+          errors: {
+            message: ['user does not exist']
+          }
+        }));
   }
 }
 
