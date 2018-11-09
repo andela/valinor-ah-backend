@@ -74,3 +74,20 @@ describe('Testing get an article', () => {
       });
   });
 });
+describe('Fetch all articles', () => {
+  it('test /api/v1/articles route', (done) => {
+    chai.request(app)
+      .get('/api/v1/articles')
+      .end((err, res) => {
+        should.equal(res.body.Articles[0].title, 'My story at the beach');
+        should.equal(res.body.Articles[0]
+          .slug, 'My-story-at-the-beach-2324232323');
+        should.equal(res.body.Articles[0]
+          .description, 'This is my story at the beach');
+        should.equal(res.body.Articles[0].User.fullName, 'John Doe');
+        should.equal(res.body.Articles[0].User.avatarUrl, null);
+        should.equal(res.status, 200);
+        done();
+      });
+  });
+});
