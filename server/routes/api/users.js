@@ -1,9 +1,9 @@
 import express from 'express';
 
-import verifyJWT from '../../server/middlewares/verifyJWT';
-import UserValidation from '../../server/middlewares/UserValidation';
-import UserController from '../../server/controllers/UsersController';
-import facebookPassportRoutes from '../../server/config/facebookPassportRoutes';
+import UserValidation from '../../middlewares/UserValidation';
+import UserController from '../../controllers/UsersController';
+import facebookPassportRoutes from '../../config/facebookPassportRoutes';
+import verifyJWT from '../../middlewares/verifyJWT';
 
 const {
   validateUserSignUp,

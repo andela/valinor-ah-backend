@@ -9,7 +9,9 @@ import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
 
-import routes from './routes';
+import routes from './server/routes';
+
+const app = express();
 
 dotenv.config();
 
@@ -18,8 +20,6 @@ const options = {
   explorer: true
 };
 const isProduction = process.env.NODE_ENV === 'production';
-
-const app = express();
 
 // TODO: add multer to parse form data
 app.use(logger('dev'));
