@@ -259,8 +259,8 @@ describe('Update user profile', () => {
       resData.status.should.equal(401);
     });
     it('should return a failure message', () => {
-      resData.body.status.should.equal('failure');
-      resData.body.errors.message.should.equal('no token provided');
+      resData.body.status.should.equal('unauthorized');
+      resData.body.message.should.equal('please provide a token');
     });
   });
 

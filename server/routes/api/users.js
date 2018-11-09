@@ -27,15 +27,19 @@ router.get('/', (req, res) => {
       status: 200
     });
 });
+
+// sign up route
 router.post(
   '/users/signup',
   validateUserSignUp, checkExistingEmail, signUp
 );
+// login with email and password
 router.post(
   '/users/login',
   validateUserLogin, userLogin
 );
 
+// verify users email
 router.get('/users/verify', verifyToken, verifyUser);
 
 // signup or login with facebook
@@ -45,6 +49,6 @@ router.get('/auth/facebook', facebookPassportRoutes.authenticate());
 router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
 
 // update profile route
-router.patch('/users/:userId', verifyJWT, validateUserUpdate, updateProfile);
+router.patch('/users/:userId', verifyToken, validateUserUpdate, updateProfile);
 
 export default router;
