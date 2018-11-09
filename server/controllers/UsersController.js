@@ -37,11 +37,7 @@ class UsersController {
         const token = createToken(user.id, lifeSpan);
         sendEmail(
           user,
-          verifyEmailMessage(
-            token,
-            req.protocol,
-            req.headers.host
-          )
+          verifyEmailMessage(token)
         );
         res.status(201).json({
           status: 'success',
@@ -125,7 +121,7 @@ class UsersController {
   static async updateProfile(req, res, next) {
     // check if request token id matches id of account to be updated
     const { userId } = req.params;
-    const { id } = res.locals.payload;
+    const { id } = req.userData;
     if (id !== parseInt(userId, 10)) {
       const error = new Error('can\'t update another user\'s profile');
       error.status = 403;
