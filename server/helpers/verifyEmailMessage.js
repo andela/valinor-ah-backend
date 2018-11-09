@@ -7,14 +7,10 @@ dotenv.config();
  * @returns {object} - contains the mail message template
  */
 
-const verifyEmailMessage = (token, protocol, address) => {
+const verifyEmailMessage = (token) => {
   const err = { errors: {} };
   if (token === undefined || token.trim() === '') {
     err.errors.token = ['please provide a token'];
-  } if (protocol === undefined || protocol.trim() === '') {
-    err.errors.protocol = ['please provide a protocol'];
-  } if (address === undefined || address.trim() === '') {
-    err.errors.address = ['please provide an address'];
   } if (Object.keys(err.errors).length > 0) {
     return err;
   }
@@ -24,7 +20,7 @@ const verifyEmailMessage = (token, protocol, address) => {
     `<div style="height: 20em, background-color: #E6FFED; 
       border: 1px solid black; padding: 0.5em;">
         <p>
-          <a href="${protocol}://${address}/api/v1/users/verify?token=${token}">
+          <a href="${process.env.API_BASE_URL}/users/verify?token=${token}">
           <strong>
             CLICK HERE!
           </strong>
