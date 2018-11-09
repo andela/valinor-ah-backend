@@ -12,11 +12,11 @@ chai.use(chaiHttp);
 
 const should = chai.should();
 
-// eslint-disable-next-line max-len
-const twitterCallbackResult = twitterCallback(accessToken, tokenSecret, profile);
 
-describe('test twitter callback', () => {
+describe('test twitter callback', (done) => {
   it('should return undefined if successful', () => {
+    // eslint-disable-next-line max-len
+    const twitterCallbackResult = twitterCallback(accessToken, tokenSecret, profile, done);
     should.equal(twitterCallbackResult, undefined);
   });
 });

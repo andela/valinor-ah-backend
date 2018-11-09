@@ -74,6 +74,41 @@ class ArticleController {
           message: [err.message]
         }
       }));
+import models from '../models';
+
+const { Article, User } = models;
+
+/**
+ * @class ArticleControllers
+ * @description Article related Operations
+ */
+class ArticleController {
+  /**
+   * controller to create an article
+   * @param {object} req
+   * @param {object} res
+   * @returns {void}
+   */
+  static fetchAllArticles(req, res) {
+    Article
+      .findAndCountAll({
+        include:
+          [{
+            model: User,
+            attributes: ['fullName', 'avatarUrl']
+          }]
+      })
+      .then((result) => {
+        res.status(200).json({
+          Articles: result.rows
+        });
+      })
+      .catch(err => res.status(500)
+        .json({
+          errors: {
+            message: [err.message]
+          }
+        }));
   }
 }
 
