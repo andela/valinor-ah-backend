@@ -18,10 +18,13 @@ export default (sequelize, DataTypes) => {
     }
   });
   Article.associate = (models) => {
-    const { User } = models;
+    const { User, ArticleLike } = models;
     Article.belongsTo(User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
+    });
+    Article.hasMany(ArticleLike, {
+      foreignKey: 'articleId'
     });
   };
   return Article;

@@ -52,12 +52,16 @@ export default (sequelize, DataTypes) => {
   });
 
   User.associate = (models) => {
-    const { Article, Role } = models;
+    const { Article, ArticleLike, Role } = models;
+
     User.hasMany(Article, {
       foreignKey: 'userId'
     });
     User.belongsTo(Role, {
       foreignKey: 'roleId'
+    });
+    User.hasMany(ArticleLike, {
+      foreignKey: 'userId'
     });
   };
   return User;
