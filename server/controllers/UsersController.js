@@ -119,25 +119,13 @@ class UsersController {
    * @param {object} next
    * @returns {void}
    */
-  static async updateProfile(req, res, next) {
+  static updateProfile(req, res, next) {
     // check if request token id matches id of account to be updated
     const { userId } = req.params;
     const { id } = req.userData;
     if (id !== parseInt(userId, 10)) {
       const error = new Error('can\'t update another user\'s profile');
       error.status = 403;
-      return next(error);
-    }
-
-    // check if user exists
-    try {
-      const user = await User.findByPk(userId);
-      if (!user) {
-        const error = new Error('user not found');
-        error.status = 404;
-        return next(error);
-      }
-    } catch (error) {
       return next(error);
     }
 
@@ -226,6 +214,40 @@ class UsersController {
             message: ['user does not exist']
           }
         }));
+  }
+
+  /**
+   * @description - This method gets a list of user profiles
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static getUserProfiles(req, res, next) {
+    // get all user profiles and order by full name
+    User.findAll({
+      attributes: [
+        'fullName',
+        'avatarUrl',
+        'bio',
+        'twitterUrl',
+        'facebookUrl',
+        'location',
+        'roleId',
+      ],
+      order: [
+        ['fullName', 'ASC']
+      ],
+      raw: true,
+    })
+      .then((result) => {
+        res.status(200).json({
+          Users: result,
+        });
+      })
+      .catch((err) => {
+        next(err);
+      });
   }
 }
 

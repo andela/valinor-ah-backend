@@ -12,13 +12,15 @@ const loginUrl = '/api/v1/users/login';
 
 const updateData = {
   fullName: 'Tani Morgana',
-  email: 't.morgan@gmail.com',
+  email: 'solomon.sulaiman@andela.com',
   bio: 'I am a girl that does magic tricks',
   avatarUrl: 'https://www.hahafakeurl.com/',
   location: 'England',
   facebookUrl: 'https://www.hahafakefacebookurl.com',
   twitterUrl: 'https://www.hahafaketwitterurl.com'
 };
+
+const userData = {};
 
 describe('Test default route', () => {
   it('Should return 200 for the default route', (done) => {
@@ -61,6 +63,8 @@ describe('/users/signup', () => {
         res.body.user.fullName.should.be.eql('Solomon Kingsley');
         res.body.user.confirmEmail.should.be.eql(false);
         res.body.user.email.should.be.eql('solomon.sulaiman@andela.com');
+        userData.id = res.body.user.id;
+        userData.token = res.body.user.token;
         done();
       });
   });
@@ -221,25 +225,63 @@ describe('Verify user email via link', () => {
   );
 });
 
-// USER PROFILE UPDATE TEST SUITE
-describe('Update user profile', () => {
-  const userData = {};
-  before((done) => {
-    // Sign up a user and get the id and token returned
-    chai.request(app)
-      .post(signupUrl)
-      .send({
-        fullName: 'Not Tani',
-        email: 'n.tani@whowa.com',
-        password: 'ntanirfsee4',
-      })
-      .end((err, res) => {
-        userData.id = res.body.user.id;
-        userData.token = res.body.user.token;
-        done();
-      });
+// GET USERS PROFILES TEST SUTE
+describe('Get all user Profiles', () => {
+  describe('with an unconfirmed email', () => {
+    const result = {};
+    before((done) => {
+      chai.request(app)
+        .get('/api/v1/users')
+        .set('authorization', userData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 403', () => {
+      result.status.should.equal(403);
+    });
+    it('should have a descriptive error message', () => {
+      result.body.errors.message.should
+        .equal('please confirm your email then try again');
+    });
   });
 
+  describe('with confirmed email', () => {
+    const result = {};
+    before((done) => {
+      // confirm the user's email
+      chai.request(app)
+        .get(`/api/v1/users/verify?token=${userData.token}`)
+        .end(() => {
+          done();
+        });
+    });
+
+    before((done) => {
+      chai.request(app)
+        .get('/api/v1/users')
+        .set('authorization', userData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a response of 200', () => {
+      result.status.should.equal(200);
+    });
+    it('should have a body containing an array of profiles', () => {
+      result.body.Users.should.be.an('Array');
+    });
+  });
+});
+
+// USER PROFILE UPDATE TEST SUITE
+describe('Update user profile', () => {
   // try to update the user with no token
   describe('with no token provided', () => {
     const resData = {};
