@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt-nodejs';
+import 'babel-polyfill';
 import { Op } from 'sequelize';
 import cloudinary from 'cloudinary';
 
