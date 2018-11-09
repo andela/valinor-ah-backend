@@ -23,7 +23,7 @@ describe('Testing article models - unit tests', () => {
             .eql(articleWithValidData.body);
           returnedArticle.title.should.be
             .eql(articleWithValidData.title);
-          Article.findOne({ where: { id: 1 } })
+          Article.findOne({ where: { id: returnedArticle.id } })
             .then((newArticle) => {
               newArticle.slug.should.be
                 .eql(articleWithValidData.slug);

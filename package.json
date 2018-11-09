@@ -7,8 +7,8 @@
     "node": "10.11.0"
   },
   "scripts": {
-    "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require @babel/register --require @babel/polyfill --exit",
-    "start": "npm run clean && npm run build && node dist/app.js",
+    "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require babel-register --require babel-polyfill --exit",
+    "start": "npm run build && node dist/app.js",
     "start:dev": "npm run db-init && nodemon --exec babel-node app.js || true",
     "build": "babel . --ignore node_modules,test,coverage,dist -d dist/ && cp swagger.json dist/",
     "clean": "rm -rf dist && mkdir dist",
@@ -23,11 +23,13 @@
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
-    "@babel/cli": "^7.1.5",
-    "@babel/core": "^7.1.5",
-    "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.5",
+    "@babel/preset-stage-0": "^7.0.0",
     "@sendgrid/mail": "^6.3.1",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.3",
     "cloudinary": "^1.11.0",
@@ -62,8 +64,6 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
-    "@babel/node": "^7.0.0",
-    "@babel/register": "^7.0.0",
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
     "coveralls": "^3.0.2",
