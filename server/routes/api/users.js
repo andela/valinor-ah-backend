@@ -3,6 +3,7 @@ import express from 'express';
 import UserValidation from '../../middlewares/UserValidation';
 import UserController from '../../controllers/UsersController';
 import facebookPassportRoutes from '../../config/facebookPassportRoutes';
+import googlePassportRoutes from '../../config/googlePassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
 import twitterPassportRoutes from '../../config/twitterPassportRoutes';
 
@@ -57,5 +58,11 @@ router.get('/auth/twitter', twitterPassportRoutes.authenticate());
 
 // handle the callback after twitter has authenticated the user
 router.get('/auth/twitter/callback', twitterPassportRoutes.callback());
+
+// signup or login with google
+router.get('/auth/google', googlePassportRoutes.authenticate());
+
+// google callback route
+router.get('/auth/google/callback', googlePassportRoutes.callback());
 
 export default router;

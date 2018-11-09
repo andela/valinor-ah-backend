@@ -9,7 +9,7 @@
   "scripts": {
     "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require babel-register --require babel-polyfill --exit",
     "start": "npm run build && node dist/app.js",
-    "start:dev": "npm run db-init && nodemon --exec babel-node app.js || true",
+    "start:dev": "nodemon --exec babel-node app.js",
     "build": "babel . --ignore node_modules,test,coverage,dist -d dist/ && cp swagger.json dist/",
     "clean": "rm -rf dist && mkdir dist",
     "cover": "./node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- ./test/**/**/* --exit",
@@ -23,7 +23,6 @@
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
-    "@babel/preset-stage-0": "^7.0.0",
     "@sendgrid/mail": "^6.3.1",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",

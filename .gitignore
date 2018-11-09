@@ -38,7 +38,6 @@ node_modules
 
 dist
 sendgrid.env
-coverage
 .nyc_output
 
 # Multer file upload storage
