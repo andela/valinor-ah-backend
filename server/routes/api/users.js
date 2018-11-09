@@ -6,6 +6,7 @@ import facebookPassportRoutes from '../../config/facebookPassportRoutes';
 import googlePassportRoutes from '../../config/googlePassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
 import twitterPassportRoutes from '../../config/twitterPassportRoutes';
+import confirmUser from '../../middlewares/confirmUser';
 
 const {
   validateUserSignUp,
@@ -17,7 +18,8 @@ const {
   userLogin,
   signUp,
   verifyUser,
-  updateProfile
+  updateProfile,
+  getUserProfiles,
 } = UserController;
 
 const router = express.Router();
@@ -51,7 +53,10 @@ router.get('/auth/facebook', facebookPassportRoutes.authenticate());
 router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
 
 // update profile route
-router.patch('/users/:userId', verifyToken, validateUserUpdate, updateProfile);
+router.patch(
+  '/users/:userId',
+  verifyToken, confirmUser, validateUserUpdate, updateProfile
+);
 
 // route for twitter authentication and login
 router.get('/auth/twitter', twitterPassportRoutes.authenticate());
@@ -64,5 +69,8 @@ router.get('/auth/google', googlePassportRoutes.authenticate());
 
 // google callback route
 router.get('/auth/google/callback', googlePassportRoutes.callback());
+
+// get all user profiles
+router.get('/users', verifyToken, confirmUser, getUserProfiles);
 
 export default router;

@@ -19,7 +19,7 @@ const port = process.env.PORT || 3000;
 const options = {
   explorer: true
 };
-const isProduction = process.env.NODE_ENV === 'production';
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 // TODO: add multer to parse form data
 app.use(logger('dev'));
@@ -74,12 +74,12 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.json({
-    status: 'failure',
+    status: err.statusMessage || 'failure',
     errors: {
       message: err.message,
     }
   });
-  if (!isProduction) {
+  if (isDevelopment) {
     next(err);
   }
 });
