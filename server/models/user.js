@@ -18,15 +18,15 @@ export default (sequelize, DataTypes) => {
     },
     facebookId: {
       allowNull: true,
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
     },
     twitterId: {
       allowNull: true,
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
     },
     googleId: {
       allowNull: true,
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
     },
     bio: {
       allowNull: true,

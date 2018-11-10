@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+
 import models from '../models';
 
 const { Article, User } = models;
@@ -20,10 +21,14 @@ class ArticleController {
       where: {
         [Op.or]: [{ slug }, { id: +slug || 0 }]
       },
-      include: [User]
+      include: [{
+        model: User,
+        as: 'author',
+        attributes: ['fullName', 'email', 'avatarUrl', 'bio', 'roleId']
+      }]
     })
-      .then((returnedArticle) => {
-        if (!returnedArticle) {
+      .then((article) => {
+        if (!article) {
           return res.status(404).json({
             status: 'failure',
             errors: {
@@ -31,41 +36,9 @@ class ArticleController {
             }
           });
         }
-        const {
-          id,
-          title,
-          description,
-          body,
-          createdAt,
-          updatedAt,
-          userId
-        } = returnedArticle;
-        const {
-          fullName,
-          email,
-          avatarUrl,
-          bio,
-          roleId
-        } = returnedArticle.User;
         return res.status(200).json({
           status: 'success',
-          article: {
-            id,
-            title,
-            slug: returnedArticle.slug,
-            description,
-            body,
-            createdAt,
-            updatedAt,
-            userId,
-            author: {
-              fullName,
-              email,
-              avatarUrl,
-              bio,
-              roleId
-            }
-          }
+          article
         });
       })
       .catch(err => res.status(500).json({
@@ -74,15 +47,8 @@ class ArticleController {
           message: [err.message]
         }
       }));
-import models from '../models';
+  }
 
-const { Article, User } = models;
-
-/**
- * @class ArticleControllers
- * @description Article related Operations
- */
-class ArticleController {
   /**
    * controller to create an article
    * @param {object} req
@@ -95,12 +61,17 @@ class ArticleController {
         include:
           [{
             model: User,
+            as: 'author',
             attributes: ['fullName', 'avatarUrl']
-          }]
+          }],
+        order: [
+          ['id', 'DESC']
+        ]
       })
       .then((result) => {
         res.status(200).json({
-          Articles: result.rows
+          status: 'success',
+          articles: result.rows
         });
       })
       .catch(err => res.status(500)

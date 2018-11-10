@@ -79,13 +79,13 @@ describe('Fetch all articles', () => {
     chai.request(app)
       .get('/api/v1/articles')
       .end((err, res) => {
-        should.equal(res.body.Articles[0].title, 'My story at the beach');
-        should.equal(res.body.Articles[0]
-          .slug, 'My-story-at-the-beach-2324232323');
-        should.equal(res.body.Articles[0]
-          .description, 'This is my story at the beach');
-        should.equal(res.body.Articles[0].User.fullName, 'John Doe');
-        should.equal(res.body.Articles[0].User.avatarUrl, null);
+        should.equal(res.body.articles[0].title, 'Valinor');
+        should.equal(res.body.articles[0]
+          .slug, 'team-valinor');
+        should.equal(res.body.articles[0]
+          .description, 'Team valinor is a simulation team');
+        should.equal(res.body.articles[0].author.fullName, 'John Mike');
+        should.equal(res.body.articles[0].author.avatarUrl, null);
         should.equal(res.status, 200);
         done();
       });
