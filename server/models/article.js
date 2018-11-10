@@ -20,6 +20,7 @@ export default (sequelize, DataTypes) => {
   Article.associate = (models) => {
     const { User, ArticleLike, Comment } = models;
     Article.belongsTo(User, {
+      as: 'author',
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });

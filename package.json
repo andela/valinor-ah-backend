@@ -8,10 +8,10 @@
   },
   "scripts": {
     "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require babel-register --require babel-polyfill --exit",
-    "start": "npm run build && node dist/app.js",
+    "start": "npm run clean && npm run build && node dist/app.js",
     "start:dev": "nodemon --exec babel-node app.js",
     "build": "babel . --ignore node_modules,test,coverage,dist -d dist/ && cp swagger.json dist/",
-    "clean": "rm -rf dist && mkdir dist",
+    "clean": "rm -rf dist",
     "cover": "./node_modules/.bin/babel-node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- ./test/**/**/* --exit",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "db-init": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",

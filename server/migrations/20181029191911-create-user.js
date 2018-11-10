@@ -33,15 +33,15 @@ export default {
     },
     facebookId: {
       allowNull: true,
-      type: Sequelize.STRING,
+      type: Sequelize.BIGINT,
     },
     twitterId: {
       allowNull: true,
-      type: Sequelize.STRING,
+      type: Sequelize.BIGINT,
     },
     googleId: {
       allowNull: true,
-      type: Sequelize.STRING,
+      type: Sequelize.BIGINT,
     },
     bio: {
       allowNull: true,

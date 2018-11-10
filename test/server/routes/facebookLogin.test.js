@@ -12,11 +12,12 @@ chai.use(chaiHttp);
 const should = chai.should();
 
 describe('Test facebook login route', () => {
-  before(() => {
+  before((done) => {
     nock('https://www.facebook.com/')
       .filteringPath(() => '/api/v1/auth/facebook')
       .get('/api/v1/auth/facebook')
       .reply(200, 'facebook login route called!');
+    done();
   });
 
   // test facebook a route
@@ -32,8 +33,8 @@ describe('Test facebook login route', () => {
   }));
 });
 
-describe('Test facebook callback function', (done) => {
-  it('should return undefined if successful', () => {
+describe('Test facebook callback function', () => {
+  it('should return undefined if successful', (done) => {
     // eslint-disable-next-line max-len
     const facebookCallbackResult = facebookCallback(accessToken, refreshToken, profile, done);
     should.equal(facebookCallbackResult, undefined);

@@ -16,11 +16,12 @@ const should = chai.should();
 
 describe('Test Google login route', function google() {
   this.timeout(4000);
-  before(() => {
+  before((done) => {
     nock('https://www.google.com/')
       .filteringPath(() => '/api/v1/auth/google')
       .get('/api/v1/auth/google')
       .reply(200, 'mock doodle log google');
+    done();
   });
 
   // test google route
@@ -30,20 +31,14 @@ describe('Test Google login route', function google() {
       .get('/api/v1/auth/google')
       .end((err, res) => {
         res.should.have.status(200);
-        // res.text.should.be.equal('mock doodle log google');
         done();
       });
   }));
 });
 
 describe('Test google callback function', () => {
-  let result;
-  before((done) => {
-    result = googleCallback(accessToken, refreshToken, profile, done);
-    done();
-  });
-
-  it('should return undefined if successful', () => {
+  it('should return undefined if successful', (done) => {
+    const result = googleCallback(accessToken, refreshToken, profile, done);
     should.equal(result, undefined);
   });
 });
