@@ -4,7 +4,7 @@ import Sequelize from 'sequelize';
 
 import models from '../models';
 
-const { Article, User } = models;
+const { Article, User, ArticleLike } = models;
 const { Op } = Sequelize;
 /**
  * @class ArticleController
@@ -118,6 +118,97 @@ class ArticleController {
         },
       });
     });
+  }
+
+  /**
+   * controller to like or dislike an article
+   * @param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @returns {void}
+   */
+  static async likeOrDislikeArticle(req, res, next) {
+    const { articleId, action } = req.params;
+    const userId = req.userData.id;
+
+    /**
+     * This function likes or dislikes an article
+     * @param {boolean} status - true for like, false for dislike
+     * @returns {void}
+     */
+    const likeDisliker = async (status) => {
+      let articleLike;
+      let created;
+      try {
+        // find the article like or create it
+        [articleLike, created] = await ArticleLike.findOrCreate({
+          where: { [Op.and]: [{ userId }, { articleId }] },
+          defaults: { status, articleId, userId, }
+        });
+      } catch (err) {
+        return next(err);
+      }
+
+      // suffix for message
+      const suffix = status ? 'like' : 'dislike';
+      // get the article like id
+      const articleLikeId = articleLike.dataValues.id;
+
+      if (created) {
+        // if like/dislike was added
+        return res.status(201).json({
+          status: 'success',
+          message: `article successfully ${suffix}d`,
+        });
+      }
+
+      // if like/dislike was not added
+      if (status !== articleLike.dataValues.status) {
+        // opposite action was triggered, update the like
+        const [rowCount] = await ArticleLike.update({
+          status: !articleLike.dataValues.status,
+        }, {
+          where: {
+            id: articleLikeId,
+          }
+        });
+        if (rowCount > 0) {
+          return res.status(200).json({
+            status: 'success',
+            message: `you changed your mind, article successfully ${suffix}d`,
+          });
+        }
+      }
+      // same action was triggered, undo the like or dislike
+      const undoRows = await ArticleLike.destroy({
+        where: {
+          id: articleLikeId,
+        }
+      });
+      if (undoRows > 0) {
+        return res.status(200).json({
+          status: 'success',
+          message: `article ${suffix}, undo successful`,
+        });
+      }
+    };
+
+    // error for unknown action in switch statement
+    // eslint-disable-next-line max-len
+    const unknownActionError = new Error('unknown action, you may either like or dislike only');
+    unknownActionError.status = 422;
+
+    // switch statement for like or dislike
+    switch (action) {
+      case 'like':
+        likeDisliker(true);
+        break;
+      case 'dislike':
+        likeDisliker(false);
+        break;
+      default:
+        return next(unknownActionError);
+    }
   }
 }
 
