@@ -84,89 +84,107 @@ describe('/users/signup', () => {
 });
 
 describe('Testing Login feature -Integration testing', () => {
-  it(
-    'should display error message if user logs in with empty fields',
-    (done) => {
+  describe('POST /api/v1/users/login', () => {
+    it('should show error if user is not found', (done) => {
       chai.request(app)
-        .post(loginUrl)
+        .post(`${loginUrl}`)
         .send({
-          email: '',
-          password: ''
+          email: 'invalid.email@example.com'
         })
         .end((err, res) => {
-          res.status.should.be.eql(422);
-          res.body.should.be.eql({
-            errors: {
-              email: ['please enter email'],
-              password: ['please enter password']
-            }
-          });
+          res.status.should.eql(404);
+          res.body.errors.message[0].should.eql('User not found');
           done();
         });
-    }
-  );
+    });
 
-  it(
-    'should display error message if user fails to enter password',
-    (done) => {
-      chai.request(app)
-        .post(loginUrl)
-        .send({
-          email: 'augustineezinwa@gmail.com',
-          password: ''
-        })
-        .end((err, res) => {
-          res.status.should.be.eql(422);
-          res.body.should.be.eql({
-            errors: {
-              password: ['please enter password']
-            }
+    it('should display error message if email field is empty',
+      (done) => {
+        chai.request(app)
+          .post(loginUrl)
+          .send({
+            email: ''
+          })
+          .end((err, res) => {
+            res.status.should.be.eql(422);
+            res.body.should.be.eql({
+              errors: {
+                email: ['please enter email']
+              }
+            });
+            done();
           });
-          done();
-        });
-    }
-  );
+      });
 
-  it(
-    'should display error message if user logs in with invalid credentials',
-    (done) => {
-      chai.request(app)
-        .post(loginUrl)
-        .send({
-          email: 'augustineezinwa@gmail.com',
-          password: 'fishdonek4'
-        })
-        .end((err, res) => {
-          res.status.should.be.eql(401);
-          res.body.should.be.eql({
-            errors: {
-              message: ['Invalid email or password']
-            }
+    it('should send email to a user',
+      (done) => {
+        chai.request(app)
+          .post(loginUrl)
+          .send({
+            email: 'solomon.sulaiman@andela.com'
+          })
+          .end((err, res) => {
+            res.status.should.be.eql(200);
+            res.body.status.should.be.eql('success');
+            res.body.message.should.be
+              .eql('email login link sent successfully');
+            res.body.token.should.be.a('string');
+            done();
           });
-          done();
-        });
-    }
-  );
+      });
+  });
 
-  it(
-    'should log in a user',
-    (done) => {
+  describe('GET /api/v1/users/login', () => {
+    let token;
+    let token1;
+    before(() => {
+      token = createToken(1, '1h');
+      token1 = createToken(100, '1h');
+    });
+
+    it('should show error if token is missing', (done) => {
       chai.request(app)
-        .post(loginUrl)
-        .send({
-          email: 'solomon.sulaiman@andela.com',
-          password: 'solomon123'
-        })
+        .get(`${loginUrl}?token=${token}1s`)
         .end((err, res) => {
-          res.status.should.be.eql(200);
-          res.body.status.should.be.eql('success');
-          res.body.message.should.be.eql('you are logged in');
-          res.body.user.email.should.be.eql('solomon.sulaiman@andela.com');
-          res.body.user.token.should.be.a('string');
+          res.status.should.eql(401);
+          res.body.status.should.eql('unauthorized');
+          res.body.message.should.eql('invalid token!');
+        });
+      done();
+    });
+
+    it('should show error if token is invalid or expired', (done) => {
+      chai.request(app)
+        .get(`${loginUrl}?token=`)
+        .end((err, res) => {
+          res.status.should.eql(401);
+          res.body.status.should.eql('unauthorized');
+          res.body.message.should.eql('please provide a token');
+        });
+      done();
+    });
+
+    it('should show error if user is not found', (done) => {
+      chai.request(app)
+        .get(`${loginUrl}?token=${token1}`)
+        .end((err, res) => {
+          res.status.should.eql(404);
+          res.body.errors.message[0].should.eql('User not found');
           done();
         });
-    }
-  );
+    });
+
+    it('should log a user in successfully', (done) => {
+      chai.request(app)
+        .get(`${loginUrl}?token=${token}`)
+        .end((err, res) => {
+          res.status.should.eql(200);
+          res.body.status.should.eql('success');
+          res.body.message.should.eql('you are logged in');
+          done();
+        });
+    });
+  });
 });
 
 describe('Verify user email via link', () => {

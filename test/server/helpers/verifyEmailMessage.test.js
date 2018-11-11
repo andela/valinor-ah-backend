@@ -1,5 +1,5 @@
 import chai from 'chai';
-import verifyEmailMessage from '../../../server/helpers/verifyEmailMessage';
+import { verifyEmailMessage } from '../../../server/helpers/emailTemplates';
 
 chai.should();
 

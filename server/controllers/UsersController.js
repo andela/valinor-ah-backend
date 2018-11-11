@@ -5,7 +5,10 @@ import cloudinary from 'cloudinary';
 
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
-import verifyEmailMessage from '../helpers/verifyEmailMessage';
+import {
+  verifyEmailMessage,
+  loginLinkMessage
+} from '../helpers/emailTemplates';
 import { createToken } from '../middlewares/tokenUtils';
 import cloudinaryConfig from '../config/cloudinaryConfig';
 
@@ -64,46 +67,95 @@ class UsersController {
   }
 
   /**
-    * @description - This method logs in user and return a token.
-    * @param {object} req - The request object bearing the email and password.
+    * @description - This method sends a login link to the user.
+    * @param {object} req - The request object bearing the email.
     * @param {object} res - The response object that is returned as json.
     * @returns {object} - The object with message.
     * @memberOf UserController
     * @static
     */
-  static userLogin(req, res) {
-    const { email, password } = req.body;
+  static userLoginStart(req, res) {
+    const { email } = req.body;
+    const lifeSpan = '1h';
+
     return User.findOne({
       where: {
         email
       }
     })
       .then((userFound) => {
-        if (!userFound || !bcrypt.compareSync(password, userFound.password)) {
-          return res.status(401).json({
+        if (!userFound) {
+          return res.status(404).json({
             errors: {
-              message: ['Invalid email or password']
+              message: ['User not found']
             }
           });
         }
-        if (bcrypt.compareSync(password, userFound.password)) {
-          const {
-            id,
+
+        const userId = userFound.id;
+        const token = createToken(userId, lifeSpan);
+        const loginUrl = `${req.protocol}://${req.get('host')}`
+        + `/api/v1/users/login?token=${token}`;
+
+        // send email with link to login to user
+        sendEmail(userFound, loginLinkMessage(loginUrl, token));
+
+        res.status(200).json({
+          status: 'success',
+          message: 'email login link sent successfully',
+          token
+        });
+      })
+      .catch(err => res.status(500).json({
+        errors: {
+          message: [err.message]
+        }
+      }));
+  }
+
+  /**
+    * @description - This method logs in user and return a token.
+    * @param {object} req - The request object with token as a query object.
+    * @param {object} res - The response object that is returned as json.
+    * @returns {object} - The object with message.
+    * @memberOf UserController
+    * @static
+    */
+  static userLoginEnd(req, res) {
+    const { id } = req.userData;
+    const lifeSpan = 60 * 60 * 24;
+
+    return User.findOne({
+      where: {
+        id
+      }
+    })
+      .then((userFound) => {
+        if (!userFound) {
+          return res.status(404).json({
+            errors: {
+              message: ['User not found']
+            }
+          });
+        }
+
+        const token = createToken(id, lifeSpan);
+        const {
+          email,
+          fullName,
+          roleId
+        } = userFound;
+
+        return res.status(200).json({
+          status: 'success',
+          message: 'you are logged in',
+          user: {
             fullName,
-            roleId
-          } = userFound;
-          const lifeSpan = 60 * 60 * 24;
-          return res.status(200).json({
-            status: 'success',
-            message: 'you are logged in',
-            user: {
-              fullName,
-              email,
-              roleId,
-              token: createToken(id, lifeSpan)
-            }
-          });
-        }
+            email,
+            roleId,
+            token
+          }
+        });
       })
       .catch(err => res.status(500).json({
         errors: {

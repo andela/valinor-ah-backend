@@ -244,18 +244,16 @@ class UserValidation {
     * @static
     */
   static validateUserLogin(req, res, next) {
-    const { email, password } = req.body;
+    const { email } = req.body;
     const errors = {};
     const returnError = () => res.status(422).json({
       errors
     });
-    if (email && password) return next();
-    if (!email && !password) {
+    if (email) return next();
+    if (!email) {
       errors.email = ['please enter email'];
-      errors.password = ['please enter password'];
     }
     if (!email) errors.email = ['please enter email'];
-    if (!password) errors.password = ['please enter password'];
     return returnError();
   }
 }
