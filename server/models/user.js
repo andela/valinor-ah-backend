@@ -56,21 +56,30 @@ export default (sequelize, DataTypes) => {
       Article,
       ArticleLike,
       Role,
-      Comment
+      Comment,
+      Rating
     } = models;
+
+    User.belongsTo(Role, {
+      foreignKey: 'roleId'
+    });
 
     User.hasMany(Article, {
       foreignKey: 'userId'
     });
-    User.belongsTo(Role, {
-      foreignKey: 'roleId'
+
+    User.hasMany(Rating, {
+      foreignKey: 'userId'
     });
+
     User.hasMany(ArticleLike, {
       foreignKey: 'userId'
     });
+
     User.hasMany(Comment, {
       foreignKey: 'userId'
     });
   };
+
   return User;
 };

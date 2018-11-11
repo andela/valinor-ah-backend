@@ -15,20 +15,36 @@ export default (sequelize, DataTypes) => {
     body: {
       allowNull: false,
       type: DataTypes.STRING,
+    },
+    rating: {
+      allowNull: true,
+      type: DataTypes.FLOAT,
+      defaultValue: null
     }
   });
+
   Article.associate = (models) => {
-    const { User, ArticleLike, Comment } = models;
+    const {
+      User, ArticleLike, Comment, Rating
+    } = models;
     Article.belongsTo(User, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
+
     Article.hasMany(ArticleLike, {
-      foreignKey: 'articleId'
+      foreignKey: 'articleId',
+      onDelete: 'CASCADE'
+    });
+
+    Article.hasMany(Rating, {
+      foreignKey: 'articleId',
+      onDelete: 'CASCADE'
     });
     Article.hasMany(Comment, {
       foreignKey: 'commentId',
     });
   };
+
   return Article;
 };

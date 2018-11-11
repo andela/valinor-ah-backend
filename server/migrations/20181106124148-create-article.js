@@ -22,6 +22,11 @@ export default {
       type: Sequelize.STRING,
       allowNull: false
     },
+    rating: {
+      type: Sequelize.FLOAT,
+      allowNull: true,
+      defaultValue: null
+    },
     userId: {
       type: Sequelize.INTEGER,
       onDelete: 'CASCADE',
