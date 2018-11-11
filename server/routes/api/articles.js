@@ -7,7 +7,7 @@ import validateArticleId from '../../middlewares/validateArticleId';
 
 const articles = express.Router();
 
-const { validateArticleInput } = ArticleValidation;
+const { validateArticleInput, validatePageNumber } = ArticleValidation;
 const {
   createArticle,
   getAnArticle,
@@ -19,7 +19,7 @@ articles.post('/articles', verifyToken, validateArticleInput, createArticle);
 
 articles.get('/articles/:slug', getAnArticle);
 
-articles.get('/articles', fetchAllArticles);
+articles.get('/articles/page/:page', validatePageNumber, fetchAllArticles);
 
 // routes to like or dislike articles
 articles.post(

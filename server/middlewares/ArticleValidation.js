@@ -47,6 +47,33 @@ class ArticleValidation {
     ArticleValidation.validateBody(req);
     sendFormattedError(req, res, next);
   }
+
+  /**
+    * @description - This method validates the article page number.
+    * @param {object} req - The request object to be validated.
+    * @param {object} res - Th response object to be validated.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf ArticleValidators
+    * @static
+    */
+  static validatePageNumber(req, res, next) {
+    const { page } = req.params;
+    if (/\D/g.test(page)) {
+      return res.status(400).json({
+        errors: {
+          pageNumber: ['page number must be an integer']
+        }
+      });
+    } if (+page < 1) {
+      return res.status(400).json({
+        errors: {
+          pageNumber: ['page number must be a greater than 0']
+        }
+      });
+    }
+    next();
+  }
 }
 
 export default ArticleValidation;
