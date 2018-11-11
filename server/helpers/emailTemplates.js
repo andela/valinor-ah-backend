@@ -11,9 +11,12 @@ const verifyEmailMessage = (token) => {
   const err = { errors: {} };
   if (token === undefined || token.trim() === '') {
     err.errors.token = ['please provide a token'];
-  } if (Object.keys(err.errors).length > 0) {
+  }
+
+  if (Object.keys(err.errors).length > 0) {
     return err;
   }
+
   return {
     subject: 'Welcome to Author\'s Haven! Please Confirm your email',
     body:
@@ -42,7 +45,7 @@ const loginLinkMessage = (loginUrl, token) => {
 
   if (token === undefined || token.trim() === '') {
     err.errors.token = ['please provide a token'];
-  } if (Object.keys(err.errors).lenght > 0) {
+  } if (Object.keys(err.errors).length > 0) {
     return err;
   }
   return {

@@ -7,6 +7,20 @@ const message = [];
  */
 class UserValidation {
   /**
+    * @description - This method checks if a user enters an email.
+    * @param {object} req - The request object bearing the email.
+    * @param {object} res - The response object sent to the next middleware.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateUserLogin(req, res, next) {
+    UserValidation.validateEmail(req);
+    UserValidation.sendFormattedError(req, res, next);
+  }
+
+  /**
     * @description - This method validates the user request body.
     * @param {object} req - The request object to be validated.
     * @param {object} res - Th response object to be validated.
@@ -18,7 +32,6 @@ class UserValidation {
   static validateUserSignUp(req, res, next) {
     UserValidation.validateFullName(req);
     UserValidation.validateEmail(req);
-    UserValidation.validatePassword(req);
     UserValidation.sendFormattedError(req, res, next);
   }
 
@@ -133,23 +146,6 @@ class UserValidation {
   }
 
   /**
-    * @description - This method validates the password
-    * @param {object} req - The request object
-    * @returns {null} - returns nothing
-    * @memberOf UserValidation
-    * @static
-    */
-  static validatePassword(req) {
-    req.checkBody('password', 'please enter password').exists();
-    req.checkBody('password', 'password must be at least 8 characters')
-      .isLength({ min: 8 });
-    req.checkBody('password', 'password must contain a letter and number')
-      .matches(/^((?=.*\d))(?=.*[a-zA-Z])/);
-    req.checkBody('password', 'password must not contain space')
-      .matches(/^\S*$/);
-  }
-
-  /**
     * @description - This method validates the fullName
     * @param {object} req - The request object
     * @returns {null} - returns nothing
@@ -233,28 +229,6 @@ class UserValidation {
         }
       }));
   }
-
-  /**
-    * @description - This method checks if a user enters an email and password.
-    * @param {object} req - The request object bearing the email.
-    * @param {object} res - The response object sent to the next middleware.
-    * @param {object} next - The callback function to the next middleware.
-    * @returns {object} - The error object with message.
-    * @memberOf UserValidation
-    * @static
-    */
-  static validateUserLogin(req, res, next) {
-    const { email } = req.body;
-    const errors = {};
-    const returnError = () => res.status(422).json({
-      errors
-    });
-    if (email) return next();
-    if (!email) {
-      errors.email = ['please enter email'];
-    }
-    if (!email) errors.email = ['please enter email'];
-    return returnError();
-  }
 }
+
 export default UserValidation;

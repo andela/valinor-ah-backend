@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt-nodejs';
 import 'babel-polyfill';
 import { Op } from 'sequelize';
 import cloudinary from 'cloudinary';
@@ -21,29 +20,48 @@ const { User } = models;
  * @description User related Operations
  */
 class UsersController {
-/**
- * @description
- * @param {object} req - request object
- * @param {object} res - response object
- * @returns {object} - returns user
- */
-  static signUp(req, res) {
-    const { fullName, email, password } = req.body;
-    const hashedPassword = bcrypt.hashSync(`${password}`);
-    const lifeSpan = 60 * 60 * 24;
-    return User
-      .create({
+  /**
+    * @description - This method sends a login link to the user.
+    * @param {object} req - The request object bearing the email.
+    * @param {object} res - The response object that is returned as json.
+    * @returns {object} - The object with message.
+    * @memberOf UserController
+    * @static
+    */
+  static signupOrLoginStart(req, res) {
+    const lifeSpan = '1h';
+    const { fullName, email } = req.body;
+
+    User.findOrCreate({
+      where: {
+        email
+      },
+      defaults: {
         fullName,
-        email,
-        password: hashedPassword
-      })
-      .then((user) => {
-        const token = createToken(user.id, lifeSpan);
-        sendEmail(
-          user,
-          verifyEmailMessage(token)
-        );
-        res.status(201).json({
+        email
+      }
+    })
+      .spread((user, created) => {
+        const userId = user.id;
+        const token = createToken(userId, lifeSpan);
+
+        if (!created) {
+          const loginUrl = `${process.env.API_BASE_URL}/users/login?`
+            + `token=${token}`;
+
+          // send email with link to login to user
+          sendEmail(user, loginLinkMessage(loginUrl, token));
+
+          return res.status(200).json({
+            status: 'success',
+            message: 'email login link sent successfully',
+            token
+          });
+        }
+
+        sendEmail(user, verifyEmailMessage(token));
+
+        return res.status(201).json({
           status: 'success',
           message: 'New user created successfully',
           user: {
@@ -67,53 +85,6 @@ class UsersController {
   }
 
   /**
-    * @description - This method sends a login link to the user.
-    * @param {object} req - The request object bearing the email.
-    * @param {object} res - The response object that is returned as json.
-    * @returns {object} - The object with message.
-    * @memberOf UserController
-    * @static
-    */
-  static userLoginStart(req, res) {
-    const { email } = req.body;
-    const lifeSpan = '1h';
-
-    return User.findOne({
-      where: {
-        email
-      }
-    })
-      .then((userFound) => {
-        if (!userFound) {
-          return res.status(404).json({
-            errors: {
-              message: ['User not found']
-            }
-          });
-        }
-
-        const userId = userFound.id;
-        const token = createToken(userId, lifeSpan);
-        const loginUrl = `${req.protocol}://${req.get('host')}`
-        + `/api/v1/users/login?token=${token}`;
-
-        // send email with link to login to user
-        sendEmail(userFound, loginLinkMessage(loginUrl, token));
-
-        res.status(200).json({
-          status: 'success',
-          message: 'email login link sent successfully',
-          token
-        });
-      })
-      .catch(err => res.status(500).json({
-        errors: {
-          message: [err.message]
-        }
-      }));
-  }
-
-  /**
     * @description - This method logs in user and return a token.
     * @param {object} req - The request object with token as a query object.
     * @param {object} res - The response object that is returned as json.
@@ -123,13 +94,9 @@ class UsersController {
     */
   static userLoginEnd(req, res) {
     const { id } = req.userData;
-    const lifeSpan = 60 * 60 * 24;
+    const lifeSpan = '90d';
 
-    return User.findOne({
-      where: {
-        id
-      }
-    })
+    User.findByPk(id)
       .then((userFound) => {
         if (!userFound) {
           return res.status(404).json({
@@ -150,6 +117,7 @@ class UsersController {
           status: 'success',
           message: 'you are logged in',
           user: {
+            id,
             fullName,
             email,
             roleId,
@@ -226,7 +194,7 @@ class UsersController {
 
   /**
   * @description - This method logs in user and return a token.
-  * @param {object} req - The request object bearing the email and password.
+  * @param {object} req - The request object bearing the email.
   * @param {object} res - The response object that is returned as json.
   * @returns {object} - The json object with message.
   * @memberOf UserController
