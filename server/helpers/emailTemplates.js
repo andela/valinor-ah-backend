@@ -31,4 +31,34 @@ const verifyEmailMessage = (token) => {
   };
 };
 
-export default verifyEmailMessage;
+/**
+ * @description loginEmailMessage contains the email message template
+ * @param {string} loginUrl - The token generated for the user
+ * @returns {object} - contains the mail message template
+ */
+
+const loginLinkMessage = (loginUrl, token) => {
+  const err = { errors: {} };
+
+  if (token === undefined || token.trim() === '') {
+    err.errors.token = ['please provide a token'];
+  } if (Object.keys(err.errors).lenght > 0) {
+    return err;
+  }
+  return {
+    subject: 'Welcome to Author\'s Haven',
+    body:
+    `<div>
+      <p>Click
+        <a href="${loginUrl}">
+          <strong>here</strong>
+        </a>
+         and confirm that you would like to login. 
+         This link will expire in one hour.
+      </p>
+    </div>
+    `
+  };
+};
+
+export { loginLinkMessage, verifyEmailMessage };
