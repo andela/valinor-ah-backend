@@ -29,7 +29,7 @@ export default {
     },
     {
       title: 'My story at the beach',
-      slug: 'My-story-at-the-beach-2324232323',
+      slug: 'My-story-at-the-beach-2324232323a',
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
@@ -38,7 +38,7 @@ export default {
     },
     {
       title: 'Jambolani',
-      slug: 'south-africa-201',
+      slug: 'south-africa-201a',
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
@@ -47,7 +47,7 @@ export default {
     },
     {
       title: 'Valinor',
-      slug: 'team-valinor',
+      slug: 'team-valinora',
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
@@ -56,7 +56,7 @@ export default {
     },
     {
       title: 'My story at the beach',
-      slug: 'My-story-at-the-beach-2324232323',
+      slug: 'My-story-at-the-beach-2324232323b',
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
@@ -65,7 +65,7 @@ export default {
     },
     {
       title: 'Jambolani',
-      slug: 'south-africa-201',
+      slug: 'south-africa-201b',
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
@@ -74,7 +74,7 @@ export default {
     },
     {
       title: 'Valinor',
-      slug: 'team-valinor',
+      slug: 'team-valinorb',
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
@@ -83,7 +83,7 @@ export default {
     },
     {
       title: 'My story at the beach',
-      slug: 'My-story-at-the-beach-2324232323',
+      slug: 'My-story-at-the-beach-2324232323c',
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
@@ -92,7 +92,7 @@ export default {
     },
     {
       title: 'Jambolani',
-      slug: 'south-africa-201',
+      slug: 'south-africa-201c',
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
@@ -101,7 +101,7 @@ export default {
     },
     {
       title: 'Valinor',
-      slug: 'team-valinor',
+      slug: 'team-valinorc',
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
@@ -110,7 +110,7 @@ export default {
     },
     {
       title: 'My story at the beach',
-      slug: 'My-story-at-the-beach-2324232323',
+      slug: 'My-story-at-the-beach-2324232323d',
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
@@ -119,7 +119,7 @@ export default {
     },
     {
       title: 'Jambolani',
-      slug: 'south-africa-201',
+      slug: 'south-africa-201d',
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
@@ -128,7 +128,7 @@ export default {
     },
     {
       title: 'Valinor',
-      slug: 'team-valinor',
+      slug: 'team-valinord',
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
@@ -137,7 +137,7 @@ export default {
     },
     {
       title: 'My story at the beach',
-      slug: 'My-story-at-the-beach-2324232323',
+      slug: 'My-story-at-the-beach-2324232323e',
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
@@ -146,7 +146,7 @@ export default {
     },
     {
       title: 'Jambolani',
-      slug: 'south-africa-201',
+      slug: 'south-africa-201e',
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
@@ -155,7 +155,7 @@ export default {
     },
     {
       title: 'Valinor',
-      slug: 'team-valinor',
+      slug: 'team-valinore',
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
