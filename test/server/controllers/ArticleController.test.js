@@ -190,7 +190,6 @@ describe('Articles Controller Tests', () => {
         .send({
           fullName: 'Not Tani',
           email: 'n.tani@whowa.com',
-          password: 'ntanirfsee4',
         })
         .end((err, res) => {
           userData.id = res.body.user.id;

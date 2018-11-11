@@ -21,8 +21,7 @@ describe('Testing comment on articles', () => {
       .post(signupUrl)
       .send({
         fullName: 'Solomon Kingsley',
-        email: 'abiodun.abud@andela.com',
-        password: 'solomon123',
+        email: 'abiodun.abud@andela.com'
       })
       .end((err, res) => {
         res.should.have.status(201);

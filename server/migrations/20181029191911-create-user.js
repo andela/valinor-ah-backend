@@ -33,10 +33,6 @@ export default {
       allowNull: true,
       type: Sequelize.STRING
     },
-    password: {
-      allowNull: true,
-      type: Sequelize.STRING
-    },
     avatarUrl: {
       allowNull: true,
       type: Sequelize.STRING

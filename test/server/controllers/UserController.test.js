@@ -52,7 +52,6 @@ describe('/users/signup', () => {
       .send({
         fullName: 'Solomon Kingsley',
         email: 'solomon.sulaiman@andela.com',
-        password: 'solomon123',
       })
       .end((err, res) => {
         res.should.have.status(201);
@@ -68,12 +67,11 @@ describe('/users/signup', () => {
         done();
       });
   });
-  it('should create new user', (done) => {
+  it('should not create new user', (done) => {
     chai.request(app)
       .post(signupUrl)
       .send({
-        fullName: 'Solomon Kingsley',
-        password: 'solomon123',
+        fullName: 'Solomon Kingsley'
       })
       .end((err, res) => {
         res.should.have.status(422);
@@ -85,53 +83,38 @@ describe('/users/signup', () => {
 
 describe('Testing Login feature -Integration testing', () => {
   describe('POST /api/v1/users/login', () => {
-    it('should show error if user is not found', (done) => {
+    it('should display error message if email field is empty', (done) => {
       chai.request(app)
-        .post(`${loginUrl}`)
+        .post(loginUrl)
         .send({
-          email: 'invalid.email@example.com'
+          email: ''
         })
         .end((err, res) => {
-          res.status.should.eql(404);
-          res.body.errors.message[0].should.eql('User not found');
+          res.status.should.be.eql(422);
+          res.body.should.be.eql({
+            errors: {
+              email: ['please enter a valid email']
+            }
+          });
           done();
         });
     });
 
-    it('should display error message if email field is empty',
-      (done) => {
-        chai.request(app)
-          .post(loginUrl)
-          .send({
-            email: ''
-          })
-          .end((err, res) => {
-            res.status.should.be.eql(422);
-            res.body.should.be.eql({
-              errors: {
-                email: ['please enter email']
-              }
-            });
-            done();
-          });
-      });
-
-    it('should send email to a user',
-      (done) => {
-        chai.request(app)
-          .post(loginUrl)
-          .send({
-            email: 'solomon.sulaiman@andela.com'
-          })
-          .end((err, res) => {
-            res.status.should.be.eql(200);
-            res.body.status.should.be.eql('success');
-            res.body.message.should.be
-              .eql('email login link sent successfully');
-            res.body.token.should.be.a('string');
-            done();
-          });
-      });
+    it('should send email to a user', (done) => {
+      chai.request(app)
+        .post(loginUrl)
+        .send({
+          email: 'solomon.sulaiman@andela.com'
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be
+            .eql('email login link sent successfully');
+          res.body.token.should.be.a('string');
+          done();
+        });
+    });
   });
 
   describe('GET /api/v1/users/login', () => {

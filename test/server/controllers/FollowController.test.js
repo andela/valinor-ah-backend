@@ -11,7 +11,6 @@ describe('FollowController Tests', () => {
       .send({
         fullName: 'Fishes Donkey',
         email: 'fishdonkey@jackson.com',
-        password: 'ntanirfsee4',
       })
       .end((err, res) => {
         userData.id = res.body.user.id;
