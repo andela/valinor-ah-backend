@@ -402,4 +402,44 @@ describe('Articles Controller Tests', () => {
       });
     });
   });
+  it('it should return 400 error if page number is not an integer', (done) => {
+    chai.request(app)
+      .get('/api/v1/articles/page/a')
+      .end((err, res) => {
+        should.equal(
+          res.body.errors.pageNumber[0],
+          'page number must be an integer'
+        );
+        should.equal(res.status, 400);
+        done();
+      });
+  });
+  it('it should return 400 error if page number less than 1', (done) => {
+    chai.request(app)
+      .get('/api/v1/articles/page/0')
+      .end((err, res) => {
+        should.equal(
+          res.body.errors.pageNumber[0],
+          'page number must be a greater than 0'
+        );
+        should.equal(res.status, 400);
+        done();
+      });
+  });
+  it('it should return 422 error if maximum pages are reached', (done) => {
+    chai.request(app)
+      .get('/api/v1/articles/page/9')
+      .end((err, res) => {
+        should.equal(
+          res.body.errors.status,
+          'failure'
+        );
+        should.equal(
+          res.body.errors.message,
+          'available number of page(s) exceeded'
+        );
+        should.equal(res.status, 422);
+        done();
+      });
+  });
 });

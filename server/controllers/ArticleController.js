@@ -52,14 +52,19 @@ class ArticleController {
   }
 
   /**
-   * controller to fetch all articles
-   * @param {object} req - express request object
-   * @param {object} res - express response object
-   * @returns {void}
+   * @description controller to fetch all articles
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @returns {object} - returns all articles
    */
   static fetchAllArticles(req, res) {
+    const { page } = req.params;
+    const limit = 10;
+    const offset = (+page - 1) * limit;
     Article
       .findAndCountAll({
+        offset,
+        limit,
         include:
           [{
             model: User,
@@ -71,9 +76,20 @@ class ArticleController {
         ]
       })
       .then((result) => {
-        res.status(200).json({
+        const { rows, count } = result;
+        const pageCount = Math.ceil(count / limit);
+        if (+page > pageCount) {
+          return res.status(422).json({
+            errors: {
+              status: 'failure',
+              message: 'available number of page(s) exceeded'
+            }
+          });
+        }
+        return res.status(200).json({
           status: 'success',
-          articles: result.rows
+          availablePages: pageCount,
+          articles: rows
         });
       })
       .catch(err => res.status(500)
