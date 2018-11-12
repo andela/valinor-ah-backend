@@ -34,6 +34,81 @@ describe('Articles Controller Tests', () => {
           done();
         });
     });
+    it(
+      'should return error if page number & limit are not integers',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles?page=a&limit=u')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              errors: {
+                page: [
+                  'page query must be an integer',
+                  'page query must be greater than 0'
+                ],
+                limit: [
+                  'limit query must be an integer',
+                  'limit query must be greater than 0'
+                ]
+              }
+            });
+            should.equal(res.status, 400);
+            done();
+          });
+      }
+    );
+    it('should return error if page number & limit are less than 1', (done) => {
+      chai.request(app)
+        .get('/api/v1/articles?page=0&limit=0')
+        .end((err, res) => {
+          res.body.should.deep.equal({
+            errors: {
+              page: [
+                'page query must be greater than 0'
+              ],
+              limit: [
+                'limit query must be greater than 0'
+              ]
+            }
+          });
+          should.equal(res.status, 400);
+          done();
+        });
+    });
+    it('should return error if maximum pages are reached', (done) => {
+      chai.request(app)
+        .get('/api/v1/articles?page=9&limit=10')
+        .end((err, res) => {
+          should.equal(
+            res.body.errors.status,
+            'failure'
+          );
+          should.equal(
+            res.body.errors.message,
+            'available number of page(s) exceeded'
+          );
+          should.equal(res.status, 422);
+          done();
+        });
+    });
+    it(
+      'should return error if page & limit queries are not provided',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles')
+          .end((err, res) => {
+            should.equal(res.body.articles[0].title, 'Valinor');
+            should.equal(res.body.articles[0]
+              .slug, 'team-valinor');
+            should.equal(res.body.articles[0]
+              .description, 'Team valinor is a simulation team');
+            should.equal(res.body.articles[0].author.fullName, 'John Mike');
+            should.equal(res.body.articles[0].author.avatarUrl, null);
+            should.equal(res.status, 200);
+            done();
+          });
+      }
+    );
   });
 
   describe('Testing get an article', () => {
@@ -401,45 +476,5 @@ describe('Articles Controller Tests', () => {
         result.body.errors.message.should.be.equal('Sorry, that article was not found');
       });
     });
-  });
-  it('it should return 400 error if page number is not an integer', (done) => {
-    chai.request(app)
-      .get('/api/v1/articles/page/a')
-      .end((err, res) => {
-        should.equal(
-          res.body.errors.pageNumber[0],
-          'page number must be an integer'
-        );
-        should.equal(res.status, 400);
-        done();
-      });
-  });
-  it('it should return 400 error if page number less than 1', (done) => {
-    chai.request(app)
-      .get('/api/v1/articles/page/0')
-      .end((err, res) => {
-        should.equal(
-          res.body.errors.pageNumber[0],
-          'page number must be a greater than 0'
-        );
-        should.equal(res.status, 400);
-        done();
-      });
-  });
-  it('it should return 422 error if maximum pages are reached', (done) => {
-    chai.request(app)
-      .get('/api/v1/articles/page/9')
-      .end((err, res) => {
-        should.equal(
-          res.body.errors.status,
-          'failure'
-        );
-        should.equal(
-          res.body.errors.message,
-          'available number of page(s) exceeded'
-        );
-        should.equal(res.status, 422);
-        done();
-      });
   });
 });

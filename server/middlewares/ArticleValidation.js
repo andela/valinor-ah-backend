@@ -49,7 +49,39 @@ class ArticleValidation {
   }
 
   /**
-    * @description - This method validates the article page number.
+   * This method validates the page query
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validatePageQuery(req) {
+    req.checkQuery(
+      'page',
+      'page query must be an integer'
+    ).optional({ checkFalsy: false }).isInt();
+    req.checkQuery(
+      'page',
+      'page query must be greater than 0'
+    ).optional({ checkFalsy: false }).isInt({ gt: 0 });
+  }
+
+  /**
+   * This method validates the limit query
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateLimitQuery(req) {
+    req.checkQuery(
+      'limit',
+      'limit query must be an integer'
+    ).optional({ checkFalsy: false }).isInt();
+    req.checkQuery(
+      'limit',
+      'limit query must be greater than 0'
+    ).optional({ checkFalsy: false }).isInt({ gt: 0 });
+  }
+
+  /**
+    * @description - This method validates the article page queries.
     * @param {object} req - The request object to be validated.
     * @param {object} res - Th response object to be validated.
     * @param {object} next - The callback function to the next middleware.
@@ -57,22 +89,10 @@ class ArticleValidation {
     * @memberOf ArticleValidators
     * @static
     */
-  static validatePageNumber(req, res, next) {
-    const { page } = req.params;
-    if (/\D/g.test(page)) {
-      return res.status(400).json({
-        errors: {
-          pageNumber: ['page number must be an integer']
-        }
-      });
-    } if (+page < 1) {
-      return res.status(400).json({
-        errors: {
-          pageNumber: ['page number must be a greater than 0']
-        }
-      });
-    }
-    next();
+  static validateQuery(req, res, next) {
+    ArticleValidation.validatePageQuery(req);
+    ArticleValidation.validateLimitQuery(req);
+    sendFormattedError(req, res, next, 400);
   }
 }
 
