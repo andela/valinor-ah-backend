@@ -3,6 +3,7 @@ import slugify from 'slugify';
 import Sequelize from 'sequelize';
 
 import models from '../models';
+import numberOfArticles from '../helpers/numberOfArticles';
 
 const { Article, User, ArticleLike } = models;
 const { Op } = Sequelize;
@@ -58,9 +59,11 @@ class ArticleController {
    * @returns {object} - returns all articles
    */
   static fetchAllArticles(req, res) {
-    const { page } = req.params;
-    const limit = 10;
-    const offset = (+page - 1) * limit;
+    const suppliedPage = req.query.page;
+    const suppliedLimit = req.query.limit;
+    const page = suppliedPage || 1;
+    const limit = suppliedLimit || 10;
+    const offset = (+page - 1) * +limit;
     Article
       .findAndCountAll({
         offset,
@@ -77,7 +80,8 @@ class ArticleController {
       })
       .then((result) => {
         const { rows, count } = result;
-        const pageCount = Math.ceil(count / limit);
+        const pageCount = Math.ceil(count / +limit);
+        const articlesOnPage = numberOfArticles(count, +limit, +page);
         if (+page > pageCount) {
           return res.status(422).json({
             errors: {
@@ -88,7 +92,10 @@ class ArticleController {
         }
         return res.status(200).json({
           status: 'success',
-          availablePages: pageCount,
+          totalPages: pageCount,
+          currentPage: +page,
+          totalArticles: count,
+          articlesOnPage,
           articles: rows
         });
       })
