@@ -37,3 +37,8 @@ node_modules
 .env
 
 dist
+sendgrid.env
+.nyc_output
+
+# Multer file upload storage
+uploads

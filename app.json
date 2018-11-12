@@ -1,12 +1,57 @@
 {
   "scripts": {},
-  "env": {},
+  "env": {
+    "CLOUDINARY_CLOUD_NAME": {
+      "required": true
+    },
+    "CLOUDINARY_KEY": {
+      "required": true
+    },
+    "CLOUDINARY_SECRET": {
+      "required": true
+    },
+    "FACEBOOK_APP_ID": {
+      "required": true
+    },
+    "FACEBOOK_APP_SECRET": {
+      "required": true
+    },
+    "GOOGLE_CALLBACK_URL_DEV": {
+      "required": true
+    },
+    "GOOGLE_CLIENT_ID": {
+      "required": true
+    },
+    "GOOGLE_CLIENT_SECRET": {
+      "required": true
+    },
+    "JWT_SECRET": {
+      "required": true
+    },
+    "SECRET": {
+      "required": true
+    },
+    "SENDGRID_API_KEY": {
+      "required": true
+    },
+    "TWITTER_APP_ID": {
+      "required": true
+    },
+    "TWITTER_APP_SECRET": {
+      "required": true
+    },
+    "TWITTER_CALL_BACK_URL_DEV": {
+      "required": true
+    }
+  },
   "formation": {
     "web": {
       "quantity": 1
     }
   },
-  "addons": [],
+  "addons": [
+    "heroku-postgresql"
+  ],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
