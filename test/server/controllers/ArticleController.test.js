@@ -25,7 +25,7 @@ describe('Articles Controller Tests', () => {
         .end((err, res) => {
           should.equal(res.body.articles[0].title, 'Valinor');
           should.equal(res.body.articles[0]
-            .slug, 'team-valinor');
+            .slug, 'team-valinore');
           should.equal(res.body.articles[0]
             .description, 'Team valinor is a simulation team');
           should.equal(res.body.articles[0].author.fullName, 'John Mike');

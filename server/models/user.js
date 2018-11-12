@@ -57,7 +57,8 @@ export default (sequelize, DataTypes) => {
       ArticleLike,
       Role,
       Comment,
-      Rating
+      Rating,
+      CommentLike
     } = models;
 
     User.belongsTo(Role, {
@@ -77,6 +78,9 @@ export default (sequelize, DataTypes) => {
     });
 
     User.hasMany(Comment, {
+      foreignKey: 'userId'
+    });
+    User.hasMany(CommentLike, {
       foreignKey: 'userId'
     });
   };

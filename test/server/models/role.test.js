@@ -4,7 +4,7 @@ import models from '../../../server/models';
 const { Role } = models;
 chai.should();
 describe('Ensure roles table is created and populated', () => {
-  it('should return all rows in the table', () => {
+  it('should return all rows in the table', (done) => {
     Role
       .findAll()
       .then((result) => {
@@ -27,6 +27,7 @@ describe('Ensure roles table is created and populated', () => {
             privilege:
             'Can follow authors and publish articles, but can not be followed'
           });
+        done();
       })
       .catch(error => error);
   });
