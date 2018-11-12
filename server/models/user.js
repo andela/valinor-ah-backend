@@ -58,7 +58,8 @@ export default (sequelize, DataTypes) => {
       Role,
       Comment,
       Rating,
-      CommentLike
+      CommentLike,
+      Follow
     } = models;
 
     User.belongsTo(Role, {
@@ -82,6 +83,16 @@ export default (sequelize, DataTypes) => {
     });
     User.hasMany(CommentLike, {
       foreignKey: 'userId'
+    });
+    User.belongsToMany(User, {
+      as: 'authorId',
+      through: Follow,
+      foreignKey: 'authorId'
+    });
+    User.belongsToMany(User, {
+      as: 'followerId',
+      through: Follow,
+      foreignKey: 'followerId'
     });
   };
 
