@@ -21,6 +21,7 @@ const {
 articles.post('/articles', verifyToken, validateArticleInput, createArticle);
 
 articles.get('/articles/:slug', getAnArticle);
+articles.get('/articles', fetchAllArticles);
 
 articles.get('/articles', validateQuery, fetchAllArticles);
 
