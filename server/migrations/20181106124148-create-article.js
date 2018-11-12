@@ -36,6 +36,14 @@ export default {
         key: 'id'
       }
     },
+    categoryId: {
+      type: Sequelize.INTEGER,
+      onUpdate: 'CASCADE',
+      references: {
+        model: 'Categories',
+        key: 'id'
+      }
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE
