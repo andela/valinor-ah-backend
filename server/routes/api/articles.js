@@ -21,14 +21,13 @@ const {
 articles.post('/articles', verifyToken, validateArticleInput, createArticle);
 
 articles.get('/articles/:slug', getAnArticle);
-articles.get('/articles', fetchAllArticles);
 
 articles.get('/articles', validateQuery, fetchAllArticles);
 
 
 // routes to like or dislike articles
 articles.post(
-  '/articles/:articleId/:action',
+  '/articles/:articleId/reaction/:action',
   verifyToken, validateArticleId, likeOrDislikeArticle
 );
 

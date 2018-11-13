@@ -13,78 +13,9 @@ chai.use(chaiHttp);
 
 const articleBaseUrl = '/api/v1/articles';
 const getAnArticleUrl = string => `${articleBaseUrl}/${string}`;
-const userData = {};
-const signupUrl = '/api/v1/users/signup';
 
 describe('Articles Controller Tests', () => {
-  before((done) => {
-    // Sign up a user and get the id and token returned
-    chai.request(app)
-      .post('/api/v1/users/signup')
-      .send({
-        fullName: 'Not Tani',
-        email: 'n.tani@whowa.com',
-        password: 'ntanirfsee4',
-      })
-      .end((err, res) => {
-        userData.id = res.body.user.id;
-        userData.token = res.body.user.token;
-        done();
-      });
-  });
-
-  describe('Create an article with valid inputs', () => {
-    const result = {};
-    before((done) => {
-      // create an article
-      chai.request(app)
-        .post('/api/v1/articles')
-        .send(articleInputValid)
-        .set('Authorization', userData.token)
-        .end((err, res) => {
-          result.status = res.status;
-          result.body = res.body;
-          done();
-        });
-    });
-
-    // check status code
-    it('should return a status of 201', () => {
-      result.status.should.equal(201);
-    });
-
-    // check body
-    it('should return the expected body', () => {
-      result.body.status.should.equal('success');
-      result.body.article.title.should.equal(articleInputValid.title);
-    });
-  });
-
-  describe('Create an article with no title', () => {
-    const result = {};
-    before((done) => {
-      // create an article
-      chai.request(app)
-        .post('/api/v1/articles')
-        .send(articleInputNoTitle)
-        .set('Authorization', userData.token)
-        .end((err, res) => {
-          result.status = res.status;
-          result.body = res.body;
-          done();
-        });
-    });
-
-    // check status code
-    it('should return a status of 422', () => {
-      result.status.should.equal(422);
-    });
-
-    // check body
-    it('should return the expected body', () => {
-      result.body.errors.title[0].should.equal('please enter a title');
-    });
-  });
+  const userData = {};
 
   // FETCH ALL ARTICLES
   describe('Fetch all articles', () => {
@@ -168,7 +99,7 @@ describe('Articles Controller Tests', () => {
           .end((err, res) => {
             should.equal(res.body.articles[0].title, 'Valinor');
             should.equal(res.body.articles[0]
-              .slug, 'team-valinor');
+              .slug, 'team-valinore');
             should.equal(res.body.articles[0]
               .description, 'Team valinor is a simulation team');
             should.equal(res.body.articles[0].author.fullName, 'John Mike');
@@ -383,7 +314,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // like an article
         chai.request(app)
-          .post(`${articleBaseUrl}/${articleId}/like`)
+          .post(`${articleBaseUrl}/${articleId}/reaction/like`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -405,7 +336,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // like the same article(should undo)
         chai.request(app)
-          .post(`${articleBaseUrl}/${articleId}/like`)
+          .post(`${articleBaseUrl}/${articleId}/reaction/like`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -427,7 +358,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // dislike an article
         chai.request(app)
-          .post(`${articleBaseUrl}/${articleId}/dislike`)
+          .post(`${articleBaseUrl}/${articleId}/reaction/dislike`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -449,7 +380,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // dislike the same article(should undo)
         chai.request(app)
-          .post(`${articleBaseUrl}/${articleId}/dislike`)
+          .post(`${articleBaseUrl}/${articleId}/reaction/dislike`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -471,7 +402,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // like an article
         chai.request(app)
-          .post(`${articleBaseUrl}/${articleId}/like`)
+          .post(`${articleBaseUrl}/${articleId}/reaction/like`)
           .set('Authorization', userData.token)
           .end(() => {
             done();
@@ -481,7 +412,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // dislike the same article
         chai.request(app)
-          .post(`${articleBaseUrl}/${articleId}/dislike`)
+          .post(`${articleBaseUrl}/${articleId}/reaction/dislike`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -504,7 +435,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // like an article with a fake slug
         chai.request(app)
-          .post(`${articleBaseUrl}/homerton-b-baleclava-1n2n1t/like`)
+          .post(`${articleBaseUrl}/homerton-b-baleclava-1n2n1t/reaction/like`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -527,7 +458,7 @@ describe('Articles Controller Tests', () => {
       before((done) => {
         // like an article with a fake slug
         chai.request(app)
-          .post(`${articleBaseUrl}/100000/like`)
+          .post(`${articleBaseUrl}/100000/reaction/like`)
           .set('Authorization', userData.token)
           .end((err, res) => {
             result.status = res.status;
@@ -545,58 +476,5 @@ describe('Articles Controller Tests', () => {
         result.body.errors.message.should.be.equal('Sorry, that article was not found');
       });
     });
-  });
-});
-
-describe('Testing comment on articles', () => {
-  it('should create new user', (done) => {
-    chai.request(app)
-      .post(signupUrl)
-      .send({
-        fullName: 'Solomon Kingsley',
-        email: 'abiodun.abud@andela.com',
-        password: 'solomon123',
-      })
-      .end((err, res) => {
-        res.should.have.status(201);
-        res.body.should.be.a('object');
-        res.body.user.token.should.be.a('string');
-        res.body.user.fullName.should.be.a('string');
-        res.body.user.email.should.be.a('string');
-        res.body.user.fullName.should.be.eql('Solomon Kingsley');
-        res.body.user.confirmEmail.should.be.eql(false);
-        res.body.user.email.should.be.eql('abiodun.abud@andela.com');
-        userData.id = res.body.user.id;
-        userData.token = res.body.user.token;
-        done();
-      });
-  });
-  it('POST /article/:articleId/comments add new comment', () => {
-    chai.request(app)
-      .post('/api/v1/articles/1/comments')
-      .set('authorization', userData.token)
-      .send({
-        body: 'Working as expected'
-      })
-      .end((err, res) => {
-        res.should.have.status(201);
-        res.body.should.be.a('object');
-        res.body.comment.should.be.a('object');
-        res.body.comment.body.should.be.a('string');
-        res.body.comment.commentBy.should.be.a('object');
-      });
-  });
-  it('POST /article/:articleId/comments should not add new comment', () => {
-    chai.request(app)
-      .post('/api/v1/articles/1/comments')
-      .set('authorization', userData.token)
-      .send({
-        commentBody: 'Working as expected'
-      })
-      .end((err, res) => {
-        res.should.have.status(422);
-        res.body.should.be.a('object');
-        res.body.errors.should.be.a('object');
-      });
   });
 });
