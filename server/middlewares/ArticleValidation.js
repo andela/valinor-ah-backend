@@ -81,6 +81,18 @@ class ArticleValidation {
   }
 
   /**
+   * Validate the Article input field
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @param {object} next - The callback function to the next middleware.
+   * @return {void}
+   */
+  static validateArticleCommentInput(req, res, next) {
+    ArticleValidation.validateBody(req);
+    sendFormattedError(req, res, next);
+  }
+
+  /**
     * @description - This method validates the article page queries.
     * @param {object} req - The request object to be validated.
     * @param {object} res - Th response object to be validated.
