@@ -7,7 +7,7 @@ import {
 }
   from '../../../mockdata/followMockData';
 
-const { Follow } = models;
+const { Follow, User } = models;
 chai.should();
 
 describe('Testing follow models - unit tests', () => {
@@ -51,6 +51,16 @@ describe('Testing follow models - unit tests', () => {
           error.name.should.be.eql('SequelizeForeignKeyConstraintError');
           error.parent.detail.should.be
             .eql('Key (followerId)=(90000) is not present in table "Users".');
+        });
+      done();
+    }
+  );
+  it(
+    'testing after-create hooks',
+    (done) => {
+      User.findOne({ where: { id: 1 } })
+        .then((userData) => {
+          userData.followers.should.be.deep.eql(2);
         });
       done();
     }

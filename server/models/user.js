@@ -49,6 +49,16 @@ export default (sequelize, DataTypes) => {
       allowNull: true,
       type: DataTypes.STRING,
     },
+    following: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    followers: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
   });
 
   User.associate = (models) => {
@@ -68,6 +78,7 @@ export default (sequelize, DataTypes) => {
     });
 
     User.hasMany(Article, {
+      as: 'publishedArticles',
       foreignKey: 'userId'
     });
 

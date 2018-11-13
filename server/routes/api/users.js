@@ -1,5 +1,6 @@
 import express from 'express';
 
+import FollowController from '../../controllers/FollowController';
 import UserValidation from '../../middlewares/UserValidation';
 import UserController from '../../controllers/UsersController';
 import facebookPassportRoutes from '../../config/facebookPassportRoutes';
@@ -13,6 +14,7 @@ const {
   checkExistingEmail,
   validateUserLogin,
   validateUserUpdate,
+  validateFollowUserUrl
 } = UserValidation;
 const {
   userLogin,
@@ -21,6 +23,10 @@ const {
   updateProfile,
   getUserProfiles,
 } = UserController;
+const {
+  followAuthor,
+  displayFollowView
+} = FollowController;
 
 const router = express.Router();
 
@@ -72,5 +78,15 @@ router.get('/auth/google/callback', googlePassportRoutes.callback());
 
 // get all user profiles
 router.get('/users', verifyToken, confirmUser, getUserProfiles);
+
+router.post(
+  '/users/follow/:authorId',
+  validateFollowUserUrl, verifyToken, followAuthor
+);
+
+router.get(
+  '/users/follow/:userId',
+  validateFollowUserUrl, displayFollowView
+);
 
 export default router;

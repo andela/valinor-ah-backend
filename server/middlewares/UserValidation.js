@@ -69,6 +69,35 @@ class UserValidation {
   }
 
   /**
+    * @description - This method validates the params in url
+    * @param {object} req - The request object
+    * @param {object} fieldName - The url param
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateUrlParams(req, fieldName) {
+    req.checkParams(fieldName, `invalid ${fieldName} in url`)
+      .isNumeric();
+  }
+
+  /**
+    * @description - This method validates the params in url
+    * @param {object} req - The request object
+    * @param {object} res - The request object
+    * @param {function} next - callback to the next middleware
+    * @param {object} fieldName - The url param
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateFollowUserUrl(req, res, next) {
+    if (req.params.authorId) UserValidation.validateUrlParams(req, 'authorId');
+    if (req.params.userId) UserValidation.validateUrlParams(req, 'userId');
+    UserValidation.sendFormattedError(req, res, next);
+  }
+
+  /**
     * @description - This method validates the bio
     * @param {object} req - The request object
     * @returns {null} - returns nothing
