@@ -16,10 +16,18 @@ export const articleInputValid = {
   title: 'How to write you name',
   description: 'This article talks about how to write your name',
   body: 'let\'s talk about names, what is your name?',
+  tags: ['football', 'naming', 'conventions']
 };
 
 
 export const articleInputNoTitle = {
   description: 'This article talks about how to write your name',
   body: 'let\'s talk about names, what is your name?',
+};
+
+export const articleInputInvalidTags = {
+  title: 'How to write you name',
+  description: 'This article talks about how to write your name',
+  body: 'let\'s talk about names, what is your name?',
+  tags: [123, 'naming', 'conventions']
 };

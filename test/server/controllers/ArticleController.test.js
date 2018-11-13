@@ -5,6 +5,7 @@ import app from '../../../app';
 import {
   articleInputValid,
   articleInputNoTitle,
+  articleInputInvalidTags
 } from '../../../mockdata/articleMockData';
 
 const should = chai.should();
@@ -222,6 +223,32 @@ describe('Articles Controller Tests', () => {
       it('should return the expected body', () => {
         result.body.status.should.equal('success');
         result.body.article.title.should.equal(articleInputValid.title);
+      });
+    });
+
+    describe('Create and article with invalid Tags', () => {
+      const result = {};
+      before((done) => {
+        // create an article with an invalid tag
+        chai.request(app)
+          .post('/api/v1/articles')
+          .send(articleInputInvalidTags)
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            result.status = res.status;
+            result.body = res.body;
+            done();
+          });
+      });
+
+      // check status code
+      it('should return a status of 422', () => {
+        result.status.should.equal(422);
+      });
+      // check body
+      it('should return a descriptive failure message', () => {
+        result.body.errors.tags[0].should
+          .equal('tags must be an array of strings');
       });
     });
 
