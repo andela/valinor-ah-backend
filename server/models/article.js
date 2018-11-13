@@ -25,7 +25,13 @@ export default (sequelize, DataTypes) => {
 
   Article.associate = (models) => {
     const {
-      User, ArticleLike, Comment, Rating, Category, ArticleTag
+      User,
+      ArticleLike,
+      Comment,
+      Rating,
+      Category,
+      ArticleTag,
+      Bookmark
     } = models;
     Article.belongsTo(User, {
       as: 'author',
@@ -45,12 +51,14 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
     Article.hasMany(Comment, {
-      foreignKey: 'commentId',
+      foreignKey: 'articleId',
+    });
+    Article.hasMany(Bookmark, {
+      foreignKey: 'articleId',
     });
     Article.hasMany(ArticleTag, {
       foreignKey: 'articleId',
     });
   };
-
   return Article;
 };

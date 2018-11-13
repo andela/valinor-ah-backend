@@ -59,7 +59,8 @@ export default (sequelize, DataTypes) => {
       Comment,
       Rating,
       CommentLike,
-      Follow
+      Follow,
+      Bookmark
     } = models;
 
     User.belongsTo(Role, {
@@ -93,6 +94,9 @@ export default (sequelize, DataTypes) => {
       as: 'followerId',
       through: Follow,
       foreignKey: 'followerId'
+    });
+    User.hasMany(Bookmark, {
+      foreignKey: 'userId'
     });
   };
 
