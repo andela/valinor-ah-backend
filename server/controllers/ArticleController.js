@@ -5,7 +5,9 @@ import Sequelize from 'sequelize';
 import models from '../models';
 import numberOfArticles from '../helpers/numberOfArticles';
 
-const { Article, User, ArticleLike } = models;
+const {
+  Article, User, ArticleLike, Tag, ArticleTag,
+} = models;
 const { Op } = Sequelize;
 /**
  * @class ArticleController
@@ -111,36 +113,63 @@ class ArticleController {
    * controller to create an article
    * @param {object} req - express request object
    * @param {object} res - express response object
+   * @param {object} next - express next object
    * @returns {void}
    */
-  static createArticle(req, res) {
+  static async createArticle(req, res, next) {
     const {
       title,
       description,
       body,
+      tags,
     } = req.body;
     const userId = req.userData.id;
     const slug = `${slugify(title.toLowerCase())}-${uniqueSlug()}`;
 
-    Article.create({
-      title,
-      slug,
-      description,
-      body,
-      userId,
-    }).then((article) => {
+    let article;
+    try {
+      // create an article
+      article = await Article.create({
+        title,
+        slug,
+        description,
+        body,
+        userId,
+      });
+    } catch (err) {
+      next(err);
+    }
+
+    // article successfully created
+    if (article) {
       const articleData = article.dataValues;
+      articleData.tags = tags;
       res.status(201).json({
         status: 'success',
         article: articleData,
       });
-    }).catch((err) => {
-      res.status(500).json({
-        error: {
-          message: err.message,
-        },
-      });
-    });
+
+      if (tags) {
+        // loop through tags and find/create tags and add to articleTags table
+        tags.forEach(async (tagName) => {
+          let tagData;
+          try {
+            // find or add entry to tag table
+            [tagData] = await Tag.findOrCreate({
+              where: { tagName },
+              defaults: { tagName }
+            });
+            // add entry to article tag table
+            await ArticleTag.create({
+              tagId: tagData.dataValues.id,
+              articleId: article.dataValues.id,
+            });
+          } catch (err) {
+            next(err);
+          }
+        });
+      }
+    }
   }
 
   /**

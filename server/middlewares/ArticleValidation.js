@@ -26,12 +26,35 @@ class ArticleValidation {
   }
 
   /**
-   * This method validates the title
+   * This method validates the body
    * @param {object} req - The request object
    * @returns {void}
    */
   static validateBody(req) {
     req.checkBody('body', 'please enter a body').exists();
+  }
+
+  /**
+   * This method validates the tags
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateTags(req) {
+    if (req.body.tags) {
+      // custom validation to check if tags are an strings
+      req.checkBody('tags', 'tags must be an array of strings')
+        .custom((tags) => {
+          if (Array.isArray(tags)) {
+            let notString = 0;
+            tags.forEach((tag) => {
+              if ((typeof tag) !== 'string') {
+                notString += 1;
+              }
+            });
+            if (!notString) return true;
+          }
+        });
+    }
   }
 
   /**
@@ -45,6 +68,7 @@ class ArticleValidation {
     ArticleValidation.validateTitle(req);
     ArticleValidation.validateDescription(req);
     ArticleValidation.validateBody(req);
+    ArticleValidation.validateTags(req);
     sendFormattedError(req, res, next);
   }
 
