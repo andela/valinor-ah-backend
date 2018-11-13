@@ -99,3 +99,5 @@ export const userDataWithVeryLongBio = {
     dfdjfdjfjdpfjkdpjfdpfjpdjfdpfjpdjfdoipjfdopjfdpjfdifjdpfjdjf
     dofjdpjfpdjfpdjfdjfpdjfpdjfdpoijfdsjwfpei3er//3erfje3kfkdkf`,
 };
+
+export const userData = {};

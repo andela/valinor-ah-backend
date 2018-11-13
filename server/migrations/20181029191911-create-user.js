@@ -19,6 +19,16 @@ export default {
         key: 'id'
       }
     },
+    following: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      defaultValue: 0
+    },
+    followers: {
+      allowNull: false,
+      type: Sequelize.INTEGER,
+      defaultValue: 0
+    },
     email: {
       allowNull: true,
       type: Sequelize.STRING
