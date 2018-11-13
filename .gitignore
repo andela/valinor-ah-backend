@@ -42,3 +42,6 @@ sendgrid.env
 
 # Multer file upload storage
 uploads
+
+# vscode config
+.vscode
