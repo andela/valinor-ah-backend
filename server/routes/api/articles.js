@@ -4,6 +4,7 @@ import { verifyToken } from '../../middlewares/tokenUtils';
 import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/ArticleValidation';
 import validateResourceId from '../../middlewares/validateResourceId';
+import queryGenerator from '../../middlewares/QueryGenerator';
 
 const articles = express.Router();
 
@@ -22,7 +23,7 @@ articles.post('/articles', verifyToken, validateArticleInput, createArticle);
 
 articles.get('/articles/:slug', getAnArticle);
 
-articles.get('/articles', validateQuery, fetchAllArticles);
+articles.get('/articles', validateQuery, queryGenerator, fetchAllArticles);
 
 // routes to like or dislike articles
 articles.post(
