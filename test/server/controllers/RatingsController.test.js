@@ -1,19 +1,13 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
-
 import app from '../../../app';
-import {
-  ratingWithInvalidData
-} from '../../../mockdata/ratingMockData';
+import { ratingWithInvalidData } from '../../../mockdata/ratingMockData';
 
-const should = chai.should();
+const articleId = 1;
+const signupUrl = '/api/v1/users/signup';
+const userData = {};
 
 chai.use(chaiHttp);
-const articleId = 1;
-const ratingUrl = `/api/v1/articles/${articleId}/rating`;
-const signupUrl = '/api/v1/users/signup';
-
-const userData = {};
 
 describe('Articles Controller Tests', () => {
   describe('Add a rating', () => {
@@ -28,9 +22,23 @@ describe('Articles Controller Tests', () => {
         .end((err, res) => {
           userData.id = res.body.user.id;
           userData.token = res.body.user.token;
-          console.log(userData);
           done();
         });
+    });
+
+    it('should not add rating if articleId is missing or invalid', (done) => {
+      chai.request(app)
+        .post(`/api/v1/articles/${articleId}ty/rating`)
+        .set('Authorization', userData.token)
+        .send({ rating: 5 })
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.status.should.be.eql(400);
+          res.body.status.should.eql('failure');
+          res.body.errors.message.should
+            .eql('invalid id, article id must be a number');
+        });
+      done();
     });
 
     it('should not not save rating from unauithorized user', (done) => {
