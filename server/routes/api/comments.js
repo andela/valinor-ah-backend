@@ -3,21 +3,31 @@ import { verifyToken } from '../../middlewares/tokenUtils';
 import CommentController from '../../controllers/CommentController';
 import ArticleCommentValidation from
   '../../middlewares/ArticleValidation';
-import validateArticleId from '../../middlewares/validateArticleId';
+import verifyUser from '../../middlewares/confirmUser';
+import validateResourceId from '../../middlewares/validateResourceId';
 
 const comments = express.Router();
 
 const { validateArticleCommentInput } = ArticleCommentValidation;
 const {
-  addCommentOnArticle
+  addCommentOnArticle,
+  likeOrDislikeComment
 } = CommentController;
 
 comments.post(
   '/articles/:articleId/comments',
   verifyToken,
   validateArticleCommentInput,
-  validateArticleId,
+  validateResourceId,
   addCommentOnArticle
+);
+
+comments.post(
+  '/articles/:articleId/comments/:commentId/reaction/:action',
+  verifyToken,
+  verifyUser,
+  validateResourceId,
+  likeOrDislikeComment
 );
 
 export default comments;

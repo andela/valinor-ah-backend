@@ -3,7 +3,7 @@ import express from 'express';
 import { verifyToken } from '../../middlewares/tokenUtils';
 import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/ArticleValidation';
-import validateArticleId from '../../middlewares/validateArticleId';
+import validateResourceId from '../../middlewares/validateResourceId';
 
 const articles = express.Router();
 
@@ -28,7 +28,7 @@ articles.get('/articles', validateQuery, fetchAllArticles);
 // routes to like or dislike articles
 articles.post(
   '/articles/:articleId/reaction/:action',
-  verifyToken, validateArticleId, likeOrDislikeArticle
+  verifyToken, validateResourceId, likeOrDislikeArticle
 );
 
 export default articles;
