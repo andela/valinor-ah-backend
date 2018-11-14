@@ -1,6 +1,7 @@
 import uniqueSlug from 'unique-slug';
 import slugify from 'slugify';
 import Sequelize from 'sequelize';
+import readingTime from 'reading-time';
 
 import models from '../models';
 import numberOfArticles from '../helpers/numberOfArticles';
@@ -124,7 +125,10 @@ class ArticleController {
       tags,
     } = req.body;
     const userId = req.userData.id;
+    // creata a unique slug
     const slug = `${slugify(title.toLowerCase())}-${uniqueSlug()}`;
+    // calculate the reading time
+    const stats = readingTime(body);
 
     let article;
     try {
@@ -134,6 +138,7 @@ class ArticleController {
         slug,
         description,
         body,
+        readTime: stats.time,
         userId,
       });
     } catch (err) {

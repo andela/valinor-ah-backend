@@ -6,6 +6,7 @@ export default {
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -15,6 +16,7 @@ export default {
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -24,6 +26,7 @@ export default {
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -33,6 +36,7 @@ export default {
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -42,6 +46,7 @@ export default {
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -51,6 +56,7 @@ export default {
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -60,6 +66,7 @@ export default {
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -69,6 +76,7 @@ export default {
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -78,6 +86,7 @@ export default {
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -87,6 +96,7 @@ export default {
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -96,6 +106,7 @@ export default {
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -105,6 +116,7 @@ export default {
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -114,6 +126,7 @@ export default {
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -123,6 +136,7 @@ export default {
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -132,6 +146,7 @@ export default {
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -141,6 +156,7 @@ export default {
       description: 'This is my story at the beach',
       body: 'Once upon a time in Mexico.. there was ...',
       userId: 1,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -150,6 +166,7 @@ export default {
       description: 'Jambolani is the fifa ball',
       body: 'Jambolani is the fifa ball used in south africa 2010 world cup',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -159,6 +176,7 @@ export default {
       description: 'Team valinor is a simulation team',
       body: 'They are handling authors haven product. Good luck, guys.',
       userId: 2,
+      readTime: 3600,
       createdAt: new Date(),
       updatedAt: new Date()
     }

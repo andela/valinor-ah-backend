@@ -19,7 +19,11 @@ export default {
       allowNull: false
     },
     body: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
+      allowNull: false
+    },
+    readTime: {
+      type: Sequelize.INTEGER,
       allowNull: false
     },
     rating: {

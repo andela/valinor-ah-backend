@@ -14,7 +14,11 @@ export default (sequelize, DataTypes) => {
     },
     body: {
       allowNull: false,
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
+    },
+    readTime: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
     },
     rating: {
       allowNull: true,
