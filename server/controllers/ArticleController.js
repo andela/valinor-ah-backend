@@ -150,29 +150,24 @@ class ArticleController {
    * @returns {object} - returns all articles
    */
   static fetchAllArticles(req, res) {
-    const suppliedPage = req.query.page;
-    const suppliedLimit = req.query.limit;
-    const page = suppliedPage || 1;
-    const limit = suppliedLimit || 10;
-    const offset = (+page - 1) * +limit;
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const { meta } = req;
+    console.log(meta);
     Article
-      .findAndCountAll({
-        offset,
-        limit,
-        include:
-          [{
-            model: User,
-            as: 'author',
-            attributes: ['fullName', 'avatarUrl']
-          }],
-        order: [
-          ['id', 'DESC']
-        ]
-      })
+      .findAndCountAll(meta)
       .then((result) => {
         const { rows, count } = result;
         const pageCount = Math.ceil(count / +limit);
         const articlesOnPage = numberOfArticles(count, +limit, +page);
+        if (count < 1) {
+          return res.status(404).json({
+            errors: {
+              status: 'failure',
+              message: 'no articles found'
+            }
+          });
+        }
         if (+page > pageCount) {
           return res.status(422).json({
             errors: {
