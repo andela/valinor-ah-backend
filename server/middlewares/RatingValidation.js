@@ -4,11 +4,11 @@ const { sendFormattedError } = UserValidation;
 
 /**
  * @class ValidationHelper
- * @description Helps perform validations on article request body.
+ * @description Helps perform validations on rating request body
  */
 class RatingValidation {
   /**
-   * This method validates the title
+   * This method validates the rating
    * @param {object} req - The request object
    * @returns {void}
    */
@@ -18,7 +18,7 @@ class RatingValidation {
   }
 
   /**
-   * Validate the Article input field
+   * Validate the rating value
    * @param {object} req - The request object
    * @param {object} res - The response object
    * @param {object} next - The callback function to the next middleware.

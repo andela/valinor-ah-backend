@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import models from '../models';
 
 const { Rating } = models;
@@ -30,9 +29,8 @@ class RatingsController {
     })
       .spread((newRating, created) => {
         if (!created) {
-          return newRating.update(
-            { rating }
-          )
+          return newRating
+            .update({ rating })
             .then(() => res.status(200).json({
               status: 'success',
               message: 'rating updated sucessfully'
