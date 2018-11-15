@@ -7,7 +7,7 @@ import models from '../models';
 import numberOfArticles from '../helpers/numberOfArticles';
 
 const {
-  Article, User, ArticleLike, Tag, ArticleTag,
+  Article, User, ArticleLike, Tag, ArticleTag, Comment
 } = models;
 const { Op } = Sequelize;
 /**
@@ -31,6 +31,9 @@ class ArticleController {
         model: User,
         as: 'author',
         attributes: ['fullName', 'email', 'avatarUrl', 'bio', 'roleId']
+      }, {
+        model: Comment,
+        as: 'comments',
       }]
     })
       .then((article) => {

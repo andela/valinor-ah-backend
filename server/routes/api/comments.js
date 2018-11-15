@@ -11,9 +11,12 @@ const comments = express.Router();
 const { validateArticleCommentInput } = ArticleCommentValidation;
 const {
   addCommentOnArticle,
+  editComment,
+  getComment,
   likeOrDislikeComment
 } = CommentController;
 
+// post a comment
 comments.post(
   '/articles/:articleId/comments',
   verifyToken,
@@ -22,6 +25,7 @@ comments.post(
   addCommentOnArticle
 );
 
+// like or dislike a comment
 comments.post(
   '/articles/:articleId/comments/:commentId/reaction/:action',
   verifyToken,
@@ -29,5 +33,13 @@ comments.post(
   validateResourceId,
   likeOrDislikeComment
 );
+
+// edit a comment
+comments.patch('/comments/:commentId',
+  verifyToken, validateResourceId, editComment);
+
+// get a comment and its entire history
+comments.get('/comments/:commentId',
+  verifyToken, validateResourceId, getComment);
 
 export default comments;

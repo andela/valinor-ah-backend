@@ -312,7 +312,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${userData.id + 5}`)
+        .patch(`/api/v1/users/${userData.id - 1}`)
         .set('authorization', userData.token)
         .send(updateData)
         .end((err, res) => {
@@ -413,7 +413,7 @@ describe('Update user profile', () => {
     it('return body containing a descriptive failure message', () => {
       resData.body.status.should.equal('failure');
       resData.body.errors.message.should
-        .equal('user not found');
+        .equal('Sorry, that user was not found');
     });
   });
 });

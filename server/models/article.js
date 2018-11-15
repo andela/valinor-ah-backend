@@ -55,6 +55,7 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
     Article.hasMany(Comment, {
+      as: 'comments',
       foreignKey: 'articleId',
     });
     Article.hasMany(Bookmark, {

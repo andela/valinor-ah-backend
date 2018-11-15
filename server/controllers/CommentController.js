@@ -1,9 +1,11 @@
 import Sequelize from 'sequelize';
 import models from '../models';
 
-const { User, Comment, CommentLike } = models;
-
 const { Op } = Sequelize;
+
+const {
+  User, Comment, CommentEvent, CommentLike,
+} = models;
 
 /**
  * @class CommentController
@@ -38,6 +40,7 @@ class CommentController {
               status: 'success',
               message: 'Comment added successfully',
               comment: {
+                id: comment.id,
                 body: comment.body,
                 articleId: comment.articleId,
                 createdAt,
@@ -154,6 +157,86 @@ class CommentController {
       default:
         return next(unknownActionError);
     }
+  }
+
+  /**
+   * @description This method edits a comment on an article
+     * @param {object} req - exporess request object
+     * @param {object} res - express response object
+     * @param {object} next - express next object
+     * @returns {object} returns an object of comment
+   */
+  static async editComment(req, res, next) {
+    const { update } = req.body;
+    const { commentId } = req.params;
+    let rowCount;
+    let comment;
+    try {
+      comment = await Comment.findByPk(commentId, {
+        raw: true,
+      });
+      if (comment.body === update) {
+        // if no changes were made
+        const noChangeError = new Error('you must make changes to update');
+        noChangeError.status = 409;
+        return next(noChangeError);
+      }
+      [rowCount] = await Comment.update(
+        { body: update },
+        { where: { id: commentId } }
+      );
+    } catch (err) {
+      return next(err);
+    }
+
+    if (rowCount > 0) {
+      return res.status(200).json({
+        status: 'success',
+        message: `${rowCount} comment successfully updated`,
+      });
+    }
+  }
+
+  /**
+   * @description This method add new comment on an article
+     * @param {object} req - exporess request object
+     * @param {object} res - express response object
+     * @param {object} next - express next object
+     * @returns {object} returns an object of comment
+   */
+  static async getComment(req, res, next) {
+    const { commentId } = req.params;
+    const comment = {};
+
+    let current;
+    let history;
+    try {
+      // get the comment
+      current = await Comment.findByPk(commentId, {
+        include: [{
+          model: User,
+          as: 'author',
+          attributes: ['fullName', 'avatarUrl', 'roleId'],
+        }],
+      });
+
+      // get comment history
+      history = await CommentEvent.findAll({
+        where: {
+          commentId
+        },
+        attributes: ['previousBody', 'createdAt'],
+      });
+    } catch (err) {
+      return next(err);
+    }
+
+    comment.current = current;
+    comment.history = history;
+    return res.status(200).json({
+      status: 'success',
+      comment,
+    });
   }
 }
 
