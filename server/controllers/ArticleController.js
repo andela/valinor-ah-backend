@@ -8,7 +8,16 @@ import cleanupArticlesResponse from '../helpers/cleanupArticlesResponse';
 import addMetaToArticle from '../helpers/addMetaToArticle';
 
 const {
-  Article, User, ArticleLike, Tag, ArticleTag, Comment, Bookmark, Category
+  Article,
+  User,
+  ArticleLike,
+  Tag,
+  ArticleTag,
+  Comment,
+  ReportHistory,
+  Bookmark,
+  Category,
+  ReportType
 } = models;
 const { Op } = Sequelize;
 /**
@@ -378,6 +387,71 @@ class ArticleController {
       default:
         return next(unknownActionError);
     }
+  }
+
+  /**
+    * @description - This method logs in user and return a token.
+    * @param {object} req - The request object bearing the email and password.
+    * @param {object} res - The response object that is returned as json.
+    * @returns {object} - The object with message.
+    * @memberOf UserController
+    */
+  static reportArticle(req, res) {
+    const { reportBody, type } = req.body;
+    const userId = req.userData.id;
+    const { articleId } = req.params;
+
+    Article.findByPk(articleId)
+      .then((article) => {
+        ReportType.findOne({
+          where: {
+            title: type
+          }
+        })
+          .then((result) => {
+            const typeId = result.id;
+
+            if (article.userId === userId) {
+              return res.status(403).json({
+                status: 'failure',
+                message: 'sorry, you cannot report an article you wrote'
+              });
+            }
+            const authorId = article.userId;
+
+            ReportHistory
+              .create({
+                reportBody,
+                typeId,
+                authorId,
+                reporterId: userId
+              })
+              .then(() => {
+                res.status(200).json({
+                  status: 'success',
+                  message: 'your report was successfully submitted'
+                });
+              })
+              .catch(err => res.status(500).json({
+                status: 'failure',
+                errors: {
+                  message: [err.message]
+                }
+              }));
+          })
+          .catch(err => res.status(500).json({
+            status: 'failure',
+            errors: {
+              message: [err.message]
+            }
+          }));
+      })
+      .catch(err => res.status(500).json({
+        status: 'failure',
+        errors: {
+          message: [err.message]
+        }
+      }));
   }
 }
 

@@ -17,12 +17,30 @@ class ArticleValidation {
   }
 
   /**
+   * This method validates the title
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateType(req) {
+    req.checkBody('type', 'please enter a report type').exists();
+  }
+
+  /**
    * This method validates the description
    * @param {object} req - The request object
    * @returns {void}
    */
   static validateDescription(req) {
     req.checkBody('description', 'please enter a description').exists();
+  }
+
+  /**
+   * This method validates the description
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateReportBody(req) {
+    req.checkBody('reportBody', 'please enter a report body').exists();
   }
 
   /**
@@ -172,7 +190,7 @@ class ArticleValidation {
   }
 
   /**
-    * @description - Validate the Article input field
+   * @description - Validate the Article input field
    * @param {object} req - The request object
    * @param {object} res - The response object
    * @param {object} next - The callback function to the next middleware.
@@ -181,6 +199,21 @@ class ArticleValidation {
   static validateArticleCommentInput(req, res, next) {
     ArticleValidation.validateBody(req);
     sendFormattedError(req, res, next);
+  }
+
+  /**
+    * @description - This method validates the article page queries.
+    * @param {object} req - The request object to be validated.
+    * @param {object} res - Th response object to be validated.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf ArticleValidators
+    * @static
+    */
+  static validateReportArticle(req, res, next) {
+    ArticleValidation.validateType(req);
+    ArticleValidation.validateReportBody(req);
+    sendFormattedError(req, res, next, 400);
   }
 }
 
