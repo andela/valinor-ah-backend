@@ -10,6 +10,7 @@ import addReadingStats from '../../middlewares/addReadingStats';
 const articles = express.Router();
 
 const {
+  validateReportArticle,
   validateArticleInput,
   validateQuery
 } = ArticleValidation;
@@ -18,6 +19,7 @@ const {
   getAnArticle,
   fetchAllArticles,
   likeOrDislikeArticle,
+  reportArticle
 } = ArticleController;
 
 // post an article
@@ -55,5 +57,9 @@ articles.post(
   validateResourceId,
   likeOrDislikeArticle
 );
+
+// routes to report articles
+articles.post('/articles/:articleId/report',
+  verifyToken, validateReportArticle, reportArticle);
 
 export default articles;

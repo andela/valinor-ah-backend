@@ -1,13 +1,16 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
-
 import app from '../../../app';
+import { createToken } from '../../../server/middlewares/tokenUtils';
+
 import {
   articleInputValid,
   articleInputNoTitle,
-  articleInputInvalidTags
+  articleInputInvalidTags,
+  articleReportData,
+  articleReportDataNoReportBody,
+  articleReportDataNoType
 } from '../../../mockdata/articleMockData';
-import { createToken } from '../../../server/middlewares/tokenUtils';
 
 const should = chai.should();
 
@@ -640,6 +643,7 @@ describe('Articles Controller Tests', () => {
       });
     });
   });
+
   describe('Testing bookmarks', () => {
     it(`should throw error if user trys to fetch all 
     his or her bookmarked articles`,
@@ -715,6 +719,74 @@ describe('Articles Controller Tests', () => {
           res.status.should.be.eql(400);
           res.body.errors.message.should.be
             .eql('invalid id, article id must be a number');
+          done();
+        });
+    });
+  });
+
+  describe('Report and article', () => {
+    const token = createToken(1, '1d');
+    it('should throw error if type field is missing', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/2/report`)
+        .set('authorization', token)
+        .send(articleReportDataNoType)
+        .end((err, res) => {
+          res.status.should.be.eql(400);
+          res.body.errors.type.should.be
+            .eql(['please enter a report type']);
+          done();
+        });
+    });
+
+    it('should throw error if report body field is missing', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/2/report`)
+        .set('authorization', token)
+        .send(articleReportDataNoReportBody)
+        .end((err, res) => {
+          res.status.should.be.eql(400);
+          res.body.errors.reportBody.should.be
+            .eql(['please enter a report body']);
+          done();
+        });
+    });
+
+    it('should not post a report if user is unauthenticated', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/1/report`)
+        .end((err, res) => {
+          res.status.should.be.eql(401);
+          res.body.status.should.be.eql('unauthorized');
+          res.body.message.should.be.eql('please provide a token');
+          done();
+        });
+    });
+
+    it('should not post a report if user wrote the article', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/1/report`)
+        .set('authorization', token)
+        .send(articleReportData)
+        .end((err, res) => {
+          res.status.should.be.eql(403);
+          res.body.status.should.be.eql('failure');
+          res.body.message.should.be
+            .eql('sorry, you cannot report an article you wrote');
+          done();
+        });
+    });
+
+    it('should report an article', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/2/report`)
+        .set('authorization', token)
+        .send(articleReportData)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be
+            .eql('your report was successfully submitted');
           done();
         });
     });

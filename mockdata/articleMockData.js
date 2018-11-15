@@ -34,3 +34,16 @@ export const articleInputInvalidTags = {
   body: 'let\'s talk about names, what is your name?',
   tags: [123, 'naming', 'conventions']
 };
+
+export const articleReportData = {
+  reportBody: 'He copied my work without attribution',
+  type: 'Plagiarism'
+};
+
+export const articleReportDataNoReportBody = {
+  type: 'Plagiarism'
+};
+
+export const articleReportDataNoType = {
+  reportBody: 'He copied my work without attribution'
+};

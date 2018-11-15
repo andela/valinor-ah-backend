@@ -72,7 +72,8 @@ export default (sequelize, DataTypes) => {
       CommentLike,
       Follow,
       Bookmark,
-      ReadingStats
+      ReadingStats,
+      ReportHistory
     } = models;
 
     User.belongsTo(Role, {
@@ -95,25 +96,38 @@ export default (sequelize, DataTypes) => {
     User.hasMany(Comment, {
       foreignKey: 'userId'
     });
+
     User.hasMany(CommentLike, {
       foreignKey: 'userId'
     });
+
     User.belongsToMany(User, {
       as: 'authorId',
       through: Follow,
       foreignKey: 'authorId'
     });
+
     User.belongsToMany(User, {
       as: 'followerId',
       through: Follow,
       foreignKey: 'followerId'
     });
+
     User.hasMany(Bookmark, {
       as: 'myBookmarks',
       foreignKey: 'userId'
     });
+
     User.hasMany(ReadingStats, {
       foreignKey: 'userId'
+    });
+
+    User.hasMany(ReportHistory, {
+      foreignKey: 'authortId'
+    });
+
+    User.hasMany(ReportHistory, {
+      foreignKey: 'reporterId'
     });
   };
 
