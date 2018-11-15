@@ -43,7 +43,7 @@ describe('Report Controller Tests', () => {
   describe('POST /api/v1/report-types', () => {
     it('should not return error if token is missing', (done) => {
       chai.request(app)
-        .get('/api/v1/reports')
+        .post('/api/v1/report-types')
         .send(validReportData)
         .end((err, res) => {
           res.status.should.be.equal(401);
@@ -51,7 +51,7 @@ describe('Report Controller Tests', () => {
         });
     });
 
-    it('should not add a report if title is missing', (done) => {
+    it('should not add a report type if title is missing', (done) => {
       chai.request(app)
         .post('/api/v1/report-types')
         .set('Authorization', token)
@@ -63,7 +63,7 @@ describe('Report Controller Tests', () => {
         });
     });
 
-    it('should not add a report if description is missing', (done) => {
+    it('should not add a report type if description is missing', (done) => {
       chai.request(app)
         .post('/api/v1/report-types')
         .set('Authorization', token)
@@ -76,7 +76,7 @@ describe('Report Controller Tests', () => {
         });
     });
 
-    it('should not add a reportif description is missing', (done) => {
+    it('should add report type', (done) => {
       chai.request(app)
         .post('/api/v1/report-types')
         .set('Authorization', token)
@@ -84,6 +84,19 @@ describe('Report Controller Tests', () => {
         .end((err, res) => {
           res.status.should.be.equal(200);
           res.body.status.should.eql('success');
+          done();
+        });
+    });
+
+    it('should not add a duplicate report type', (done) => {
+      chai.request(app)
+        .post('/api/v1/report-types')
+        .set('Authorization', token)
+        .send(validReportData)
+        .end((err, res) => {
+          res.status.should.be.equal(409);
+          res.body.status.should.eql('failure');
+          res.body.message.should.eql('report type already exists');
           done();
         });
     });

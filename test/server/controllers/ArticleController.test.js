@@ -325,6 +325,8 @@ describe('Articles Controller Tests', () => {
           res.body.article.slug.should.be.eql('south-africa-201');
           res.body.article.description.should.be
             .eql('Jambolani is the fifa ball');
+          res.body.article.author.email.should.be
+            .eql('johnmike@andela.com');
           res.body.article.author.fullName.should.be
             .eql('John Mike');
           should.equal(res.body.article.author.avatarUrl, null);
@@ -340,6 +342,11 @@ describe('Articles Controller Tests', () => {
           res.body.article.id.should.be.eql(2);
           res.body.article.title.should.be.eql('Jambolani');
           res.body.article.slug.should.be.eql('south-africa-201');
+          // res.body.article.userId.should.be.eql(2);
+          res.body.article.description.should.be
+            .eql('Jambolani is the fifa ball');
+          res.body.article.author.email.should.be
+            .eql('johnmike@andela.com');
           res.body.article.author.fullName.should.be
             .eql('John Mike');
           should.equal(res.body.article.author.avatarUrl, null);

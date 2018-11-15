@@ -3,6 +3,7 @@ import express from 'express';
 import FollowController from '../../controllers/FollowController';
 import UserValidation from '../../middlewares/UserValidation';
 import UsersController from '../../controllers/UsersController';
+import NotificationController from '../../controllers/NotificationController';
 import facebookPassportRoutes from '../../config/facebookPassportRoutes';
 import googlePassportRoutes from '../../config/googlePassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
@@ -11,12 +12,14 @@ import confirmUser from '../../middlewares/confirmUser';
 import validateResourceId from '../../middlewares/validateResourceId';
 import validateAccess from '../../middlewares/validateAccess';
 
+
 const {
   validateUserSignUp,
   checkExistingEmail,
   validateUserLogin,
   validateUserUpdate,
-  validateFollowUserUrl
+  validateFollowUserUrl,
+  validateNotificationSetting
 } = UserValidation;
 const {
   signUp,
@@ -38,6 +41,10 @@ const {
 } = FollowController;
 
 const users = express.Router();
+// const router = express.Router();
+
+const { updateNotificationStatus } = NotificationController;
+
 
 users.get('/', (req, res) => {
   res.status(200)
@@ -130,4 +137,14 @@ users.get(
   verifyToken, deleteAccount
 );
 
+// user opt-in or opt-out of notification route
+users.put(
+  '/users',
+  verifyToken,
+  confirmUser,
+  validateNotificationSetting,
+  updateNotificationStatus
+);
+
+// export default router;
 export default users;

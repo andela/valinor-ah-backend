@@ -1,10 +1,14 @@
+import dotenv from 'dotenv';
 import Sequelize from 'sequelize';
 import models from '../models';
+import NotificationController from './NotificationController';
+import sendEmail from '../helpers/sendEmail';
 
+dotenv.config();
 const { Op } = Sequelize;
 
 const {
-  User, Comment, CommentEvent, CommentLike, CommentReply
+  User, Comment, CommentEvent, CommentLike, CommentReply, ArticleLike
 } = models;
 
 /**
@@ -37,6 +41,34 @@ class CommentController {
         User.findByPk(userId)
           .then((user) => {
             const { fullName, avatarUrl } = user;
+            ArticleLike.findAll({
+              where: {
+                articleId,
+                status: true
+              },
+              include: [{ model: User }]
+            })
+              .then((users) => {
+                // looping through the list of users who liked the article
+                users.map((userObj) => {
+                  sendEmail(userObj.User, {
+                    subject: 'New Article Reaction',
+                    body: `You have new article reaction. 
+                    Check it out at 
+                    ${process.env.API_BASE_URL}/article/${articleId}`
+                  });
+                  // add a new entry to notification events
+                  NotificationController.addNewNotificationEvent(
+                    'article reaction',
+                    userObj.User.id, user.id,
+                    'You have a new reaction on an article you liked',
+                    `${process.env.API_BASE_URL}/article/${articleId}`,
+                    false
+                  );
+                  return userObj;
+                });
+              });
+
             res.status(201).json({
               status: 'success',
               message: 'Comment added successfully',

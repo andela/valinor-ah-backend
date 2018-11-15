@@ -13,10 +13,9 @@ describe('Get one article likes value', () => {
         like.id.should.be.eql(1);
         like.userId.should.be.eql(1);
         like.articleId.should.be.eql(1);
-        like.status.should.be.eql(false);
-        done();
-      })
-      .catch(err => err);
+        like.status.should.be.eql(true);
+      });
+    done();
   });
   it('get the second record from ArticleLikes table', (done) => {
     ArticleLike
@@ -24,11 +23,10 @@ describe('Get one article likes value', () => {
       .then((like) => {
         like.should.be.a('object');
         like.id.should.be.eql(2);
-        like.userId.should.be.eql(1);
+        like.userId.should.be.eql(2);
         like.articleId.should.be.eql(2);
         like.status.should.be.eql(true);
-        done();
-      })
-      .catch(err => err);
+      });
+    done();
   });
 });

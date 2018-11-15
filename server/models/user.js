@@ -28,6 +28,11 @@ export default (sequelize, DataTypes) => {
       allowNull: true,
       type: DataTypes.STRING,
     },
+    notification: {
+      allowNull: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
     confirmEmail: {
       allowNull: false,
       type: DataTypes.BOOLEAN,
@@ -79,7 +84,8 @@ export default (sequelize, DataTypes) => {
       Bookmark,
       ReadingStats,
       ReportHistory,
-      CommentReply
+      CommentReply,
+      NotificationEvent
     } = models;
 
     User.belongsTo(Role, {
@@ -118,7 +124,16 @@ export default (sequelize, DataTypes) => {
       through: Follow,
       foreignKey: 'followerId'
     });
-
+    User.belongsToMany(User, {
+      as: 'receiverId',
+      through: NotificationEvent,
+      foreignKey: 'receiverId'
+    });
+    User.belongsToMany(User, {
+      as: 'senderId',
+      through: NotificationEvent,
+      foreignKey: 'senderId'
+    });
     User.hasMany(Bookmark, {
       as: 'myBookmarks',
       foreignKey: 'userId'
