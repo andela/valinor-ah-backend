@@ -4,7 +4,8 @@ export const articleWithValidData = {
   description: 'This is my story at the beach',
   body: 'Once upon a time in Mexico.. there was ...',
   readTime: 30000,
-  userId: 1
+  userId: 1,
+  categoryId: 2
 };
 
 export const articleWithInValidData = {
@@ -17,7 +18,8 @@ export const articleInputValid = {
   title: 'How to write you name',
   description: 'This article talks about how to write your name',
   body: 'let\'s talk about names, what is your name?',
-  tags: ['football', 'naming', 'conventions']
+  tags: ['football', 'naming', 'conventions'],
+  categoryId: 1,
 };
 
 

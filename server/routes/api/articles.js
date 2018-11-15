@@ -19,16 +19,33 @@ const {
   likeOrDislikeArticle,
 } = ArticleController;
 
-articles.post('/articles', verifyToken, validateArticleInput, createArticle);
+// post an article
+articles.post(
+  '/articles',
+  verifyToken,
+  validateArticleInput,
+  createArticle
+);
 
-articles.get('/articles/:slug', getAnArticle);
+// get all articles, search articles, filter articles
+articles.get(
+  '/articles/category/:categoryName',
+  validateQuery,
+  queryGenerator,
+  fetchAllArticles
+);
 
-articles.get('/articles', validateQuery, queryGenerator, fetchAllArticles);
-
-// routes to like or dislike articles
+// get article by slug or id
+articles.get(
+  '/articles/:slug',
+  getAnArticle
+);
+// like or dislike articles
 articles.post(
   '/articles/:articleId/reaction/:action',
-  verifyToken, validateResourceId, likeOrDislikeArticle
+  verifyToken,
+  validateResourceId,
+  likeOrDislikeArticle
 );
 
 export default articles;
