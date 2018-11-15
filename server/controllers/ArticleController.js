@@ -8,6 +8,9 @@ import addMetaToArticle from '../helpers/addMetaToArticle';
 import addTagsToArticle from '../helpers/addTagsToArticle';
 import { deleteArticle, updateStatus } from '../helpers/deleteUtils';
 import errorResponse from '../helpers/errorResponse';
+import NotificationController from './NotificationController';
+
+const { addNewNotificationEvent } = NotificationController;
 
 const {
   Article,
@@ -450,6 +453,29 @@ class ArticleController {
       const articleLikeId = articleLike.dataValues.id;
 
       if (created) {
+        const type = 'Like';
+        Article
+          .findOne({
+            where: { id: articleId },
+            include: [{ model: User, as: 'author' }]
+          })
+          .then((article) => {
+            const author = article.dataValues.author.dataValues;
+            const authorId = article.dataValues.author.dataValues.id;
+
+            addNewNotificationEvent(
+              'article reaction',
+              authorId,
+              userId,
+              'Someone liked your article',
+              `${process.env.API_BASE_URL}/articles/${articleId}`,
+              false,
+              author,
+              type
+            );
+          })
+          .catch(err => err);
+
         // if like/dislike was added
         return res.status(201).json({
           status: 'success',

@@ -5,6 +5,9 @@ import getFollowViews from '../helpers/getfollowViews';
 import NotificationController from './NotificationController';
 import sendEmail from '../helpers/sendEmail';
 
+const { addNewNotificationEvent } = NotificationController;
+let type;
+
 dotenv.config();
 
 const { User, Article, Follow } = models;
@@ -66,15 +69,17 @@ class FollowController {
                       Check it out at ${process.env.API_BASE_URL}/users/${id}`
                     }
                   );
-
                   // TODO 2: Also add a new entry to notification events
-                  NotificationController.addNewNotificationEvent(
+                  type = 'Follow';
+                  addNewNotificationEvent(
                     'follows',
                     authorId,
                     id,
-                    'You have a new follower',
+                    'You have a new follower/unfollower',
                     `${process.env.API_BASE_URL}/users/${id}`,
-                    false
+                    false,
+                    author,
+                    type
                   );
                   return successResponse('you followed this author', true);
                 }
@@ -97,9 +102,16 @@ class FollowController {
                         }
                       );
                       // TODO 4: Also add a new entry to notification events
-                      NotificationController.deleteNotificationEventEntry(
+                      type = 'Unfollow';
+                      addNewNotificationEvent(
+                        'unfollows',
                         authorId,
-                        id
+                        id,
+                        'Someone unfollowed you',
+                        `${process.env.API_BASE_URL}/users/${id}`,
+                        false,
+                        author,
+                        type
                       );
                       return successResponse(
                         'you unfollowed this author',

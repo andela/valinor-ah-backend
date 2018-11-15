@@ -87,4 +87,36 @@ const deleteAccountMessage = (token) => {
   return message;
 };
 
-export { loginLinkMessage, verifyEmailMessage, deleteAccountMessage };
+const follow = (senderId, type) => ({
+  subject: `New ${type}`,
+  body: `You have a new follower.
+  Check it out at ${process.env.API_BASE_URL}/users/${senderId}`
+});
+
+const unfollow = (senderId, type) => ({
+  subject: `New ${type}`,
+  body: `Someone has unfollowed you.
+  Check it out at ${process.env.API_BASE_URL}/users/${senderId}`
+});
+
+const like = (url, type) => ({
+  subject: `New ${type}`,
+  body: `You have a new like.
+  Check it out at ${url}`
+});
+
+const comment = (url, type) => ({
+  subject: `New ${type}`,
+  body: `You have a new comment.
+  Check it out at ${url}`
+});
+
+export {
+  loginLinkMessage,
+  verifyEmailMessage,
+  follow,
+  unfollow,
+  like,
+  comment,
+  deleteAccountMessage
+};

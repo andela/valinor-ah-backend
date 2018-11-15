@@ -12,7 +12,6 @@ import confirmUser from '../../middlewares/confirmUser';
 import validateResourceId from '../../middlewares/validateResourceId';
 import validateAccess from '../../middlewares/validateAccess';
 
-
 const {
   validateUserSignUp,
   checkExistingEmail,
@@ -146,5 +145,4 @@ users.put(
   updateNotificationStatus
 );
 
-// export default router;
 export default users;

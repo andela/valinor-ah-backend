@@ -68,7 +68,7 @@ describe('Testing NotificationEvent model', () => {
         }
       })
       .then((events) => {
-        events.count.should.be.eql(3);
+        events.count.should.be.eql(7);
         done();
       });
   });

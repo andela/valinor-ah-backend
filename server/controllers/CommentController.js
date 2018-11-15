@@ -57,13 +57,18 @@ class CommentController {
                     Check it out at 
                     ${process.env.API_BASE_URL}/article/${articleId}`
                   });
+                  const type = 'Comment';
+
                   // add a new entry to notification events
                   NotificationController.addNewNotificationEvent(
                     'article reaction',
-                    userObj.User.id, user.id,
+                    userObj.User.id,
+                    user.id,
                     'You have a new reaction on an article you liked',
                     `${process.env.API_BASE_URL}/article/${articleId}`,
-                    false
+                    false,
+                    user,
+                    type
                   );
                   return userObj;
                 });

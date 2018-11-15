@@ -10,6 +10,7 @@ chai.use(chaiHttp);
 
 const updateNotificationUrl = '/api/v1/users';
 const confirmUserEmailUrl = '/api/v1/users/verify?token=';
+const getUserNotificationsUrl = '/api/v1/notifications';
 
 const userData = {};
 userData.token = createToken(2, '5m');
@@ -39,9 +40,8 @@ describe('Test Notification Controller', () => {
       .end((err, res) => {
         res.should.have.status(403);
         res.body.should.be.an('object');
-        res.body.errors.message.should.be.eql(
-          'please confirm your email then try again'
-        );
+        res.body.errors.message.should.be
+          .eql('please confirm your email then try again');
         done();
       });
   });
@@ -81,6 +81,30 @@ describe('Test Notification Controller', () => {
         res.should.have.status(200);
         res.body.should.be.an('object');
         res.body.message.should.be.deep.equal('You have successfully opt-in');
+        done();
+      });
+  });
+
+  it('should not get all notifications if user has no token', (done) => {
+    chai.request(app)
+      .get(getUserNotificationsUrl)
+      .end((err, res) => {
+        res.should.be.an('object');
+        res.status.should.be.eql(401);
+        res.body.message.should.eql('please provide a token');
+        done();
+      });
+  });
+
+  it('should get all notifications for a user', (done) => {
+    chai.request(app)
+      .get(getUserNotificationsUrl)
+      .set('Authorization', userData.token)
+      .end((err, res) => {
+        res.should.be.an('object');
+        res.status.should.be.eql(200);
+        res.body.message.should
+          .eql('Notifications retrieved successfully');
         done();
       });
   });

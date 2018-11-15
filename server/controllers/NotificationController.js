@@ -1,7 +1,14 @@
+/* eslint-disable max-len */
 import models from '../models';
+import sendEmail from '../helpers/sendEmail';
+import {
+  follow,
+  unfollow,
+  like,
+  comment
+} from '../helpers/emailTemplates';
 
 const { NotificationEvent, User } = models;
-
 
 /**
  * @class NOtificationController
@@ -18,11 +25,11 @@ class NotificationController {
    * @param {string} body - the body of the notification
    * @param {string} url -
    * @param {boolean} status - status of the notification (read or unread)
+   * @param {user} user - author of the article
+   * @param {type} type - the type of notification
    * @returns {object} - returns object of the entry
    */
-  static addNewNotificationEvent(
-    notification, receiverId, senderId, body, url, status
-  ) {
+  static addNewNotificationEvent(notification, receiverId, senderId, body, url, status, user, type) {
     let notificationId;
     switch (notification) {
       case 'follows':
@@ -43,6 +50,31 @@ class NotificationController {
     })
       .then(event => event)
       .catch(err => err);
+
+    // TODO 3: notify the author with authorId that
+    // follower with followerId unfollows him/her
+    let messageObject;
+
+    switch (type) {
+      case 'Follow':
+        messageObject = follow(senderId, type);
+        break;
+      case 'Unfollow':
+        messageObject = unfollow(senderId, type);
+        break;
+      case 'Like':
+        messageObject = like(url, type);
+        break;
+      case 'Comment':
+        messageObject = comment(url, type);
+        break;
+      default:
+    }
+
+    sendEmail(
+      user,
+      messageObject
+    );
   }
 
   /**
@@ -95,6 +127,26 @@ class NotificationController {
             message: [err.message]
           }
         }));
+  }
+
+  /**
+   * @description allow a user to opt in or out of notification
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @return {void} -
+   */
+  static getUserNotifications(req, res) {
+    const { id } = req.userData;
+
+    NotificationEvent.findAll({ where: { receiverId: id } })
+      .then((notifications) => {
+        res.status(200).json({
+          status: 'success',
+          message: 'Notifications retrieved successfully',
+          notifications
+        });
+      })
+      .catch();
   }
 }
 

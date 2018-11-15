@@ -6,11 +6,19 @@ import comments from './comments';
 import ratings from './ratings';
 import bookmarks from './bookmarks';
 import reports from './reports';
+import notifications from './notifications';
 
 const router = express.Router();
-// const router = express.Router();
 
-router.use('/', bookmarks, users, articles, comments, ratings, reports);
+router.use(
+  '/',
+  bookmarks,
+  users,
+  articles,
+  comments,
+  ratings,
+  reports,
+  notifications
+);
 
-// router.use('/', users, articles, ratings, comments, );
 export default router;
