@@ -59,6 +59,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'articleId',
     });
     Article.hasMany(Bookmark, {
+      as: 'bookmarkedArticles',
       foreignKey: 'articleId',
     });
     Article.hasMany(ArticleTag, {

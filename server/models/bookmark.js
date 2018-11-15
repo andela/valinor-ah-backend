@@ -6,10 +6,12 @@ export default (sequelize) => {
     const { User, Article } = models;
     Bookmark.belongsTo(User, {
       foreignKey: 'userId',
+      as: 'myBookmarks',
       onDelete: 'CASCADE'
     });
     Bookmark.belongsTo(Article, {
       foreignKey: 'articleId',
+      as: 'bookmarkedArticles',
       onDelete: 'CASCADE'
     });
   };
