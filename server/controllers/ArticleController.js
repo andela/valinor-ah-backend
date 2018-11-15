@@ -4,7 +4,8 @@ import Sequelize from 'sequelize';
 import readingTime from 'reading-time';
 
 import models from '../models';
-import numberOfArticles from '../helpers/numberOfArticles';
+import cleanupArticlesResponse from '../helpers/cleanupArticlesResponse';
+import addMetaToArticle from '../helpers/addMetaToArticle';
 
 const {
   Article, User, ArticleLike, Tag, ArticleTag, Comment, Bookmark
@@ -153,13 +154,12 @@ class ArticleController {
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     const { meta } = req;
-    console.log(meta);
     Article
       .findAndCountAll(meta)
-      .then((result) => {
+      .then(async (result) => {
         const { rows, count } = result;
         const pageCount = Math.ceil(count / +limit);
-        const articlesOnPage = numberOfArticles(count, +limit, +page);
+        const articlesOnPage = rows.length;
         if (count < 1) {
           return res.status(404).json({
             errors: {
@@ -176,13 +176,15 @@ class ArticleController {
             }
           });
         }
+        const addMeta = await addMetaToArticle(rows);
+        const articles = cleanupArticlesResponse(addMeta);
         return res.status(200).json({
           status: 'success',
           totalPages: pageCount,
           currentPage: +page,
           totalArticles: count,
           articlesOnPage,
-          articles: rows
+          articles
         });
       })
       .catch(err => res.status(500)
@@ -206,6 +208,7 @@ class ArticleController {
       description,
       body,
       tags,
+      categoryId
     } = req.body;
     const userId = req.userData.id;
     // creata a unique slug
@@ -223,6 +226,7 @@ class ArticleController {
         body,
         readTime: stats.time,
         userId,
+        categoryId
       });
     } catch (err) {
       next(err);

@@ -43,6 +43,7 @@ export default {
     categoryId: {
       type: Sequelize.INTEGER,
       onUpdate: 'CASCADE',
+      allowNull: false,
       references: {
         model: 'Categories',
         key: 'id'

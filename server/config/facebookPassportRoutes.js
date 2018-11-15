@@ -22,7 +22,7 @@ passport.deserializeUser((id, done) => {
 const facebookOptions = {
   clientID: process.env.FACEBOOK_APP_ID,
   clientSecret: process.env.FACEBOOK_APP_SECRET,
-  callbackURL: 'http://localhost:3000/api/v1/auth/facebook/callback',
+  callbackURL: `${process.env.API_BASE_URL}/auth/facebook/callback`,
   profileFields: ['id', 'emails', 'name', 'picture.type(large)']
 };
 passport.use(new FacebookStrategy(facebookOptions, facebookCallback));

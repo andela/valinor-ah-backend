@@ -20,17 +20,17 @@ describe('Articles Controller Tests', () => {
 
   // FETCH ALL ARTICLES
   describe('Fetch all articles', () => {
-    it('test /api/v1/articles route', (done) => {
+    it('test /api/v1/articles/category/all route', (done) => {
       chai.request(app)
-        .get('/api/v1/articles')
+        .get('/api/v1/articles/category/all')
         .end((err, res) => {
           should.equal(res.body.articles[0].title, 'Valinor');
           should.equal(res.body.articles[0]
             .slug, 'team-valinore');
           should.equal(res.body.articles[0]
             .description, 'Team valinor is a simulation team');
-          should.equal(res.body.articles[0].author.fullName, 'John Mike');
-          should.equal(res.body.articles[0].author.avatarUrl, null);
+          should.equal(res.body.articles[0].author, 'John Mike');
+          should.equal(res.body.articles[0].authorAvatar, null);
           should.equal(res.status, 200);
           done();
         });
@@ -39,7 +39,7 @@ describe('Articles Controller Tests', () => {
       'should return error if page number & limit are not integers',
       (done) => {
         chai.request(app)
-          .get('/api/v1/articles?page=a&limit=u')
+          .get('/api/v1/articles/category/all?page=a&limit=u')
           .end((err, res) => {
             res.body.should.deep.equal({
               errors: {
@@ -60,7 +60,7 @@ describe('Articles Controller Tests', () => {
     );
     it('should return error if page number & limit are less than 1', (done) => {
       chai.request(app)
-        .get('/api/v1/articles?page=0&limit=0')
+        .get('/api/v1/articles/category/all?page=0&limit=0')
         .end((err, res) => {
           res.body.should.deep.equal({
             errors: {
@@ -78,7 +78,7 @@ describe('Articles Controller Tests', () => {
     });
     it('should return error if maximum pages are reached', (done) => {
       chai.request(app)
-        .get('/api/v1/articles?page=9&limit=10')
+        .get('/api/v1/articles/category/all?page=9&limit=10')
         .end((err, res) => {
           should.equal(
             res.body.errors.status,
@@ -96,16 +96,103 @@ describe('Articles Controller Tests', () => {
       'should return error if page & limit queries are not provided',
       (done) => {
         chai.request(app)
-          .get('/api/v1/articles')
+          .get('/api/v1/articles/category/fashion')
           .end((err, res) => {
             should.equal(res.body.articles[0].title, 'Valinor');
             should.equal(res.body.articles[0]
-              .slug, 'team-valinore');
+              .slug, 'team-valinord');
             should.equal(res.body.articles[0]
               .description, 'Team valinor is a simulation team');
-            should.equal(res.body.articles[0].author.fullName, 'John Mike');
-            should.equal(res.body.articles[0].author.avatarUrl, null);
+            should.equal(res.body.articles[0].author, 'John Mike');
+            should.equal(res.body.articles[0].authorAvatar, null);
             should.equal(res.status, 200);
+            done();
+          });
+      }
+    );
+    it(
+      'should return error if category does not exist',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/kljdnf')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              status: 'failure',
+              errors: {
+                message: 'this category does not exist'
+              }
+            });
+            should.equal(res.status, 404);
+            done();
+          });
+      }
+    );
+    it(
+      'should return articles with author query',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/all?author=1')
+          .end((err, res) => {
+            should.equal(res.body.articles[0].title, 'My story at the beach');
+            should.equal(res.status, 200);
+            done();
+          });
+      }
+    );
+    it(
+      'should return articles with tag query',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/all?tag=1 2')
+          .end((err, res) => {
+            should.equal(res.body.articles[0].title, 'Jambolani');
+            should.equal(res.status, 200);
+            done();
+          });
+      }
+    );
+    it(
+      'should return articles with tag query',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/all?tag=12')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              status: 'failure',
+              errors: {
+                message: 'this tag does not match any existing article'
+              }
+            });
+            should.equal(res.status, 404);
+            done();
+          });
+      }
+    );
+    it(
+      'should return search results',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/all?search=valinor')
+          .end((err, res) => {
+            should.equal(res.body.articles[0].title, 'Valinor');
+            should.equal(res.status, 200);
+            done();
+          });
+      }
+    );
+    it(
+      'should return search results',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/fashion?author=3')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              errors: {
+                status: 'failure',
+                message: 'no articles found'
+              }
+            });
+            should.equal(res.status, 404);
             done();
           });
       }
