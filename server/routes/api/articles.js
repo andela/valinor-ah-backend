@@ -19,7 +19,7 @@ const {
   getAnArticle,
   fetchAllArticles,
   likeOrDislikeArticle,
-  reportArticle
+  reportArticle,
 } = ArticleController;
 
 // post an article
@@ -58,8 +58,8 @@ articles.post(
   likeOrDislikeArticle
 );
 
-// routes to report articles
-articles.post('/articles/:articleId/report',
-  verifyToken, validateReportArticle, reportArticle);
+// route to report articles
+articles.post('/articles/:articleId/reports',
+  validateResourceId, verifyToken, validateReportArticle, reportArticle);
 
 export default articles;

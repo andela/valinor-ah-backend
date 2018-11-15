@@ -123,10 +123,12 @@ export default (sequelize, DataTypes) => {
     });
 
     User.hasMany(ReportHistory, {
-      foreignKey: 'authortId'
+      as: 'author',
+      foreignKey: 'authorId'
     });
 
     User.hasMany(ReportHistory, {
+      as: 'reporter',
       foreignKey: 'reporterId'
     });
   };

@@ -390,8 +390,8 @@ class ArticleController {
   }
 
   /**
-    * @description - This method logs in user and return a token.
-    * @param {object} req - The request object bearing the email and password.
+    * @description - This method adds a new report.
+    * @param {object} req - The request object with report body and type.
     * @param {object} res - The response object that is returned as json.
     * @returns {object} - The object with message.
     * @memberOf UserController
@@ -409,6 +409,13 @@ class ArticleController {
           }
         })
           .then((result) => {
+            if (!result) {
+              return res.status(404).json({
+                status: 'failure',
+                message: 'The type you have provided does not exist'
+              });
+            }
+
             const typeId = result.id;
 
             if (article.userId === userId) {

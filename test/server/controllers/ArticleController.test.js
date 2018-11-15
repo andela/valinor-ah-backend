@@ -9,7 +9,8 @@ import {
   articleInputInvalidTags,
   articleReportData,
   articleReportDataNoReportBody,
-  articleReportDataNoType
+  articleReportDataNoType,
+  articleReportDataBadType
 } from '../../../mockdata/articleMockData';
 
 const should = chai.should();
@@ -724,11 +725,11 @@ describe('Articles Controller Tests', () => {
     });
   });
 
-  describe('Report and article', () => {
+  describe('Report an article', () => {
     const token = createToken(1, '1d');
     it('should throw error if type field is missing', (done) => {
       chai.request(app)
-        .post(`${articleBaseUrl}/2/report`)
+        .post(`${articleBaseUrl}/2/reports`)
         .set('authorization', token)
         .send(articleReportDataNoType)
         .end((err, res) => {
@@ -741,7 +742,7 @@ describe('Articles Controller Tests', () => {
 
     it('should throw error if report body field is missing', (done) => {
       chai.request(app)
-        .post(`${articleBaseUrl}/2/report`)
+        .post(`${articleBaseUrl}/2/reports`)
         .set('authorization', token)
         .send(articleReportDataNoReportBody)
         .end((err, res) => {
@@ -752,9 +753,22 @@ describe('Articles Controller Tests', () => {
         });
     });
 
+    it('should not add report if type does not exist', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/2/reports`)
+        .set('authorization', token)
+        .send(articleReportDataBadType)
+        .end((err, res) => {
+          res.status.should.be.eql(404);
+          res.body.message.should.be
+            .eql('The type you have provided does not exist');
+          done();
+        });
+    });
+
     it('should not post a report if user is unauthenticated', (done) => {
       chai.request(app)
-        .post(`${articleBaseUrl}/1/report`)
+        .post(`${articleBaseUrl}/1/reports`)
         .end((err, res) => {
           res.status.should.be.eql(401);
           res.body.status.should.be.eql('unauthorized');
@@ -765,7 +779,7 @@ describe('Articles Controller Tests', () => {
 
     it('should not post a report if user wrote the article', (done) => {
       chai.request(app)
-        .post(`${articleBaseUrl}/1/report`)
+        .post(`${articleBaseUrl}/1/reports`)
         .set('authorization', token)
         .send(articleReportData)
         .end((err, res) => {
@@ -779,7 +793,7 @@ describe('Articles Controller Tests', () => {
 
     it('should report an article', (done) => {
       chai.request(app)
-        .post(`${articleBaseUrl}/2/report`)
+        .post(`${articleBaseUrl}/2/reports`)
         .set('authorization', token)
         .send(articleReportData)
         .end((err, res) => {
