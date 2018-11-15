@@ -7,7 +7,8 @@ export default (sequelize, DataTypes) => {
   ReportType.associate = (models) => {
     const { ReportHistory } = models;
 
-    ReportType.hasMany(ReportHistory);
+    ReportType.hasMany(ReportHistory,
+      { as: 'type', foreignKey: 'typeId' });
   };
 
   return ReportType;

@@ -10,7 +10,7 @@ export default (sequelize, DataTypes) => {
     const { ReportType, User } = models;
 
     ReportHistory.belongsTo(ReportType, {
-      as: 'category'
+      foreignKey: 'typeId'
     });
 
     ReportHistory.belongsTo(User, {

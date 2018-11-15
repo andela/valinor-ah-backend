@@ -47,3 +47,8 @@ export const articleReportDataNoReportBody = {
 export const articleReportDataNoType = {
   reportBody: 'He copied my work without attribution'
 };
+
+export const articleReportDataBadType = {
+  reportBody: 'He copied my work without attribution',
+  type: 'Plagiarizm'
+};
