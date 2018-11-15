@@ -103,6 +103,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'followerId'
     });
     User.hasMany(Bookmark, {
+      as: 'myBookmarks',
       foreignKey: 'userId'
     });
   };

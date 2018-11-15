@@ -7,7 +7,7 @@ import models from '../models';
 import numberOfArticles from '../helpers/numberOfArticles';
 
 const {
-  Article, User, ArticleLike, Tag, ArticleTag, Comment
+  Article, User, ArticleLike, Tag, ArticleTag, Comment, Bookmark
 } = models;
 const { Op } = Sequelize;
 /**
@@ -15,13 +15,97 @@ const { Op } = Sequelize;
  * @description Article related Operations
  */
 class ArticleController {
-/**
+  /**
  * @description
  * @param {object} req - request object
  * @param {object} res - response object
+ * @returns {object} - bookmarks an Article
+ */
+  static bookmarkArticle(req, res) {
+    const userId = req.userData.id;
+    const { articleId } = req.params;
+    Bookmark.findOrCreate({
+      where: {
+        userId,
+        articleId
+      }
+    })
+      .spread((returnedBookmarkedArticle, status) => {
+        if (!status) {
+          return Bookmark.destroy({
+            where: {
+              userId,
+              articleId
+            }
+          })
+            .then(() => res.status(200).json({
+              status: 'success',
+              message: 'Article unbookmarked',
+              bookmarkStatus: false
+            }));
+        }
+        if (returnedBookmarkedArticle) {
+          return res.status(200).json({
+            status: 'success',
+            message: 'Article bookmarked',
+            bookmarkStatus: true
+          });
+        }
+      });
+  }
+
+  /**
+ * @description gets bookmarked Article
+ * @param {object} req - request object
+ * @param {object} res - response object
+ * @returns {object} - json response
+ */
+  static getBookmarkedArticle(req, res) {
+    const userId = req.userData.id;
+    return Bookmark.findAll({
+      where: {
+        userId
+      },
+      include: [{
+        model: Article,
+        as: 'bookmarkedArticles',
+        include: [{
+          model: User,
+          as: 'author',
+          attributes: ['fullName', 'email', 'avatarUrl', 'bio', 'roleId']
+        }]
+      }
+      ],
+      order: [['id', 'DESC']]
+    }).then((returnedBookmarkedArticle) => {
+      if (!returnedBookmarkedArticle.length) {
+        return res.status(404).json({
+          status: 'failure',
+          errors: {
+            message: ['you currently have no bookmarked articles']
+          }
+        });
+      }
+      if (returnedBookmarkedArticle) {
+        const bookmarkedArticles = returnedBookmarkedArticle
+          .map(x => x.bookmarkedArticles);
+        return res.status(200).json({
+          status: 'success',
+          message: 'Bookmarked Articles fetched successfully',
+          bookmarkedArticles
+        });
+      }
+    });
+  }
+
+  /**
+ * @description
+ * @param {object} req - request object
+ * @param {object} res - response object
+ * @param {object} message - variable message
  * @returns {object} - returns an Article
  */
-  static getAnArticle(req, res) {
+  static getAnArticle(req, res, message) {
     const { slug } = req.params;
     Article.findOne({
       where: {
@@ -47,6 +131,7 @@ class ArticleController {
         }
         return res.status(200).json({
           status: 'success',
+          message,
           article
         });
       })

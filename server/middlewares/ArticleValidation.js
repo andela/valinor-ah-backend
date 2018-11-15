@@ -130,6 +130,21 @@ class ArticleValidation {
     ArticleValidation.validateLimitQuery(req);
     sendFormattedError(req, res, next, 400);
   }
+
+  /**
+    * @description - This method validates the params in url
+    * @param {object} req - The request object
+    * @param {object} res - The request object
+    * @param {function} next - callback to the next middleware
+    * @param {object} fieldName - The url param
+    * @returns {null} - returns nothing
+    * @memberOf ArticleValidation
+    * @static
+    */
+  static validateArticleUrl(req, res, next) {
+    UserValidation.validateUrlParams(req, 'articleId');
+    sendFormattedError(req, res, next);
+  }
 }
 
 export default ArticleValidation;

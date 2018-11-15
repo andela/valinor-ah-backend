@@ -503,4 +503,83 @@ describe('Articles Controller Tests', () => {
       });
     });
   });
+  describe('Testing bookmarks', () => {
+    it(`should throw error if user trys to fetch all 
+    his or her bookmarked articles`,
+    (done) => {
+      chai.request(app)
+        .get('/api/v1/users/bookmarks')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(404);
+          res.body.status.should.be.eql('failure');
+          res.body.errors.message[0].should.be
+            .eql('you currently have no bookmarked articles');
+          done();
+        });
+    });
+    it('A signed up user should bookmark an article', (done) => {
+      chai.request(app)
+        .post('/api/v1/users/bookmarks/1')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be.eql('Article bookmarked');
+          res.body.bookmarkStatus.should.be.eql(true);
+          done();
+        });
+    });
+    it('signed user should be able to fetch all bookmarked articles',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/users/bookmarks')
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            res.status.should.be.eql(200);
+            res.body.status.should.be.eql('success');
+            res.body.message.should.be
+              .eql('Bookmarked Articles fetched successfully');
+            res.body.bookmarkedArticles.length.should.be.eql(1);
+            done();
+          });
+      });
+    it('A signed up user should be able to unbookmark an article', (done) => {
+      chai.request(app)
+        .post('/api/v1/users/bookmarks/1')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be.eql('Article unbookmarked');
+          res.body.bookmarkStatus.should.be.eql(false);
+          done();
+        });
+    });
+    it('should throw error if user trys to bookmark with an invalid url',
+      (done) => {
+        chai.request(app)
+          .post('/api/v1/users/bookmarks/aa')
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            res.status.should.be.eql(422);
+            res.body.errors.articleId.should.be
+              .eql(['invalid articleId in url']);
+            done();
+          });
+      });
+    it(`should throw error if user trys to 
+    unbookmark articlewith an invalid url`,
+    (done) => {
+      chai.request(app)
+        .post('/api/v1/users/bookmarks/unbookmarkaa')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(422);
+          res.body.errors.articleId.should.be
+            .eql(['invalid articleId in url']);
+          done();
+        });
+    });
+  });
 });

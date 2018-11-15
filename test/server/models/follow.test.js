@@ -18,8 +18,8 @@ describe('Testing follow models - unit tests', () => {
         .then((followInformation) => {
           followInformation.authorId.should.be.eql(1);
           followInformation.followerId.should.be.eql(2);
+          done();
         });
-      done();
     }
   );
   it(
@@ -29,8 +29,8 @@ describe('Testing follow models - unit tests', () => {
         .then((followInformation) => {
           followInformation.authorId.should.be.eql(1);
           followInformation.followerId.should.be.eql(3);
+          done();
         });
-      done();
     }
   );
   it(
@@ -39,8 +39,8 @@ describe('Testing follow models - unit tests', () => {
       Follow.findAndCountAll({ where: { authorId: 1 } })
         .then((followInformation) => {
           followInformation.count.should.be.deep.eql(2);
+          done();
         });
-      done();
     }
   );
   it(
@@ -51,8 +51,8 @@ describe('Testing follow models - unit tests', () => {
           error.name.should.be.eql('SequelizeForeignKeyConstraintError');
           error.parent.detail.should.be
             .eql('Key (followerId)=(90000) is not present in table "Users".');
+          done();
         });
-      done();
     }
   );
   it(
@@ -61,8 +61,8 @@ describe('Testing follow models - unit tests', () => {
       User.findOne({ where: { id: 1 } })
         .then((userData) => {
           userData.followers.should.be.deep.eql(2);
+          done();
         });
-      done();
     }
   );
 });
