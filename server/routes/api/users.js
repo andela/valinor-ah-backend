@@ -8,6 +8,7 @@ import googlePassportRoutes from '../../config/googlePassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
 import twitterPassportRoutes from '../../config/twitterPassportRoutes';
 import confirmUser from '../../middlewares/confirmUser';
+import validateResourceId from '../../middlewares/validateResourceId';
 
 const {
   validateUserSignUp,
@@ -61,7 +62,8 @@ router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
 // update profile route
 router.patch(
   '/users/:userId',
-  verifyToken, confirmUser, validateUserUpdate, updateProfile
+  verifyToken, validateResourceId, confirmUser, validateUserUpdate,
+  updateProfile
 );
 
 // route for twitter authentication and login

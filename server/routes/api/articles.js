@@ -24,7 +24,6 @@ articles.get('/articles/:slug', getAnArticle);
 
 articles.get('/articles', validateQuery, fetchAllArticles);
 
-
 // routes to like or dislike articles
 articles.post(
   '/articles/:articleId/reaction/:action',

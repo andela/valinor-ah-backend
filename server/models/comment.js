@@ -4,7 +4,20 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     }
-  }, {});
+  }, {
+    hooks: {
+      beforeBulkUpdate: (comment) => {
+        sequelize.models.Comment.findOne({
+          where: { id: comment.where.id }
+        }).then((oldComment) => {
+          sequelize.models.CommentEvent.create({
+            commentId: oldComment.dataValues.id,
+            previousBody: oldComment.dataValues.body,
+          });
+        });
+      }
+    }
+  });
   Comment.associate = (models) => {
     // associations can be defined here
     const { Article, User, CommentLike } = models;
@@ -13,6 +26,7 @@ export default (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     });
     Comment.belongsTo(User, {
+      as: 'author',
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });

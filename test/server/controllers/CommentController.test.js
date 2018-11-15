@@ -3,7 +3,6 @@ import chai from 'chai';
 
 import app from '../../../app';
 
-
 chai.should();
 
 chai.use(chaiHttp);
@@ -67,6 +66,7 @@ describe('Testing comment on articles', () => {
       });
   });
 });
+
 describe('Testing like or disliked comment', () => {
   articleId = 10;
   commentId = 1;
@@ -239,5 +239,74 @@ describe('Testing like or disliked comment', () => {
         );
         done();
       });
+  });
+});
+
+describe('edit a comment', () => {
+  const editResult = {};
+  const comment = {};
+  before((done) => {
+    // edit a comment
+    chai.request(app)
+      .patch('/api/v1/comments/5')
+      .set('authorization', userData.token)
+      .send({
+        update: 'I meant it is Working prefectly',
+      })
+      .end((err, res) => {
+        editResult.status = res.status;
+        editResult.body = res.body;
+        done();
+      });
+  });
+
+  before((done) => {
+    // get the comment
+    chai.request(app)
+      .get('/api/v1/comments/5')
+      .set('authorization', userData.token)
+      .end((err, res) => {
+        comment.status = res.status;
+        comment.body = res.body.comment;
+        done();
+      });
+  });
+
+  it('should have a status of 200', () => {
+    editResult.status.should.be.equal(200);
+    comment.status.should.be.equal(200);
+  });
+  it('should have a success response', () => {
+    editResult.body.message.should.be.equal('1 comment successfully updated');
+    comment.body.current.id.should.be.equal(5);
+    comment.body.history.should.be.an('Array');
+    comment.body.history.length.should.be.equal(1);
+  });
+});
+
+describe('edit a comment with no change', () => {
+  const editNoChange = {};
+  before((done) => {
+    // edit the same comment again with no change
+    chai.request(app)
+      .patch('/api/v1/comments/5')
+      .set('authorization', userData.token)
+      .send({
+        update: 'I meant it is Working prefectly',
+      })
+      .end((err, res) => {
+        editNoChange.status = res.status;
+        editNoChange.body = res.body;
+        done();
+      });
+  });
+
+  it('should have a status of 409', () => {
+    editNoChange.status.should.be.equal(409);
+  });
+  it('should have a descriptive error response', () => {
+    editNoChange.body.errors.message.should.be
+      .equal('you must make changes to update');
+    editNoChange.body.status.should.be.equal('failure');
   });
 });
