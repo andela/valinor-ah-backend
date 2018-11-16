@@ -8,7 +8,7 @@ import cleanupArticlesResponse from '../helpers/cleanupArticlesResponse';
 import addMetaToArticle from '../helpers/addMetaToArticle';
 
 const {
-  Article, User, ArticleLike, Tag, ArticleTag, Comment, Bookmark
+  Article, User, ArticleLike, Tag, ArticleTag, Comment, Bookmark, Category
 } = models;
 const { Op } = Sequelize;
 /**
@@ -106,7 +106,7 @@ class ArticleController {
  * @param {object} message - variable message
  * @returns {object} - returns an Article
  */
-  static getAnArticle(req, res, message) {
+  static getAnArticle(req, res) {
     const { slug } = req.params;
     Article.findOne({
       where: {
@@ -114,15 +114,19 @@ class ArticleController {
       },
       include: [{
         model: User,
-        as: 'author',
-        attributes: ['fullName', 'email', 'avatarUrl', 'bio', 'roleId']
+        as: 'author'
       }, {
         model: Comment,
         as: 'comments',
+      },
+      {
+        model: Category,
+        as: 'category',
+        attributes: ['categoryName']
       }]
     })
-      .then((article) => {
-        if (!article) {
+      .then(async (result) => {
+        if (!result) {
           return res.status(404).json({
             status: 'failure',
             errors: {
@@ -130,10 +134,11 @@ class ArticleController {
             }
           });
         }
+        const addMeta = await addMetaToArticle([result]);
+        const article = cleanupArticlesResponse(addMeta);
         return res.status(200).json({
           status: 'success',
-          message,
-          article
+          article: article[0]
         });
       })
       .catch(err => res.status(500).json({

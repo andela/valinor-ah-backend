@@ -1,9 +1,9 @@
 import { Op } from 'sequelize';
 
 import models from '../models';
-import fetchCategoryId from '../helpers/findCategoryId';
+import fetchCategoryId from '../helpers/fetchCategoryId';
 import findTagArticle from '../helpers/findTagArticle';
-import getCorrolatingTags from '../helpers/getCorrolatingTags';
+import getCorrelatingTags from '../helpers/getCorrelatingTags';
 
 const {
   User,
@@ -11,7 +11,7 @@ const {
 } = models;
 
 /**
- * @description function to return number of articles on page
+ * @description function to generate query for fetch all articles controller
  * @param {object} req
    * @param {object} res
    * @param {object} next
@@ -35,8 +35,7 @@ const queryGenerator = async (req, res, next) => {
     include:
           [{
             model: User,
-            as: 'author',
-            attributes: ['fullName', 'avatarUrl']
+            as: 'author'
           },
           {
             model: Category,
@@ -67,18 +66,18 @@ const queryGenerator = async (req, res, next) => {
     if (categoryId instanceof Error) next(categoryId);
     query.categoryId = categoryId;
   }
-  if (author) query.userId = author;
+  if (author) query.userId = author.split(' ');
 
   if (tag) {
     const articleArr = [];
-    const tagArr = tag.split(' ');
+    const tagArr = tag.trim().split(' ');
     for (let x = 0; x < tagArr.length; x += 1) {
       const articelId = findTagArticle(tagArr[x]);
       articleArr.push(articelId);
     }
     const allArticleId = await Promise.all(articleArr);
     if (allArticleId[0] instanceof Error) next(allArticleId[0]);
-    const articleIds = getCorrolatingTags(allArticleId);
+    const articleIds = getCorrelatingTags(allArticleId);
     query.id = articleIds;
   }
 

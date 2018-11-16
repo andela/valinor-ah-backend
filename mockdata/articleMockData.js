@@ -3,8 +3,8 @@ export const articleWithValidData = {
   slug: 'My-story-at-the-beach-2324232323',
   description: 'This is my story at the beach',
   body: 'Once upon a time in Mexico.. there was ...',
-  readTime: 30000,
   userId: 1,
+  readTime: 3600,
   categoryId: 2
 };
 

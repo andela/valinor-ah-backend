@@ -105,15 +105,52 @@ class ArticleValidation {
   }
 
   /**
-   * Validate the Article input field
+   * This method validates the tag query
    * @param {object} req - The request object
-   * @param {object} res - The response object
-   * @param {object} next - The callback function to the next middleware.
-   * @return {void}
+   * @returns {void}
    */
-  static validateArticleCommentInput(req, res, next) {
-    ArticleValidation.validateBody(req);
-    sendFormattedError(req, res, next);
+  static validateTagQuery(req) {
+    if (req.query.tag) {
+      // custom validation to check if tags are an strings
+      req.checkQuery(
+        'tag',
+        'tag query must be an integer'
+      )
+        .custom((tag) => {
+          const tags = /^(?:\d{1,}\s)*[0-9]{1,}$/.test(tag.trim());
+          if (tags) return true;
+        });
+    }
+  }
+
+  /**
+   * This method validates the author query
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateAuthorQuery(req) {
+    if (req.query.author) {
+      req.checkQuery(
+        'author',
+        'author query must be an integer'
+      )
+        .custom((author) => {
+          const authors = /^(?:\d{1,}\s)*[0-9]{1,}$/.test(author.trim());
+          if (authors) return true;
+        });
+    }
+  }
+
+  /**
+   * This method validates the category parameter
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateCategoryParams(req) {
+    req.checkParams(
+      'categoryName',
+      'category parameter can only contain alphabets'
+    ).optional({ checkFalsy: false }).isAlpha();
   }
 
   /**
@@ -128,21 +165,21 @@ class ArticleValidation {
   static validateQuery(req, res, next) {
     ArticleValidation.validatePageQuery(req);
     ArticleValidation.validateLimitQuery(req);
+    ArticleValidation.validateTagQuery(req);
+    ArticleValidation.validateAuthorQuery(req);
+    ArticleValidation.validateCategoryParams(req);
     sendFormattedError(req, res, next, 400);
   }
 
   /**
-    * @description - This method validates the params in url
-    * @param {object} req - The request object
-    * @param {object} res - The request object
-    * @param {function} next - callback to the next middleware
-    * @param {object} fieldName - The url param
-    * @returns {null} - returns nothing
-    * @memberOf ArticleValidation
-    * @static
-    */
-  static validateArticleUrl(req, res, next) {
-    UserValidation.validateUrlParams(req, 'articleId');
+    * @description - Validate the Article input field
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @param {object} next - The callback function to the next middleware.
+   * @return {void}
+   */
+  static validateArticleCommentInput(req, res, next) {
+    ArticleValidation.validateBody(req);
     sendFormattedError(req, res, next);
   }
 }

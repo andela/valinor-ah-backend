@@ -3,7 +3,7 @@
  * @param {array} arr
    * @returns {array} array of articleId's
 */
-const getCorrolatingTags = (arr) => {
+const getCorrelatingTags = (arr) => {
   const allLength = arr.length;
   if (arr.length < 2) {
     if (arr[0].length < 2) return arr[0][0];
@@ -32,4 +32,4 @@ const getCorrolatingTags = (arr) => {
   return result;
 };
 
-export default getCorrolatingTags;
+export default getCorrelatingTags;
