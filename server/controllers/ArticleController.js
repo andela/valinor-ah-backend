@@ -222,6 +222,7 @@ class ArticleController {
     const stats = readingTime(body);
 
     let article;
+    let user;
     try {
       // create an article
       article = await Article.create({
@@ -233,17 +234,29 @@ class ArticleController {
         userId,
         categoryId
       });
+      user = await User.findByPk(userId);
     } catch (err) {
       next(err);
     }
-
+    const {
+      fullName, email, avatarUrl, bio, roleId
+    } = user;
     // article successfully created
     if (article) {
       const articleData = article.dataValues;
       articleData.tags = tags;
       res.status(201).json({
         status: 'success',
-        article: articleData,
+        article: {
+          ...articleData,
+          author: {
+            fullName,
+            email,
+            avatarUrl,
+            bio,
+            roleId,
+          }
+        }
       });
 
       if (tags) {
