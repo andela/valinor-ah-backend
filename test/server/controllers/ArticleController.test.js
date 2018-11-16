@@ -351,6 +351,8 @@ describe('Articles Controller Tests', () => {
       it('should return the expected body', () => {
         result.body.status.should.equal('success');
         result.body.article.title.should.equal(articleInputValid.title);
+        result.body.article.author.fullName.should.be.eql('Not Tani');
+        result.body.article.author.email.should.be.eql('n.tani@whowa.com');
       });
     });
 
