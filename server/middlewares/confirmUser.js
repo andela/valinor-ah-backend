@@ -9,7 +9,7 @@ const confirmUser = async (req, res, next) => {
   try {
     user = await User.findByPk(id);
   } catch (error) {
-    next(error);
+    return next(error);
   }
 
   if (!user.dataValues.confirmEmail) {

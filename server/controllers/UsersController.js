@@ -269,6 +269,47 @@ class UsersController {
         next(err);
       });
   }
+
+  /**
+   * @description - This method gets a single user profile
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static async getSingleProfile(req, res, next) {
+    // requester id
+    const requesterId = req.userData.id;
+    // profile id
+    const { userId } = req.params;
+
+    let userProfile;
+    try {
+      // get the single user by id
+      userProfile = await User.findByPk(userId, {
+        raw: true,
+      });
+    } catch (err) {
+      next(err);
+    }
+
+    // delete unneeded information
+    delete userProfile.facebookId;
+    delete userProfile.twitterId;
+    delete userProfile.googleId;
+
+    // check if the requester is not the owner of the user profile
+    if (requesterId !== +userId) {
+      // delete sensitive information
+      delete userProfile.email;
+      delete userProfile.updatedAt;
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      userProfile,
+    });
+  }
 }
 
 export default UsersController;
