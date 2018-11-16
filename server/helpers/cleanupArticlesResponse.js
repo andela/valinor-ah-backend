@@ -16,26 +16,47 @@ const cleanupArticlesResponse = (rows) => {
       createdAt,
       updatedAt,
       author,
+      readTime,
       category,
       likes,
       dislikes,
-      comments
+      comments,
+      commentsCount
     } = rows[x].dataValues;
+    const {
+      fullName,
+      avatarUrl,
+      roleId,
+      bio,
+      followers,
+      following,
+      email
+    } = author;
     const newObj = {
       id,
       title,
       slug,
       description,
       body,
+      readTime,
       category: category.categoryName,
-      author: author.fullName,
-      authorAvatar: author.avatarUrl,
       rating,
       likes,
       dislikes,
-      comments,
+      commentsCount,
       createdAt,
       updatedAt,
+      author: {
+        id: author.id,
+        fullName,
+        avatarUrl,
+        roleId,
+        email,
+        bio,
+        followers,
+        following
+      },
+      comments,
     };
     result.push(newObj);
   }

@@ -29,8 +29,8 @@ describe('Articles Controller Tests', () => {
             .slug, 'team-valinore');
           should.equal(res.body.articles[0]
             .description, 'Team valinor is a simulation team');
-          should.equal(res.body.articles[0].author, 'John Mike');
-          should.equal(res.body.articles[0].authorAvatar, null);
+          should.equal(res.body.articles[0].author.fullName, 'John Mike');
+          should.equal(res.body.articles[0].author.avatarUrl, null);
           should.equal(res.status, 200);
           done();
         });
@@ -103,8 +103,8 @@ describe('Articles Controller Tests', () => {
               .slug, 'team-valinord');
             should.equal(res.body.articles[0]
               .description, 'Team valinor is a simulation team');
-            should.equal(res.body.articles[0].author, 'John Mike');
-            should.equal(res.body.articles[0].authorAvatar, null);
+            should.equal(res.body.articles[0].author.fullName, 'John Mike');
+            should.equal(res.body.articles[0].author.avatarUrl, null);
             should.equal(res.status, 200);
             done();
           });
@@ -197,6 +197,60 @@ describe('Articles Controller Tests', () => {
           });
       }
     );
+    it(
+      'should error if author query is not an integer',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/fashion?author=e')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              errors: {
+                author: [
+                  'author query must be an integer'
+                ]
+              }
+            });
+            should.equal(res.status, 400);
+            done();
+          });
+      }
+    );
+    it(
+      'should error if tag query is not an integer',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/fashion?author=1&tag=s')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              errors: {
+                tag: [
+                  'tag query must be an integer'
+                ]
+              }
+            });
+            should.equal(res.status, 400);
+            done();
+          });
+      }
+    );
+    it(
+      'should error if category parameter is not an integer',
+      (done) => {
+        chai.request(app)
+          .get('/api/v1/articles/category/83493')
+          .end((err, res) => {
+            res.body.should.deep.equal({
+              errors: {
+                categoryName: [
+                  'category parameter can only contain alphabets'
+                ]
+              }
+            });
+            should.equal(res.status, 400);
+            done();
+          });
+      }
+    );
   });
 
   describe('Testing get an article', () => {
@@ -234,16 +288,11 @@ describe('Articles Controller Tests', () => {
           res.body.article.id.should.be.eql(2);
           res.body.article.title.should.be.eql('Jambolani');
           res.body.article.slug.should.be.eql('south-africa-201');
-          res.body.article.userId.should.be.eql(2);
           res.body.article.description.should.be
             .eql('Jambolani is the fifa ball');
-          res.body.article.author.email.should.be
-            .eql('johnmike@andela.com');
           res.body.article.author.fullName.should.be
             .eql('John Mike');
-          res.body.article.author.roleId.should.be.eql(3);
           should.equal(res.body.article.author.avatarUrl, null);
-          should.equal(res.body.article.author.bio, null);
           done();
         });
     });
@@ -254,16 +303,9 @@ describe('Articles Controller Tests', () => {
           res.body.article.id.should.be.eql(2);
           res.body.article.title.should.be.eql('Jambolani');
           res.body.article.slug.should.be.eql('south-africa-201');
-          res.body.article.userId.should.be.eql(2);
-          res.body.article.description.should.be
-            .eql('Jambolani is the fifa ball');
-          res.body.article.author.email.should.be
-            .eql('johnmike@andela.com');
           res.body.article.author.fullName.should.be
             .eql('John Mike');
-          res.body.article.author.roleId.should.be.eql(3);
           should.equal(res.body.article.author.avatarUrl, null);
-          should.equal(res.body.article.author.bio, null);
           done();
         });
     });
@@ -649,9 +691,9 @@ describe('Articles Controller Tests', () => {
           .post('/api/v1/users/bookmarks/aa')
           .set('Authorization', userData.token)
           .end((err, res) => {
-            res.status.should.be.eql(422);
-            res.body.errors.articleId.should.be
-              .eql(['invalid articleId in url']);
+            res.status.should.be.eql(400);
+            res.body.errors.message.should.be
+              .eql('invalid id, article id must be a number');
             done();
           });
       });
@@ -662,9 +704,9 @@ describe('Articles Controller Tests', () => {
         .post('/api/v1/users/bookmarks/unbookmarkaa')
         .set('Authorization', userData.token)
         .end((err, res) => {
-          res.status.should.be.eql(422);
-          res.body.errors.articleId.should.be
-            .eql(['invalid articleId in url']);
+          res.status.should.be.eql(400);
+          res.body.errors.message.should.be
+            .eql('invalid id, article id must be a number');
           done();
         });
     });

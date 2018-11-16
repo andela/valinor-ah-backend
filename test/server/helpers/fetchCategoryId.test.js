@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import findCategoryId from '../../../server/helpers/findCategoryId';
+import fetchCategoryId from '../../../server/helpers/fetchCategoryId';
 
 let resultOne;
 let resultTwo;
@@ -8,10 +8,10 @@ let resultThree;
 let resultFour;
 describe('test findCategoryId() function', () => {
   before(async () => {
-    resultOne = await findCategoryId('fashion');
-    resultTwo = await findCategoryId('sports');
-    resultThree = await findCategoryId('technology');
-    resultFour = await findCategoryId('kjnddlnf');
+    resultOne = await fetchCategoryId('fashion');
+    resultTwo = await fetchCategoryId('sports');
+    resultThree = await fetchCategoryId('technology');
+    resultFour = await fetchCategoryId('kjnddlnf');
   });
   it('should return 3', () => {
     assert.equal(resultOne, 3);

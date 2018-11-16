@@ -30,7 +30,7 @@ const addMetaToArticle = async (rows) => {
   const commentCount = await getCommentsCount(articleIds);
   // insert comments count into rows
   for (let x = 0; x < rows.length; x += 1) {
-    rows[x].dataValues.comments = commentCount[x];
+    rows[x].dataValues.commentsCount = commentCount[x];
   }
   return rows;
 };
