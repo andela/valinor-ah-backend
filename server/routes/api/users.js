@@ -22,6 +22,7 @@ const {
   userLoginEnd,
   verifyUser,
   updateProfile,
+  getSingleProfile,
   getUserProfiles,
 } = UserController;
 const {
@@ -81,6 +82,12 @@ router.get('/auth/google/callback', googlePassportRoutes.callback());
 
 // get all user profiles
 router.get('/users', verifyToken, confirmUser, getUserProfiles);
+
+// get a single user profile
+router.get(
+  '/users/:userId',
+  verifyToken, validateResourceId, confirmUser, getSingleProfile,
+);
 
 router.post(
   '/users/follow/:authorId',

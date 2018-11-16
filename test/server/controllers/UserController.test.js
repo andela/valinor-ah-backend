@@ -4,7 +4,7 @@ import chai from 'chai';
 import app from '../../../app';
 import { createToken } from '../../../server/middlewares/tokenUtils';
 
-chai.should();
+const should = chai.should();
 
 chai.use(chaiHttp);
 const signupUrl = '/api/v1/users/signup';
@@ -414,6 +414,57 @@ describe('Update user profile', () => {
       resData.body.status.should.equal('failure');
       resData.body.errors.message.should
         .equal('Sorry, that user was not found');
+    });
+  });
+});
+
+// GET A USER PROFILE
+describe('Get user profile', () => {
+  describe('for my own profile', () => {
+    const result = {};
+    before((done) => {
+      // get my profile
+      chai.request(app)
+        .get(`/api/v1/users/${userData.id}`)
+        .set('authorization', userData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+    it('should have a response containing all the users attributes', () => {
+      result.body.status.should.be.equal('success');
+      result.body.userProfile.id.should.be.equal(userData.id);
+      result.body.userProfile.bio.should.be.equal(updateData.bio);
+    });
+  });
+
+  describe('for another user\'s profile', () => {
+    const result = {};
+    before((done) => {
+      // get my profile
+      chai.request(app)
+        .get(`/api/v1/users/${userData.id - 1}`)
+        .set('authorization', userData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+    it('should have a response body with only public attributes', () => {
+      result.body.status.should.be.equal('success');
+      should.equal(result.body.userProfile.email, undefined);
+      should.equal(result.body.userProfile.googleId, undefined);
+      should.equal(result.body.userProfile.facebookId, undefined);
+      should.equal(result.body.userProfile.twitterId, undefined);
     });
   });
 });

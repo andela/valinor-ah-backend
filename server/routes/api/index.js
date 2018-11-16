@@ -8,6 +8,6 @@ import bookmarks from './bookmarks';
 
 const router = express.Router();
 
-router.use('/', users, articles, comments, ratings, bookmarks);
+router.use('/', bookmarks, users, articles, comments, ratings);
 
 export default router;
