@@ -57,6 +57,11 @@ export default {
       allowNull: true,
       type: Sequelize.BOOLEAN
     },
+    articlesRead: {
+      allowNull: true,
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+    },
     twitterUrl: {
       allowNull: true,
       type: Sequelize.STRING,

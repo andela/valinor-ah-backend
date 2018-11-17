@@ -103,10 +103,10 @@ class ArticleController {
  * @description
  * @param {object} req - request object
  * @param {object} res - response object
- * @param {object} message - variable message
+ * @param {function} next - response object
  * @returns {object} - returns an Article
  */
-  static getAnArticle(req, res) {
+  static getAnArticle(req, res, next) {
     const { slug } = req.params;
     Article.findOne({
       where: {
@@ -136,10 +136,11 @@ class ArticleController {
         }
         const addMeta = await addMetaToArticle([result]);
         const article = cleanupArticlesResponse(addMeta);
-        return res.status(200).json({
+        res.status(200).json({
           status: 'success',
           article: article[0]
         });
+        return next();
       })
       .catch(err => res.status(500).json({
         status: 'failure',

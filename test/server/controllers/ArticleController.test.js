@@ -7,6 +7,7 @@ import {
   articleInputNoTitle,
   articleInputInvalidTags
 } from '../../../mockdata/articleMockData';
+import { createToken } from '../../../server/middlewares/tokenUtils';
 
 const should = chai.should();
 
@@ -282,7 +283,8 @@ describe('Articles Controller Tests', () => {
         });
     });
     it('Should return an article by slug', (done) => {
-      chai.request(app).get(getAnArticleUrl('south-africa-201'))
+      chai.request(app)
+        .get(getAnArticleUrl('south-africa-201'))
         .end((err, res) => {
           res.status.should.be.eql(200);
           res.body.article.id.should.be.eql(2);
@@ -297,7 +299,9 @@ describe('Articles Controller Tests', () => {
         });
     });
     it('Should return an article by id', (done) => {
+      const token = createToken(1, '24h');
       chai.request(app).get(getAnArticleUrl(2))
+        .set('authorization', token)
         .end((err, res) => {
           res.status.should.be.eql(200);
           res.body.article.id.should.be.eql(2);

@@ -35,7 +35,8 @@ export default (sequelize, DataTypes) => {
       Rating,
       Category,
       ArticleTag,
-      Bookmark
+      Bookmark,
+      ReadingStats
     } = models;
     Article.belongsTo(User, {
       as: 'author',
@@ -64,6 +65,9 @@ export default (sequelize, DataTypes) => {
     });
     Article.hasMany(ArticleTag, {
       foreignKey: 'articleId',
+    });
+    Article.hasMany(ReadingStats, {
+      foreignKey: 'userId'
     });
   };
   return Article;

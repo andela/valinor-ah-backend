@@ -33,6 +33,11 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    articlesRead: {
+      allowNull: true,
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
     twitterUrl: {
       allowNull: true,
       type: DataTypes.STRING,
@@ -66,7 +71,8 @@ export default (sequelize, DataTypes) => {
       Rating,
       CommentLike,
       Follow,
-      Bookmark
+      Bookmark,
+      ReadingStats
     } = models;
 
     User.belongsTo(Role, {
@@ -104,6 +110,9 @@ export default (sequelize, DataTypes) => {
     });
     User.hasMany(Bookmark, {
       as: 'myBookmarks',
+      foreignKey: 'userId'
+    });
+    User.hasMany(ReadingStats, {
       foreignKey: 'userId'
     });
   };
