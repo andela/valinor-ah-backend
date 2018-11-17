@@ -5,6 +5,7 @@ import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/ArticleValidation';
 import validateResourceId from '../../middlewares/validateResourceId';
 import queryGenerator from '../../middlewares/QueryGenerator';
+import addReadingStats from '../../middlewares/addReadingStats';
 
 const articles = express.Router();
 
@@ -26,6 +27,18 @@ articles.post(
   validateArticleInput,
   createArticle
 );
+articles.post(
+  '/articles',
+  verifyToken,
+  validateArticleInput,
+  createArticle
+);
+
+articles.get(
+  '/articles/:slug',
+  getAnArticle,
+  addReadingStats
+);
 
 // get all articles, search articles, filter articles
 articles.get(
@@ -35,11 +48,6 @@ articles.get(
   fetchAllArticles
 );
 
-// get article by slug or id
-articles.get(
-  '/articles/:slug',
-  getAnArticle
-);
 // like or dislike articles
 articles.post(
   '/articles/:articleId/reaction/:action',
