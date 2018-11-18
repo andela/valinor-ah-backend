@@ -219,6 +219,8 @@ class ArticleController {
         return res.status(201).json({
           status: 'success',
           message: `article successfully ${suffix}d`,
+          articleLikeStatus: true,
+          type: suffix
         });
       }
 
@@ -236,6 +238,8 @@ class ArticleController {
           return res.status(200).json({
             status: 'success',
             message: `you changed your mind, article successfully ${suffix}d`,
+            articleLikeStatus: true,
+            type: suffix
           });
         }
       }
@@ -248,7 +252,9 @@ class ArticleController {
       if (undoRows > 0) {
         return res.status(200).json({
           status: 'success',
-          message: `article ${suffix}, undo successful`,
+          message: `article ${suffix} reversed successfully`,
+          articleLikeStatus: false,
+          type: suffix
         });
       }
     };
