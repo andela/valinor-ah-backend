@@ -511,7 +511,8 @@ describe('Articles Controller Tests', () => {
       });
       it('should return a success message', () => {
         result.body.status.should.be.equal('success');
-        result.body.message.should.be.equal('article like, undo successful');
+        result.body.message.should.be
+          .equal('article like reversed successfully');
       });
     });
 
@@ -555,7 +556,8 @@ describe('Articles Controller Tests', () => {
       });
       it('should return a success message', () => {
         result.body.status.should.be.equal('success');
-        result.body.message.should.be.equal('article dislike, undo successful');
+        result.body.message.should.be
+          .equal('article dislike reversed successfully');
       });
     });
 
