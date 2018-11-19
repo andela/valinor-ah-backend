@@ -18,7 +18,8 @@ const {
   validateFollowUserUrl
 } = UserValidation;
 const {
-  signupOrLoginStart,
+  signUp,
+  userLoginStart,
   userLoginEnd,
   verifyUser,
   updateProfile,
@@ -44,11 +45,11 @@ router.get('/', (req, res) => {
 // sign up route
 router.post(
   '/users/signup',
-  validateUserSignUp, checkExistingEmail, signupOrLoginStart
+  validateUserSignUp, checkExistingEmail, signUp
 );
 
 // login with email link
-router.post('/users/login', validateUserLogin, signupOrLoginStart);
+router.post('/users/login', validateUserLogin, userLoginStart);
 
 // login with email link
 router.get('/users/login', verifyToken, userLoginEnd);

@@ -21,59 +21,30 @@ const { User } = models;
  */
 class UsersController {
   /**
-    * @description - This method sends a login link to the user.
-    * @param {object} req - The request object bearing the email.
-    * @param {object} res - The response object that is returned as json.
-    * @returns {object} - The object with message.
-    * @memberOf UserController
-    * @static
-    */
-  static signupOrLoginStart(req, res) {
-    const lifeSpan = '1h';
+ * @description
+ * @param {object} req - request object
+ * @param {object} res - response object
+ * @returns {object} - returns user
+ */
+  static signUp(req, res) {
     const { fullName, email } = req.body;
-
-    User.findOrCreate({
-      where: {
-        email
-      },
-      defaults: {
+    const lifeSpan = '1h';
+    return User
+      .create({
         fullName,
         email
-      }
-    })
-      .spread((user, created) => {
-        const userId = user.id;
-        const token = createToken(userId, lifeSpan);
+      })
+      .then((user) => {
+        const token = createToken(user.id, lifeSpan);
+        sendEmail(
+          user,
+          verifyEmailMessage(token)
+        );
 
-        if (!created) {
-          const loginUrl = `${process.env.API_BASE_URL}/users/login?`
-            + `token=${token}`;
-
-          // send email with link to login to user
-          sendEmail(user, loginLinkMessage(loginUrl, token));
-
-          return res.status(200).json({
-            status: 'success',
-            message: 'email login link sent successfully',
-            token
-          });
-        }
-
-        sendEmail(user, verifyEmailMessage(token));
-
-        return res.status(201).json({
+        res.status(201).json({
           status: 'success',
-          message: 'New user created successfully',
-          user: {
-            id: user.id,
-            fullName,
-            roleId: user.roleId,
-            email,
-            confirmEmail: user.confirmEmail,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            token,
-          }
+          message: 'New account created successfully. Please check your '
+          + 'inbox and verify your email address.'
         });
       })
       .catch(err => res.status(500)
@@ -82,6 +53,53 @@ class UsersController {
             message: [err.message]
           },
         }));
+  }
+
+  /**
+  * @description - This method sends a login link to the user.
+  * @param {object} req - The request object bearing the email.
+  * @param {object} res - The response object that is returned as json.
+  * @returns {object} - The object with message.
+  * @memberOf UserController
+  * @static
+  */
+  static userLoginStart(req, res) {
+    const { email } = req.body;
+    const lifeSpan = '1h';
+
+    return User.findOne({
+      where: {
+        email
+      }
+    })
+      .then((userFound) => {
+        if (!userFound) {
+          return res.status(404).json({
+            errors: {
+              message: ['User not found']
+            }
+          });
+        }
+
+        const userId = userFound.id;
+        const token = createToken(userId, lifeSpan);
+        const loginUrl = `${process.env.API_BASE_URL}/users/login?`
+      + `token=${token}`;
+
+        // send email with link to login to user
+        sendEmail(userFound, loginLinkMessage(loginUrl, token));
+
+        res.status(200).json({
+          status: 'success',
+          message: 'email login link sent successfully',
+          token
+        });
+      })
+      .catch(err => res.status(500).json({
+        errors: {
+          message: [err.message]
+        }
+      }));
   }
 
   /**
@@ -107,6 +125,26 @@ class UsersController {
         }
 
         const token = createToken(id, lifeSpan);
+
+        // Require the user to have a confirmed email before they can log on.
+        if (!userFound.confirmEmail) {
+          const tokenAge = Math.abs(Date.now() - userFound.createdAt) / 3600000;
+
+          if (tokenAge < 1) {
+            return res.status(409).json({
+              status: 'failure',
+              message: 'Please check your email and verify your email address'
+            });
+          }
+          // Resend email confirmation link
+          sendEmail(userFound, verifyEmailMessage(token));
+
+          return res.status(409).json({
+            status: 'failure',
+            message: 'You must have a confirmed email to log on.'
+          });
+        }
+
         const {
           email,
           fullName,
@@ -212,14 +250,28 @@ class UsersController {
             }
           });
         }
+
+        const lifeSpan = '90d';
+        const token = createToken(user.id, lifeSpan);
+
         User
           .update(
             { confirmEmail: true },
             { where: { id } }
           )
-          .then(() => res.status(200).json({
+          .then(verifiedUser => res.status(200).json({
             status: 'success',
-            message: 'user successfully verified'
+            message: 'Email confirmed successfully',
+            user: {
+              id: verifiedUser.id,
+              fullName: verifiedUser.fullName,
+              roleId: verifiedUser.roleId,
+              email: verifiedUser.email,
+              confirmEmail: verifiedUser.confirmEmail,
+              createdAt: verifiedUser.createdAt,
+              updatedAt: verifiedUser.updatedAt,
+              token
+            }
           }))
           .catch(err => res.status(500)
             .json({

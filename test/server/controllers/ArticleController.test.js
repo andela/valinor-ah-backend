@@ -353,9 +353,9 @@ describe('Articles Controller Tests', () => {
           fullName: 'Not Tani',
           email: 'n.tani@whowa.com',
         })
-        .end((err, res) => {
-          userData.id = res.body.user.id;
-          userData.token = res.body.user.token;
+        .end(() => {
+          userData.id = 5;
+          userData.token = createToken(5, '1h');
           done();
         });
     });

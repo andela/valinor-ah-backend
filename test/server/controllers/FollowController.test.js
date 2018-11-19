@@ -1,6 +1,7 @@
 import chai from 'chai';
 import app from '../../../app';
 import { userData } from '../../../mockdata/userMockData';
+import { createToken } from '../../../server/middlewares/tokenUtils';
 
 const should = chai.should();
 
@@ -12,9 +13,9 @@ describe('FollowController Tests', () => {
         fullName: 'Fishes Donkey',
         email: 'fishdonkey@jackson.com',
       })
-      .end((err, res) => {
-        userData.id = res.body.user.id;
-        userData.token = res.body.user.token;
+      .end(() => {
+        userData.id = 7;
+        userData.token = createToken(7, '1h');
         done();
       });
   });

@@ -19,6 +19,14 @@ export default {
     createdAt: new Date(),
     updatedAt: new Date(),
     confirmEmail: true,
+  },
+  {
+    fullName: ' Krugger',
+    email: 'freddie@example.com',
+    roleId: 1,
+    confirmEmail: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})

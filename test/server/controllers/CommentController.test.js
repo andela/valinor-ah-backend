@@ -2,6 +2,7 @@ import chaiHttp from 'chai-http';
 import chai from 'chai';
 
 import app from '../../../app';
+import { createToken } from '../../../server/middlewares/tokenUtils';
 
 chai.should();
 
@@ -25,14 +26,8 @@ describe('Testing comment on articles', () => {
       .end((err, res) => {
         res.should.have.status(201);
         res.body.should.be.a('object');
-        res.body.user.token.should.be.a('string');
-        res.body.user.fullName.should.be.a('string');
-        res.body.user.email.should.be.a('string');
-        res.body.user.fullName.should.be.eql('Solomon Kingsley');
-        res.body.user.confirmEmail.should.be.eql(false);
-        res.body.user.email.should.be.eql('abiodun.abud@andela.com');
-        userData.id = res.body.user.id;
-        userData.token = res.body.user.token;
+        userData.id = 6;
+        userData.token = createToken(6, '1h');
         done();
       });
   });
@@ -110,7 +105,7 @@ describe('Testing like or disliked comment', () => {
         res.should.have.status(200);
         res.body.should.be.a('object');
         res.body.status.should.be.eql('success');
-        res.body.message.should.be.eql('user successfully verified');
+        res.body.message.should.be.eql('Email confirmed successfully');
         done();
       });
   });

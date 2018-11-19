@@ -2,6 +2,7 @@ import chaiHttp from 'chai-http';
 import chai from 'chai';
 import app from '../../../app';
 import { ratingWithInvalidData } from '../../../mockdata/ratingMockData';
+import { createToken } from '../../../server/middlewares/tokenUtils';
 
 const articleId = 1;
 const signupUrl = '/api/v1/users/signup';
@@ -19,9 +20,9 @@ describe('Articles Controller Tests', () => {
           email: 'freddie.kruggar@andela.com',
           password: 'freddie123',
         })
-        .end((err, res) => {
-          userData.id = res.body.user.id;
-          userData.token = res.body.user.token;
+        .end(() => {
+          userData.id = 8;
+          userData.token = createToken(8, '1h');
           done();
         });
     });
