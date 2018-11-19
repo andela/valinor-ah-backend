@@ -4,6 +4,7 @@ import cloudinary from 'cloudinary';
 
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
+import addMetaToAuthors from '../helpers/addMetaToAuthors';
 import {
   verifyEmailMessage,
   loginLinkMessage
@@ -308,6 +309,49 @@ class UsersController {
     return res.status(200).json({
       status: 'success',
       userProfile,
+    });
+  }
+
+  /**
+   * @description - This method gets all authors in the database
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static async fetchAuthors(req, res, next) {
+    let result;
+    try {
+      result = await User
+        .findAndCountAll({
+          where: { roleId: 2 },
+          attributes: [
+            'id',
+            'fullName',
+            'bio',
+            'avatarUrl',
+            'following',
+            'followers',
+            'articlesRead',
+            'createdAt'
+          ],
+          order: [['fullName']]
+        });
+    } catch (error) {
+      next(error);
+    }
+    const { rows, count } = result;
+    if (count < 1) {
+      const error = new Error(
+        'we currently have no authors on Author\'s Haven'
+      );
+      error.status = 400;
+      return next(error);
+    }
+    const authors = await addMetaToAuthors(rows);
+    return res.status(200).json({
+      status: 'success',
+      authors
     });
   }
 }

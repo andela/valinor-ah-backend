@@ -27,12 +27,6 @@ articles.post(
   validateArticleInput,
   createArticle
 );
-articles.post(
-  '/articles',
-  verifyToken,
-  validateArticleInput,
-  createArticle
-);
 
 articles.get(
   '/articles/:slug',

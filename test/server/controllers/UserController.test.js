@@ -1,11 +1,12 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
 
+import models from '../../../server/models';
 import app from '../../../app';
 import { createToken } from '../../../server/middlewares/tokenUtils';
 
 const should = chai.should();
-
+const { User } = models;
 chai.use(chaiHttp);
 const signupUrl = '/api/v1/users/signup';
 const loginUrl = '/api/v1/users/login';
@@ -465,6 +466,43 @@ describe('Get user profile', () => {
       should.equal(result.body.userProfile.googleId, undefined);
       should.equal(result.body.userProfile.facebookId, undefined);
       should.equal(result.body.userProfile.twitterId, undefined);
+    });
+  });
+});
+
+describe('Test fetch all authors route', () => {
+  describe('Test fetch all authors route without authors', async () => {
+    it('should return no authors from the database', () => {
+      chai
+        .request(app)
+        .get('/api/v1/users/authors')
+        .end((err, res) => {
+          res.status.should.equal(400);
+          res.body.errors.message.should.be
+            .eql('we currently have no authors on Author\'s Haven');
+        });
+    });
+  });
+
+  describe('Test fetch all authors route with one author', () => {
+    before(async () => {
+      await User.update({
+        roleId: 2
+      }, {
+        where: {
+          id: 1
+        }
+      });
+    });
+    it('should return one author from the database', () => {
+      chai
+        .request(app)
+        .get('/api/v1/users/authors')
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.authors[0].id.should.equal(1);
+          res.body.authors[0].fullName.should.equal('John Doe');
+        });
     });
   });
 });

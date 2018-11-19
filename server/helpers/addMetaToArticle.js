@@ -1,5 +1,5 @@
 import getArticleLikesCount from './getArticleLikesCount';
-import extractArticleId from './extractArticleId';
+import extractId from './extractId';
 import getCommentsCount from './getCommentsCount';
 
 /**
@@ -10,7 +10,7 @@ import getCommentsCount from './getCommentsCount';
 */
 const addMetaToArticle = async (rows) => {
   // get ids of all returned articles
-  const articleIds = extractArticleId(rows);
+  const articleIds = extractId(rows);
 
   // get how many likes each article has
   const likesArr = await getArticleLikesCount(articleIds, true);
