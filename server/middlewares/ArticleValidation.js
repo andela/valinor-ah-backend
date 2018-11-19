@@ -76,6 +76,18 @@ class ArticleValidation {
   }
 
   /**
+   * This method validates the category name
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateCategoryName(req) {
+    req.checkBody(
+      'categoryName',
+      'category name can only contain alphabets'
+    ).optional({ checkFalsy: false }).isAlpha();
+  }
+
+  /**
    * Validate the Article input field
    * @param {object} req - The request object
    * @param {object} res - The response object
@@ -87,6 +99,7 @@ class ArticleValidation {
     ArticleValidation.validateDescription(req);
     ArticleValidation.validateBody(req);
     ArticleValidation.validateTags(req);
+    ArticleValidation.validateCategoryName(req);
     sendFormattedError(req, res, next);
   }
 

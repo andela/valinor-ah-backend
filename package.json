@@ -7,7 +7,7 @@
     "node": "10.11.0"
   },
   "scripts": {
-    "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require babel-register --require babel-polyfill --exit",
+    "test": "npm run db-init && nyc mocha test/**/**/**.test.js --require babel-register --exit",
     "start": "npm run clean && npm run build && npm run db-init && node dist/app.js",
     "start:dev": "nodemon --exec babel-node app.js",
     "build": "babel . --ignore node_modules,test,coverage,dist -d dist/ && cp swagger.json dist/",
@@ -18,16 +18,15 @@
     "db-migrate": "sequelize db:migrate",
     "db-undo-migrate": "sequelize db:migrate:undo:all",
     "db-seed-all": "sequelize db:seed:all",
-    "db-init-test-dev": "sequelize db:migrate:undo:all --env development && sequelize db:migrate --env development"
+    "db-init-test-dev": "sequelize db:migrate:undo:all --env development && sequelize db:migrate --env development",
+    "heroku-postbuild": "npm run db-migrate && npm run build"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "bcrypt-nodejs": "0.0.3",
@@ -67,6 +66,7 @@
     "winston": "^3.1.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
     "coveralls": "^3.0.2",
