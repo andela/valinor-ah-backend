@@ -24,6 +24,7 @@ const {
   updateProfile,
   getSingleProfile,
   getUserProfiles,
+  fetchAuthors
 } = UserController;
 const {
   followAuthor,
@@ -54,6 +55,9 @@ router.get('/users/login', verifyToken, userLoginEnd);
 
 // verify users email
 router.get('/users/verify', verifyToken, verifyUser);
+
+// get authors
+router.get('/users/authors', fetchAuthors);
 
 // signup or login with facebook
 router.get('/auth/facebook', facebookPassportRoutes.authenticate());
