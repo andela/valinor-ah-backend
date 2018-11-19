@@ -6,9 +6,10 @@ import ArticleValidation from '../../middlewares/ArticleValidation';
 import validateResourceId from '../../middlewares/validateResourceId';
 import queryGenerator from '../../middlewares/QueryGenerator';
 import addReadingStats from '../../middlewares/addReadingStats';
+import TagController from '../../controllers/TagController';
 
 const articles = express.Router();
-
+const { getAllArticleTags } = TagController;
 const {
   validateArticleInput,
   validateQuery
@@ -33,6 +34,9 @@ articles.post(
   validateArticleInput,
   createArticle
 );
+
+// get all tags
+articles.get('/articles/tags', getAllArticleTags);
 
 articles.get(
   '/articles/:slug',
