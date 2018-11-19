@@ -1,8 +1,9 @@
 {
     "presets": [
         "env"
-        ],
-        "plugins": [
-            ["transform-object-rest-spread", { "useBuiltIns": true }]
-        ]      
+    ],
+    "plugins": [
+        "babel-plugin-transform-runtime",
+        "transform-object-rest-spread"
+    ]
 }

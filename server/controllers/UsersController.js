@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import { Op } from 'sequelize';
 import cloudinary from 'cloudinary';
 

@@ -19,7 +19,7 @@ export const articleInputValid = {
   description: 'This article talks about how to write your name',
   body: 'let\'s talk about names, what is your name?',
   tags: ['football', 'naming', 'conventions'],
-  categoryId: 1,
+  categoryName: 'naming',
 };
 
 

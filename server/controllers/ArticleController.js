@@ -160,7 +160,7 @@ class ArticleController {
   }
 
   /**
-   * controller to create an article
+   * controller to fetch all articles
    * @param {object} req - express request object
    * @param {object} res - express response object
    * @param {object} next - express next object
@@ -248,7 +248,7 @@ class ArticleController {
       description,
       body,
       tags,
-      categoryId
+      categoryName
     } = req.body;
     const userId = req.userData.id;
     // creata a unique slug
@@ -259,6 +259,11 @@ class ArticleController {
     let article;
     let user;
     try {
+      // find or create  the category
+      const [category] = await Category.findOrCreate({
+        where: { categoryName },
+        defaults: { categoryName: 'others' }
+      });
       // create an article
       article = await Article.create({
         title,
@@ -267,7 +272,7 @@ class ArticleController {
         body,
         readTime: stats.time,
         userId,
-        categoryId
+        categoryId: category.id
       });
       user = await User.findByPk(userId);
     } catch (err) {
