@@ -56,17 +56,12 @@ describe('/users/signup', () => {
       .end((err, res) => {
         res.should.have.status(201);
         res.body.should.be.a('object');
-        res.body.user.token.should.be.a('string');
-        res.body.user.fullName.should.be.a('string');
-        res.body.user.email.should.be.a('string');
-        res.body.user.fullName.should.be.eql('Solomon Kingsley');
-        res.body.user.confirmEmail.should.be.eql(false);
-        res.body.user.email.should.be.eql('solomon.sulaiman@andela.com');
-        userData.id = res.body.user.id;
-        userData.token = res.body.user.token;
+        userData.id = 6;
+        userData.token = createToken(6, '1h');
         done();
       });
   });
+
   it('should not create new user', (done) => {
     chai.request(app)
       .post(signupUrl)
@@ -100,7 +95,7 @@ describe('Testing Login feature -Integration testing', () => {
         });
     });
 
-    it('should send email to a user', (done) => {
+    it('should send login email to a user', (done) => {
       chai.request(app)
         .post(loginUrl)
         .send({
@@ -118,16 +113,18 @@ describe('Testing Login feature -Integration testing', () => {
   });
 
   describe('GET /api/v1/users/login', () => {
-    let token;
-    let token1;
+    let confirmedUserToken;
+    let unregisteredUserToken;
+    let unconfirmedUserToken;
     before(() => {
-      token = createToken(1, '1h');
-      token1 = createToken(100, '1h');
+      confirmedUserToken = createToken(4, '1h');
+      unconfirmedUserToken = createToken(1, '1h');
+      unregisteredUserToken = createToken(100, '1h');
     });
 
-    it('should show error if token is missing', (done) => {
+    it('should show error if token is invalid', (done) => {
       chai.request(app)
-        .get(`${loginUrl}?token=${token}1s`)
+        .get(`${loginUrl}?token=${confirmedUserToken}1s`)
         .end((err, res) => {
           res.status.should.eql(401);
           res.body.status.should.eql('unauthorized');
@@ -136,7 +133,7 @@ describe('Testing Login feature -Integration testing', () => {
       done();
     });
 
-    it('should show error if token is invalid or expired', (done) => {
+    it('should show error if token is missing', (done) => {
       chai.request(app)
         .get(`${loginUrl}?token=`)
         .end((err, res) => {
@@ -149,7 +146,7 @@ describe('Testing Login feature -Integration testing', () => {
 
     it('should show error if user is not found', (done) => {
       chai.request(app)
-        .get(`${loginUrl}?token=${token1}`)
+        .get(`${loginUrl}?token=${unregisteredUserToken}`)
         .end((err, res) => {
           res.status.should.eql(404);
           res.body.errors.message[0].should.eql('User not found');
@@ -157,9 +154,19 @@ describe('Testing Login feature -Integration testing', () => {
         });
     });
 
-    it('should log a user in successfully', (done) => {
+    it('should not log in a user in if email is not confirmed', (done) => {
       chai.request(app)
-        .get(`${loginUrl}?token=${token}`)
+        .get(`${loginUrl}?token=${unconfirmedUserToken}`)
+        .end((err, res) => {
+          res.status.should.eql(409);
+          res.body.status.should.eql('failure');
+          done();
+        });
+    });
+
+    it('should log a user in if email is confirmed', (done) => {
+      chai.request(app)
+        .get(`${loginUrl}?token=${confirmedUserToken}`)
         .end((err, res) => {
           res.status.should.eql(200);
           res.body.status.should.eql('success');
@@ -175,7 +182,7 @@ describe('Verify user email via link', () => {
   let token2;
   before(() => {
     token = createToken(1, '24h');
-    token2 = createToken(9, '24h');
+    token2 = createToken(90, '24h');
   });
   it(
     'should verify a user',
@@ -184,10 +191,8 @@ describe('Verify user email via link', () => {
         .get(`/api/v1/users/verify?token=${token}`)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.deep.equal({
-            status: 'success',
-            message: 'user successfully verified'
-          });
+          res.body.status.should.deep.equal('success');
+          res.body.message.should.deep.equal('Email confirmed successfully');
           done();
         });
     }
@@ -228,12 +233,13 @@ describe('Verify user email via link', () => {
 
 // GET USERS PROFILES TEST SUTE
 describe('Get all user Profiles', () => {
+  const token = createToken(5, '1h');
   describe('with an unconfirmed email', () => {
     const result = {};
     before((done) => {
       chai.request(app)
         .get('/api/v1/users')
-        .set('authorization', userData.token)
+        .set('authorization', token)
         .end((err, res) => {
           result.status = res.status;
           result.body = res.body;
