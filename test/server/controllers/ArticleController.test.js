@@ -23,6 +23,31 @@ const getAnArticleUrl = string => `${articleBaseUrl}/${string}`;
 describe('Articles Controller Tests', () => {
   const userData = {};
 
+  // FETCH ALL CATEGORIES
+  describe('Fetch all categories', () => {
+    const result = {};
+    before((done) => {
+      chai.request(app)
+        .get(`${articleBaseUrl}/categories`)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+
+    it('should contain all categories', () => {
+      result.body.categories.should.be.an('Array');
+      result.body.categories[0].categoryName.should.be.equal('fashion');
+      result.body.categories[1].categoryName.should.be.equal('sports');
+      result.body.categories[2].categoryName.should.be.equal('technology');
+    });
+  });
+
   // FETCH ALL ARTICLES
   describe('Fetch all articles', () => {
     it('test /api/v1/articles/category/all route', (done) => {

@@ -160,6 +160,31 @@ class ArticleController {
   }
 
   /**
+   * controller to create an article
+   * @param {object} req - express request object
+   * @param {object} res - express response object
+   * @param {object} next - express next object
+   * @returns {void}
+   */
+  static async fetchAllCategories(req, res, next) {
+    let categories;
+    try {
+      // find all categories
+      categories = await Category.findAll({
+        attributes: ['id', 'categoryName'],
+        order: [['categoryName', 'ASC']],
+      });
+    } catch (err) {
+      next(err);
+    }
+
+    res.status(200).json({
+      status: 'success',
+      categories,
+    });
+  }
+
+  /**
    * @description controller to fetch all articles
    * @param {object} req - request object
    * @param {object} res - response object

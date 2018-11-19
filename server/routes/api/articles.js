@@ -18,10 +18,20 @@ const {
 const {
   createArticle,
   getAnArticle,
+  fetchAllCategories,
   fetchAllArticles,
   likeOrDislikeArticle,
   reportArticle,
 } = ArticleController;
+
+// get all categories
+articles.get(
+  '/articles/categories',
+  fetchAllCategories
+);
+
+// get all tags
+articles.get('/articles/tags', getAllArticleTags);
 
 // post an article
 articles.post(
@@ -30,9 +40,6 @@ articles.post(
   validateArticleInput,
   createArticle
 );
-
-// get all tags
-articles.get('/articles/tags', getAllArticleTags);
 
 articles.get(
   '/articles/:slug',
