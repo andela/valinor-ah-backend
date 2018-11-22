@@ -60,12 +60,12 @@ class ArticleValidation {
   static validateTags(req) {
     if (req.body.tags) {
       // custom validation to check if tags are an strings
-      req.checkBody('tags', 'tags must be an array of strings')
+      req.checkBody('tags', 'tags must be an array of non-empty strings')
         .custom((tags) => {
           if (Array.isArray(tags)) {
             let notString = 0;
             tags.forEach((tag) => {
-              if ((typeof tag) !== 'string') {
+              if (!tags || (typeof tag) !== 'string' || tag.trim() === '') {
                 notString += 1;
               }
             });
@@ -81,10 +81,28 @@ class ArticleValidation {
    * @returns {void}
    */
   static validateCategoryName(req) {
-    req.checkBody(
-      'categoryName',
-      'category name can only contain alphabets'
-    ).optional({ checkFalsy: false }).isAlpha();
+    if (req.body.categoryName) {
+      req.checkBody(
+        'categoryName',
+        'category name can only contain alphabets'
+      ).isAlpha();
+    }
+  }
+
+  /**
+   * This method validates the category name
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateStatus(req) {
+    if (req.body.status) {
+      req.checkBody(
+        'status',
+        'article status may only be \'draft\' or \'publish\''
+      ).custom((status) => {
+        if (status === 'draft' || status === 'publish') return true;
+      });
+    }
   }
 
   /**
@@ -98,6 +116,21 @@ class ArticleValidation {
     ArticleValidation.validateTitle(req);
     ArticleValidation.validateDescription(req);
     ArticleValidation.validateBody(req);
+    ArticleValidation.validateStatus(req);
+    ArticleValidation.validateTags(req);
+    ArticleValidation.validateCategoryName(req);
+    sendFormattedError(req, res, next);
+  }
+
+  /**
+   * Validate the Article update entries
+   * @param {object} req - The request object
+   * @param {object} res - The response object
+   * @param {object} next - The callback function to the next middleware.
+   * @return {void}
+   */
+  static validateArticleUpdate(req, res, next) {
+    ArticleValidation.validateStatus(req);
     ArticleValidation.validateTags(req);
     ArticleValidation.validateCategoryName(req);
     sendFormattedError(req, res, next);

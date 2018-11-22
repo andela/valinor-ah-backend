@@ -5,6 +5,9 @@ import { createToken } from '../../../server/middlewares/tokenUtils';
 
 import {
   articleInputValid,
+  articleUpdateValid,
+  articleUpdateInvalidStatus,
+  articleUpdateInvalidTags,
   articleInputNoTitle,
   articleInputInvalidTags,
   articleReportData,
@@ -22,6 +25,7 @@ const getAnArticleUrl = string => `${articleBaseUrl}/${string}`;
 
 describe('Articles Controller Tests', () => {
   const userData = {};
+  let articleData = {};
 
   // FETCH ALL CATEGORIES
   describe('Fetch all categories', () => {
@@ -371,6 +375,7 @@ describe('Articles Controller Tests', () => {
           .end((err, res) => {
             result.status = res.status;
             result.body = res.body;
+            articleData = res.body.article;
             done();
           });
       });
@@ -411,7 +416,7 @@ describe('Articles Controller Tests', () => {
       // check body
       it('should return a descriptive failure message', () => {
         result.body.errors.tags[0].should
-          .equal('tags must be an array of strings');
+          .equal('tags must be an array of non-empty strings');
       });
     });
 
@@ -494,6 +499,109 @@ describe('Articles Controller Tests', () => {
       });
     });
   });
+
+  // Edit an article
+  describe('edit the article', () => {
+    const result = {};
+    describe('with valid data', () => {
+      before((done) => {
+        chai.request(app)
+          .patch(`/api/v1/articles/${articleData.id}`)
+          .send(articleUpdateValid)
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            result.status = res.status;
+            result.body = res.body;
+            done();
+          });
+      });
+
+      it('should have a status of 200', () => {
+        result.status.should.be.equal(200);
+      });
+
+      it('should return a success message', () => {
+        result.body.status.should.be.equal('success');
+        result.body.message.should.be.equal('1 article updated successfully');
+        result.body.article.title.should.be.equal(articleUpdateValid.title);
+        result.body.article.description.should.be
+          .equal(articleUpdateValid.description);
+        result.body.article.tags.should.deep.equal(articleUpdateValid.tags);
+        result.body.article.status.should.be.equal(articleUpdateValid.status);
+      });
+    });
+
+    describe('with another users article', () => {
+      before((done) => {
+        chai.request(app)
+          .patch(`/api/v1/articles/${articleData.id - 1}`)
+          .send(articleUpdateValid)
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            result.status = res.status;
+            result.body = res.body;
+            done();
+          });
+      });
+
+      it('should have a status of 403', () => {
+        result.status.should.be.equal(403);
+      });
+
+      it('should return a success message', () => {
+        result.body.status.should.be.equal('failure');
+        result.body.errors.message[0].should.be
+          .equal('you do not have permission to perform this operation');
+      });
+    });
+
+    describe('with invalid status', () => {
+      before((done) => {
+        chai.request(app)
+          .patch(`/api/v1/articles/${articleData.id}`)
+          .send(articleUpdateInvalidStatus)
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            result.status = res.status;
+            result.body = res.body;
+            done();
+          });
+      });
+
+      it('should have a status of 422', () => {
+        result.status.should.be.equal(422);
+      });
+
+      it('should return a descriptive error message', () => {
+        result.body.errors.status[0].should.be
+          .equal('article status may only be \'draft\' or \'publish\'');
+      });
+    });
+
+    describe('with invalid tags', () => {
+      before((done) => {
+        chai.request(app)
+          .patch(`/api/v1/articles/${articleData.id}`)
+          .send(articleUpdateInvalidTags)
+          .set('Authorization', userData.token)
+          .end((err, res) => {
+            result.status = res.status;
+            result.body = res.body;
+            done();
+          });
+      });
+
+      it('should have a status of 422', () => {
+        result.status.should.be.equal(422);
+      });
+
+      it('should return a descriptive error message', () => {
+        result.body.errors.tags[0].should.be
+          .equal('tags must be an array of non-empty strings');
+      });
+    });
+  });
+
 
   // LIKE OR DISLIKE AN ARTICLE
   describe('like/dislike an article', () => {
