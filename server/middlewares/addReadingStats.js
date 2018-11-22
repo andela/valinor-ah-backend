@@ -18,8 +18,16 @@ const { ReadingStats, User } = models;
 const addReadingStats = (req, res, next) => {
   const { authorization } = req.headers;
   const { slug } = req.params;
-  if (authorization) {
-    const { id } = jwt.verify(authorization, process.env.JWT_SECRET);
+  const decoded = jwt.verify(
+    authorization,
+    process.env.JWT_SECRET,
+    (err, info) => {
+      if (err) return err;
+      return info;
+    }
+  );
+  if (authorization && !decoded.message) {
+    const { id } = decoded;
     ReadingStats
       .findOrCreate({
         where: {

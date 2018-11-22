@@ -19,12 +19,13 @@ class CommentController {
      * @returns {object} returns an object of comment
    */
   static addCommentOnArticle(req, res) {
-    const { body } = req.body;
+    const { body, inlineComment } = req.body;
     const { articleId } = req.params;
     const userId = req.userData.id;
     return Comment
       .create({
         body,
+        inlineComment,
         userId,
         articleId
       })
@@ -42,6 +43,7 @@ class CommentController {
               comment: {
                 id: comment.id,
                 body: comment.body,
+                inlineComment: comment.inlineComment,
                 articleId: comment.articleId,
                 createdAt,
                 updatedAt,

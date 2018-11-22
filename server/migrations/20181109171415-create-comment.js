@@ -10,6 +10,10 @@ export default {
       allowNull: false,
       type: Sequelize.STRING
     },
+    inlineComment: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
     userId: {
       allowNull: false,
       type: Sequelize.INTEGER,

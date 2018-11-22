@@ -3,6 +3,7 @@ export default {
     body: 'This actually sucks',
     userId: 1,
     articleId: 1,
+    inlineComment: 'When are you coming to lagos?',
     createdAt: new Date(),
     updatedAt: new Date()
   },
