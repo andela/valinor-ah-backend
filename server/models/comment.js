@@ -3,6 +3,10 @@ export default (sequelize, DataTypes) => {
     body: {
       allowNull: false,
       type: DataTypes.STRING
+    },
+    inlineComment: {
+      allowNull: true,
+      type: DataTypes.STRING
     }
   }, {
     hooks: {
