@@ -512,3 +512,100 @@ describe('Test fetch all authors route', () => {
     });
   });
 });
+
+describe('Testing automatic upgrade role functionality', () => {
+  const data = {};
+  it('should signup a user', (done) => {
+    chai.request(app)
+      .post('/api/v1/users/signup')
+      .send({
+        fullName: 'Petit jackson',
+        email: 'petitjackson@whowa.com',
+      })
+      .end((err, res) => {
+        data.id = res.body.user.id;
+        data.token = res.body.user.token;
+        done();
+      });
+  });
+  it('user should create first article', (done) => {
+    chai.request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', data.token)
+      .send({
+        title: 'My story at the beach',
+        description: 'How I ventured in the beach',
+        body: 'This is the body of my story',
+        categoryId: 1,
+      })
+      .end((err, res) => {
+        res.status.should.be.eql(201);
+        res.body.article.author.roleId.should.be.eql(3);
+        done();
+      });
+  });
+  it('user should create second article', (done) => {
+    chai.request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', data.token)
+      .send({
+        title: 'My story at the beach',
+        description: 'How I ventured in the beach',
+        body: 'This is the body of my story',
+        categoryId: 1,
+      })
+      .end((err, res) => {
+        res.status.should.be.eql(201);
+        res.body.article.author.roleId.should.be.eql(3);
+        done();
+      });
+  });
+  it('user should create third article', (done) => {
+    chai.request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', data.token)
+      .send({
+        title: 'My story at the beach',
+        description: 'How I ventured in the beach',
+        body: 'This is the body of my story',
+        categoryId: 1,
+      })
+      .end((err, res) => {
+        res.status.should.be.eql(201);
+        res.body.article.author.roleId.should.be.eql(3);
+        done();
+      });
+  });
+  it('user should create fourth article', (done) => {
+    chai.request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', data.token)
+      .send({
+        title: 'My story at the beach',
+        description: 'How I ventured in the beach',
+        body: 'This is the body of my story',
+        categoryId: 1,
+      })
+      .end((err, res) => {
+        res.status.should.be.eql(201);
+        res.body.article.author.roleId.should.be.eql(3);
+        done();
+      });
+  });
+  it('user should create fifth article', (done) => {
+    chai.request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', data.token)
+      .send({
+        title: 'My story at the beach',
+        description: 'How I ventured in the beach',
+        body: 'This is the body of my story',
+        categoryId: 1,
+      })
+      .end((err, res) => {
+        res.status.should.be.eql(201);
+        res.body.article.author.roleId.should.be.eql(2);
+        done();
+      });
+  });
+});

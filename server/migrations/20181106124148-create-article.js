@@ -31,6 +31,12 @@ export default {
       allowNull: true,
       defaultValue: null
     },
+    status: {
+      type: Sequelize.ENUM,
+      values: ['publish', 'draft', 'trash', 'under review'],
+      allowNull: false,
+      defaultValue: 'draft'
+    },
     userId: {
       type: Sequelize.INTEGER,
       onDelete: 'CASCADE',

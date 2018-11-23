@@ -24,6 +24,40 @@ export default (sequelize, DataTypes) => {
       allowNull: true,
       type: DataTypes.FLOAT,
       defaultValue: null
+    },
+    status: {
+      allowNull: false,
+      type: DataTypes.ENUM,
+      values: ['publish', 'draft', 'trash', 'under review'],
+      defaultValue: 'draft'
+    }
+  }, {
+    hooks: {
+      afterCreate: async (article) => {
+        try {
+          const articles = await sequelize.models.Article.findAndCountAll({
+            where: {
+              userId: article.userId
+            },
+            include: [{
+              model: sequelize.models.User,
+              as: 'author'
+            }]
+          });
+          if (articles.count >= 5 && articles.rows[0].author.roleId === 3) {
+            await sequelize.models.User.update({
+              roleId: 2
+            },
+            {
+              where: {
+                id: article.userId
+              }
+            });
+          }
+        } catch (err) {
+          return err;
+        }
+      }
     }
   });
 
