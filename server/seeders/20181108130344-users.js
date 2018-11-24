@@ -21,7 +21,7 @@ export default {
     confirmEmail: true,
   },
   {
-    fullName: ' Krugger',
+    fullName: 'freddie Krugger',
     email: 'freddie@example.com',
     roleId: 3,
     confirmEmail: true,

@@ -5,6 +5,7 @@ import ArticleCommentValidation from
   '../../middlewares/ArticleValidation';
 import verifyUser from '../../middlewares/confirmUser';
 import validateResourceId from '../../middlewares/validateResourceId';
+import validateAccess from '../../middlewares/validateAccess';
 
 const comments = express.Router();
 
@@ -13,7 +14,8 @@ const {
   addCommentOnArticle,
   editComment,
   getComment,
-  likeOrDislikeComment
+  likeOrDislikeComment,
+  deleteComment
 } = CommentController;
 
 // post a comment
@@ -41,5 +43,14 @@ comments.patch('/comments/:commentId',
 // get a comment and its entire history
 comments.get('/comments/:commentId',
   verifyToken, validateResourceId, getComment);
+
+// delete a user comment
+comments.delete(
+  '/comments/:commentId',
+  verifyToken,
+  validateResourceId,
+  validateAccess(['ADMIN', 'USER', 'AUTHOR']),
+  deleteComment
+);
 
 export default comments;

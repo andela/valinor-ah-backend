@@ -304,3 +304,58 @@ describe('edit a comment with no change', () => {
     editNoChange.body.status.should.be.equal('failure');
   });
 });
+
+describe('Delete a comment', () => {
+  const token = createToken(4, '1m');
+
+  it('should not delete a comment if a token is missing', (done) => {
+    chai.request(app)
+      .delete('/api/v1/comments/5')
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.status.should.eql(401);
+        res.body.status.should.eql('unauthorized');
+        res.body.message.should.eql('please provide a token');
+        done();
+      });
+  });
+
+  it('should throw error if comment is not found', (done) => {
+    chai.request(app)
+      .delete('/api/v1/comments/400')
+      .set('authorization', token)
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.status.should.eql(404);
+        res.body.status.should.eql('failure');
+        done();
+      });
+  });
+
+  it('should not delete a comment if user did not make the comment', (done) => {
+    chai.request(app)
+      .delete('/api/v1/comments/4')
+      .set('authorization', token)
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.status.should.eql(403);
+        res.body.status.should.eql('failure');
+        res.body.errors.message[0].should
+          .eql('you do not have permission to perform this operation');
+        done();
+      });
+  });
+
+  it('should delete a comment if user made the comment', (done) => {
+    chai.request(app)
+      .delete('/api/v1/comments/5')
+      .set('authorization', token)
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.status.should.eql(200);
+        res.body.status.should.eql('success');
+        res.body.message.should.eql('Comment has been deleted');
+        done();
+      });
+  });
+});
