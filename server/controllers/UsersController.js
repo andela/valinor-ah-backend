@@ -116,14 +116,6 @@ class UsersController {
 
     User.findByPk(id)
       .then((userFound) => {
-        if (!userFound) {
-          return res.status(404).json({
-            errors: {
-              message: ['User not found']
-            }
-          });
-        }
-
         const token = createToken(id, lifeSpan);
 
         // Require the user to have a confirmed email before they can log on.
@@ -279,13 +271,7 @@ class UsersController {
                 message: [err.message]
               }
             }));
-      })
-      .catch(() => res.status(404)
-        .json({
-          errors: {
-            message: ['user does not exist']
-          }
-        }));
+      });
   }
 
   /**
@@ -295,31 +281,32 @@ class UsersController {
    * @param {object} next The express next object
    * @returns {void}
    */
-  static getUserProfiles(req, res, next) {
+  static async getUserProfiles(req, res, next) {
     // get all user profiles and order by full name
-    User.findAll({
-      attributes: [
-        'fullName',
-        'avatarUrl',
-        'bio',
-        'twitterUrl',
-        'facebookUrl',
-        'location',
-        'roleId',
-      ],
-      order: [
-        ['fullName', 'ASC']
-      ],
-      raw: true,
-    })
-      .then((result) => {
-        res.status(200).json({
-          Users: result,
-        });
-      })
-      .catch((err) => {
-        next(err);
+    let result;
+    try {
+      result = await User.findAll({
+        attributes: [
+          'fullName',
+          'avatarUrl',
+          'bio',
+          'twitterUrl',
+          'facebookUrl',
+          'location',
+          'roleId',
+        ],
+        order: [
+          ['fullName', 'ASC']
+        ],
+        raw: true,
       });
+    } catch (err) {
+      return next(err);
+    }
+
+    return res.status(200).json({
+      Users: result,
+    });
   }
 
   /**

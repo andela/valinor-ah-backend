@@ -168,7 +168,7 @@ describe('Testing like or disliked comment', () => {
         res.should.have.status(401);
         res.body.should.be.a('object');
         res.body.status.should.be.eql('unauthorized');
-        res.body.message.should.be.eql('invalid token!');
+        res.body.message.should.be.eql('token expired!');
         done();
       });
   });

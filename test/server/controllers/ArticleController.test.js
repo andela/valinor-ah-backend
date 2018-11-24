@@ -490,7 +490,7 @@ describe('Articles Controller Tests', () => {
       // check body
       it('should return the expected body', () => {
         result.body.status.should.equal('unauthorized');
-        result.body.message.should.equal('invalid token!');
+        result.body.message.should.equal('token expired!');
       });
     });
   });
