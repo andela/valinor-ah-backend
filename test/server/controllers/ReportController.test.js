@@ -13,7 +13,7 @@ import {
 chai.use(chaiHttp);
 
 describe('Report Controller Tests', () => {
-  const token = createToken(1, '1d');
+  const token = createToken(3, '1d');
   describe('GET /api/v1/reports', () => {
     it('should return error if token is missing', (done) => {
       chai.request(app)

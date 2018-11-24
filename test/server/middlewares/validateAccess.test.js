@@ -4,7 +4,6 @@ import validateAccess from '../../../server/middlewares/validateAccess';
 
 const should = chai.should();
 
-
 describe('Unit tests on verify admin middleware', () => {
   it('should throw error if a user wants to perform admin operations',
     async () => {
@@ -114,27 +113,29 @@ describe('Unit tests on verify admin middleware', () => {
     res.statusMessage.should.be.eql('OK');
     should.equal(a, undefined);
   });
-  it(`should allow user to perform 
-  operation on his or her comment`,
-  async () => {
-    const req = {
-      userData: {
-        id: 6
-      },
-      commentData: {
-        userId: 4
-      }
-    };
-    let a;
-    const next = () => {
-      a = 1;
-    };
-    const res = httpMocks.createResponse();
-    await validateAccess(['USER', 'ADMIN', 'AUTHOR'])(req, res, next);
-    res.statusCode.should.be.eql(403);
-    res.statusMessage.should.be.eql('OK');
-    should.equal(a, undefined);
-  });
+  it(
+    `should not allow user to perform 
+      operation on his or her comment`,
+    async () => {
+      const req = {
+        userData: {
+          id: 6
+        },
+        commentData: {
+          userId: 4
+        }
+      };
+      let a;
+      const next = () => {
+        a = 1;
+      };
+      const res = httpMocks.createResponse();
+      await validateAccess(['USER', 'ADMIN', 'AUTHOR'])(req, res, next);
+      res.statusCode.should.be.eql(403);
+      res.statusMessage.should.be.eql('OK');
+      should.equal(a, undefined);
+    }
+  );
   it(`should throw error if user wants to perform 
   operation on a user resource from another user`,
   async () => {

@@ -3,6 +3,7 @@ import express from 'express';
 import { verifyToken } from '../../middlewares/tokenUtils';
 import ReportValidation from '../../middlewares/ReportValidation';
 import ReportController from '../../controllers/ReportController';
+import validateAccess from '../../middlewares/validateAccess';
 
 const reports = express.Router();
 
@@ -16,11 +17,14 @@ const {
 } = ReportController;
 
 // route to get report
-// TODO make this route accessible to only admin
-reports.get('/reports', verifyToken, getAllReports);
+reports.get('/reports', verifyToken, validateAccess(['ADMIN']), getAllReports);
 
 // route to add/update report types
-// TODO make this route accessible to only admin
-reports.post('/report-types', verifyToken, validateReport, addReport);
+reports.post(
+  '/report-types',
+  verifyToken,
+  validateAccess(['ADMIN']),
+  validateReport, addReport
+);
 
 export default reports;

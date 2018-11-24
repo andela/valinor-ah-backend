@@ -33,7 +33,7 @@ export default {
     },
     status: {
       type: Sequelize.ENUM,
-      values: ['publish', 'draft', 'trash', 'under review'],
+      values: ['publish', 'draft', 'trash', 'under-review'],
       allowNull: false,
       defaultValue: 'draft'
     },

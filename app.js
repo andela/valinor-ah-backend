@@ -8,7 +8,6 @@ import passport from 'passport';
 import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger.json';
-
 import routes from './server/routes';
 
 const app = express();

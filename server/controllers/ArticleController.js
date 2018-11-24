@@ -2,11 +2,12 @@ import uniqueSlug from 'unique-slug';
 import slugify from 'slugify';
 import Sequelize from 'sequelize';
 import readingTime from 'reading-time';
-
 import models from '../models';
 import cleanupArticlesResponse from '../helpers/cleanupArticlesResponse';
 import addMetaToArticle from '../helpers/addMetaToArticle';
 import addTagsToArticle from '../helpers/addTagsToArticle';
+import { deleteArticle, updateStatus } from '../helpers/deleteUtils';
+import errorResponse from '../helpers/errorResponse';
 
 const {
   Article,
@@ -117,10 +118,13 @@ class ArticleController {
  * @returns {object} - returns an Article
  */
   static getAnArticle(req, res, next) {
-    const { slug } = req.params;
-    Article.findOne({
+    const {
+      slug
+    } = req.params;
+    const defaultQuery = {
       where: {
-        [Op.or]: [{ slug }, { id: +slug || 0 }]
+        [Op.or]: [{ slug }, { id: +slug || 0 }],
+        status: 'publish',
       },
       include: [{
         model: User,
@@ -165,7 +169,8 @@ class ArticleController {
           'id', 'DESC'
         ],
       ],
-    })
+    };
+    Article.findOne(defaultQuery)
       .then(async (result) => {
         if (!result) {
           return res.status(404).json({
@@ -318,13 +323,15 @@ class ArticleController {
       // get user
       user = await User.findByPk(userId);
 
-      // add tags to the article
-      const err = addTagsToArticle(tags, article.id);
-      if (err) {
-        throw err;
+      if (tags) {
+        // add tags to the article
+        const err = await addTagsToArticle(tags, article.id);
+        if (err) {
+          throw err;
+        }
       }
     } catch (err) {
-      next(err);
+      return next(err);
     }
     // get user details
     const {
@@ -335,7 +342,7 @@ class ArticleController {
       // article successfully created
       const articleData = article.dataValues;
       articleData.tags = tags;
-      res.status(201).json({
+      return res.status(201).json({
         status: 'success',
         message: 'article successfully created',
         article: {
@@ -575,6 +582,70 @@ class ArticleController {
           message: [err.message]
         }
       }));
+  }
+
+  /**
+    * @description - This method deletes an article.
+    * @param {object} req - The request object.
+    * @param {object} res - The response object that is returned as json.
+    * @returns {object} - The object with message.
+    * @memberOf UserController
+    */
+  static async deleteUserArticle(req, res) {
+    try {
+      if (req.isOwner) {
+        if (req.articleData.status === 'trash') {
+          await deleteArticle(req.articleData.id)(res);
+        } else {
+          await updateStatus('trash', req.articleData.id)(res);
+        }
+      }
+      if (req.isAdmin) await deleteArticle(req.articleData.id)(res);
+    } catch (err) {
+      return err;
+    }
+  }
+
+  /**
+    * @description - This method fetches all articles for a user.
+    * @param {object} req - The request object.
+    * @param {object} res - The response object that is returned as json.
+    * @returns {object} - The object with message.
+    * @memberOf UserController
+    */
+  static async fetchUserArticles(req, res) {
+    const userId = req.userData.id;
+    let articles;
+    try {
+      articles = await Article.findAll({
+        where: {
+          userId
+        },
+        include: [{
+          model: User,
+          as: 'author',
+          attributes: [
+            'fullName',
+            'email',
+            'avatarUrl',
+            'bio',
+            'roleId',
+            'followers',
+            'following',
+          ]
+        }]
+      });
+    } catch (err) {
+      return errorResponse(err, res);
+    }
+
+    if (articles.length) {
+      return res.status(200).json({
+        status: 'success',
+        articles
+      });
+    }
+    return errorResponse('', res, 'No articles found', 404);
   }
 }
 
