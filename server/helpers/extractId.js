@@ -1,13 +1,10 @@
 /**
- * @description function to extract return ids
+ * @description function to extract ids
  * @param {number} rows
    * @returns {array} ids
 */
 const extractId = (rows) => {
-  const result = [];
-  for (let x = 0; x < rows.length; x += 1) {
-    result.push(rows[x].id);
-  }
+  const result = rows.map(row => row.id);
   return result;
 };
 

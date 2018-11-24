@@ -518,11 +518,7 @@ describe('Test fetch all authors route', () => {
 });
 
 describe('Testing automatic upgrade role functionality', () => {
-  const data = {};
-  before(() => {
-    data.id = 4;
-    data.token = createToken(data.id, '1h');
-  });
+  const data = { token: createToken(4) };
   it('user should create first article', (done) => {
     chai.request(app)
       .post('/api/v1/articles')

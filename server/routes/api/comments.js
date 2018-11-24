@@ -9,13 +9,17 @@ import validateAccess from '../../middlewares/validateAccess';
 
 const comments = express.Router();
 
-const { validateArticleCommentInput } = ArticleCommentValidation;
+const {
+  validateArticleCommentInput,
+  validateCommentReplyInput
+} = ArticleCommentValidation;
 const {
   addCommentOnArticle,
   editComment,
   getComment,
   likeOrDislikeComment,
-  deleteComment
+  deleteComment,
+  addCommentToComment
 } = CommentController;
 
 // post a comment
@@ -25,6 +29,15 @@ comments.post(
   validateArticleCommentInput,
   validateResourceId,
   addCommentOnArticle
+);
+
+// post a comment on a comment
+comments.post(
+  '/articles/:articleId/comments/:commentId',
+  verifyToken,
+  validateCommentReplyInput,
+  validateResourceId,
+  addCommentToComment
 );
 
 // like or dislike a comment

@@ -1,6 +1,6 @@
 import models from '../models';
 
-const { Comment } = models;
+const { Comment, CommentReply } = models;
 
 /**
  * @description function to return how many comments an article has
@@ -9,20 +9,19 @@ const { Comment } = models;
    * @returns {number} comment count
 */
 const getCommentsCount = async (arr) => {
-  const comments = [];
-  for (let x = 0; x < arr.length; x += 1) {
-    const comment = Comment.findAll({
-      where: {
-        articleId: arr[x]
-      }
-    });
-    comments.push(comment);
-  }
-  const countArr = await Promise.all(comments);
-  const result = [];
-  for (let x = 0; x < countArr.length; x += 1) {
-    result.push(countArr[x].length);
-  }
+  const comments = arr.map(articleId => Comment.findAll({
+    where: { articleId }
+  }));
+  const commentReplies = arr.map(articleId => CommentReply.findAll({
+    where: { articleId }
+  }));
+  const commentCount = await Promise.all(comments);
+  const replyCount = await Promise.all(commentReplies);
+  const commentCountArray = commentCount.map(x => x.length);
+  const replyCountArray = replyCount.map(x => x.length);
+  const result = commentCountArray.map(
+    (x, index) => x + replyCountArray[index]
+  );
   return result;
 };
 

@@ -11,14 +11,10 @@ const { Article } = models;
 const addMetaToAuthors = async (rows) => {
   // get ids of all returned authors
   const authorIds = extractId(rows);
-  const allArticles = [];
-  for (let x = 0; x < rows.length; x += 1) {
-    const article = Article
-      .findAndCountAll({
-        where: { userId: authorIds[x] }
-      });
-    allArticles.push(article);
-  }
+  const allArticles = authorIds.map(userId => Article
+    .findAndCountAll({
+      where: { userId }
+    }));
   const result = await Promise.all(allArticles);
   for (let x = 0; x < result.length; x += 1) {
     const { count } = result[x];

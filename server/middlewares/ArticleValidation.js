@@ -218,6 +218,50 @@ class ArticleValidation {
   }
 
   /**
+   * This method validates the comment id
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateCommentId(req) {
+    req.checkParams(
+      'commentId',
+      'commentId must be an integer'
+    ).isInt();
+    req.checkParams(
+      'commentId',
+      'commentId must be greater than 0'
+    ).isInt({ gt: 0 });
+  }
+
+  /**
+   * This method validates the articleId
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateArticleId(req) {
+    req.checkParams(
+      'articleId',
+      'articleId must be an integer'
+    ).isInt();
+    req.checkParams(
+      'articleId',
+      'articleId must be greater than 0'
+    ).isInt({ gt: 0 });
+  }
+
+  /**
+   * This method validates the comment reply
+   * @param {object} req - The request object
+   * @returns {void}
+   */
+  static validateCommentReply(req) {
+    req.checkBody(
+      'reply',
+      'please provide a reply'
+    ).exists();
+  }
+
+  /**
     * @description - This method validates the article page queries.
     * @param {object} req - The request object to be validated.
     * @param {object} res - Th response object to be validated.
@@ -247,6 +291,7 @@ class ArticleValidation {
     sendFormattedError(req, res, next);
   }
 
+
   /**
     * @description - This method validates the article page queries.
     * @param {object} req - The request object to be validated.
@@ -259,6 +304,22 @@ class ArticleValidation {
   static validateReportArticle(req, res, next) {
     ArticleValidation.validateType(req);
     ArticleValidation.validateReportBody(req);
+    sendFormattedError(req, res, next, 400);
+  }
+
+  /**
+    * @description - This method validates comment reply input and param.
+    * @param {object} req - The request object to be validated.
+    * @param {object} res - Th response object to be validated.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf ArticleValidators
+    * @static
+    */
+  static validateCommentReplyInput(req, res, next) {
+    ArticleValidation.validateCommentId(req);
+    ArticleValidation.validateCommentReply(req);
+    ArticleValidation.validateArticleId(req);
     sendFormattedError(req, res, next, 400);
   }
 }
