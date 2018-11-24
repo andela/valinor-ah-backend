@@ -73,7 +73,8 @@ export default (sequelize, DataTypes) => {
       Follow,
       Bookmark,
       ReadingStats,
-      ReportHistory
+      ReportHistory,
+      CommentReply
     } = models;
 
     User.belongsTo(Role, {
@@ -130,6 +131,11 @@ export default (sequelize, DataTypes) => {
     User.hasMany(ReportHistory, {
       as: 'reporter',
       foreignKey: 'reporterId'
+    });
+
+    User.hasMany(CommentReply, {
+      foreignKey: 'commentId',
+      as: 'commenter',
     });
   };
 

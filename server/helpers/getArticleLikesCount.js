@@ -9,21 +9,11 @@ const { ArticleLike } = models;
    * @returns {number} article likes or dislikes
 */
 const getArticleLikesCount = async (arr, status) => {
-  const like = [];
-  for (let x = 0; x < arr.length; x += 1) {
-    const find = ArticleLike.findAll({
-      where: {
-        articleId: arr[x],
-        status
-      }
-    });
-    like.push(find);
-  }
+  const like = arr.map(articleId => ArticleLike.findAll({
+    where: { articleId, status }
+  }));
   const likes = await Promise.all(like);
-  const result = [];
-  for (let x = 0; x < likes.length; x += 1) {
-    result.push(likes[x].length);
-  }
+  const result = likes.map(x => x.length);
   return result;
 };
 

@@ -514,20 +514,7 @@ describe('Test fetch all authors route', () => {
 });
 
 describe('Testing automatic upgrade role functionality', () => {
-  const data = {};
-  it('should signup a user', (done) => {
-    chai.request(app)
-      .post('/api/v1/users/signup')
-      .send({
-        fullName: 'Petit jackson',
-        email: 'petitjackson@whowa.com',
-      })
-      .end((err, res) => {
-        data.id = res.body.user.id;
-        data.token = res.body.user.token;
-        done();
-      });
-  });
+  const data = { token: createToken(4) };
   it('user should create first article', (done) => {
     chai.request(app)
       .post('/api/v1/articles')

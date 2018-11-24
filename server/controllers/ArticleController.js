@@ -17,7 +17,8 @@ const {
   ReportHistory,
   Bookmark,
   Category,
-  ReportType
+  ReportType,
+  CommentReply
 } = models;
 const { Op } = Sequelize;
 /**
@@ -127,12 +128,43 @@ class ArticleController {
       }, {
         model: Comment,
         as: 'comments',
+        include: [{
+          model: CommentReply,
+          as: 'replies',
+          attributes: [
+            'id',
+            'reply',
+            'createdAt',
+            'updatedAt'
+          ],
+          include: [{
+            model: User,
+            as: 'commenter',
+            attributes: [
+              'id',
+              'fullName',
+              'avatarUrl',
+              'bio',
+              'location',
+              'following',
+              'followers',
+              'createdAt'
+            ]
+          }]
+        }]
       },
       {
         model: Category,
         as: 'category',
         attributes: ['categoryName']
-      }]
+      }],
+      order: [
+        [
+          { model: Comment, as: 'comments' },
+          { model: CommentReply, as: 'replies' },
+          'id', 'DESC'
+        ],
+      ],
     })
       .then(async (result) => {
         if (!result) {
