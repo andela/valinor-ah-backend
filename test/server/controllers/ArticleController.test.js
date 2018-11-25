@@ -19,7 +19,7 @@ chai.use(chaiHttp);
 
 const articleBaseUrl = '/api/v1/articles';
 const getAnArticleUrl = string => `${articleBaseUrl}/${string}`;
-
+const expiredToken = createToken(1, 1);
 describe('Articles Controller Tests', () => {
   const userData = {};
 
@@ -826,6 +826,16 @@ describe('Articles Controller Tests', () => {
           res.body.status.should.be.eql('success');
           res.body.message.should.be
             .eql('your report was successfully submitted');
+          done();
+        });
+    });
+    it('should fail due to expired token', (done) => {
+      chai.request(app)
+        .post(`${articleBaseUrl}/2/reports`)
+        .set('authorization', expiredToken)
+        .send(articleReportData)
+        .end((err, res) => {
+          res.status.should.be.eql(401);
           done();
         });
     });

@@ -308,7 +308,7 @@ describe('edit a comment with no change', () => {
 describe('Commenting on a comment', () => {
   it('should comment on a comment', (done) => {
     chai.request(app)
-      .post(`${articleBaseUrl}/1/comments/1`)
+      .post(`${articleBaseUrl}/comments/1`)
       .set('authorization', userData.token)
       .send({
         reply: 'testing replying to a comment'
@@ -317,26 +317,7 @@ describe('Commenting on a comment', () => {
         should.equal(res.status, 201);
         should.equal(res.body.status, 'success');
         should.equal(res.body.message, 'reply successfully added');
-        should.equal(res.body.comment.articleId, 1);
         done();
       });
   });
-  it('should fail to comment on a comment that doesnot belong to the article',
-    (done) => {
-      chai.request(app)
-        .post(`${articleBaseUrl}/1/comments/2`)
-        .set('authorization', userData.token)
-        .send({
-          reply: 'testing replying to a comment'
-        })
-        .end((err, res) => {
-          should.equal(res.status, 400);
-          should.equal(res.body.status, 'failure');
-          should.equal(
-            res.body.errors.message,
-            'this comment does not belong to this article'
-          );
-          done();
-        });
-    });
 });

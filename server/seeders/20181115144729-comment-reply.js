@@ -3,7 +3,6 @@ export default {
     reply: 'Plagiarism is bad',
     userId: 1,
     commentId: 1,
-    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -11,7 +10,6 @@ export default {
     reply: 'User Agreement is bad',
     userId: 1,
     commentId: 1,
-    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -19,7 +17,6 @@ export default {
     reply: 'Policy is bad',
     userId: 1,
     commentId: 1,
-    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -27,7 +24,6 @@ export default {
     reply: 'Policy is bad',
     userId: 1,
     commentId: 3,
-    articleId: 2,
     createdAt: new Date(),
     updatedAt: new Date()
   }], {}),

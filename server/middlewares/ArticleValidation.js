@@ -185,38 +185,6 @@ class ArticleValidation {
   }
 
   /**
-   * This method validates the comment id
-   * @param {object} req - The request object
-   * @returns {void}
-   */
-  static validateCommentId(req) {
-    req.checkParams(
-      'commentId',
-      'commentId must be an integer'
-    ).isInt();
-    req.checkParams(
-      'commentId',
-      'commentId must be greater than 0'
-    ).isInt({ gt: 0 });
-  }
-
-  /**
-   * This method validates the articleId
-   * @param {object} req - The request object
-   * @returns {void}
-   */
-  static validateArticleId(req) {
-    req.checkParams(
-      'articleId',
-      'articleId must be an integer'
-    ).isInt();
-    req.checkParams(
-      'articleId',
-      'articleId must be greater than 0'
-    ).isInt({ gt: 0 });
-  }
-
-  /**
    * This method validates the comment reply
    * @param {object} req - The request object
    * @returns {void}
@@ -225,7 +193,10 @@ class ArticleValidation {
     req.checkBody(
       'reply',
       'please provide a reply'
-    ).exists();
+    ).custom((reply) => {
+      const text = reply.trim();
+      if (text !== '') return true;
+    });
   }
 
   /**
@@ -284,9 +255,7 @@ class ArticleValidation {
     * @static
     */
   static validateCommentReplyInput(req, res, next) {
-    ArticleValidation.validateCommentId(req);
     ArticleValidation.validateCommentReply(req);
-    ArticleValidation.validateArticleId(req);
     sendFormattedError(req, res, next, 400);
   }
 }

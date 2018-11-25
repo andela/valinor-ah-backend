@@ -31,7 +31,7 @@ comments.post(
 
 // post a comment on a comment
 comments.post(
-  '/articles/:articleId/comments/:commentId',
+  '/articles/comments/:commentId',
   verifyToken,
   validateCommentReplyInput,
   validateResourceId,

@@ -6,7 +6,7 @@ export default (sequelize, DataTypes) => {
     }
   });
   CommentReply.associate = (models) => {
-    const { User, Comment, Article } = models;
+    const { User, Comment } = models;
     CommentReply.belongsTo(User, {
       foreignKey: 'userId',
       as: 'commenter',
@@ -15,10 +15,6 @@ export default (sequelize, DataTypes) => {
     CommentReply.belongsTo(Comment, {
       foreignKey: 'commentId',
       as: 'replies',
-      onDelete: 'CASCADE'
-    });
-    CommentReply.belongsTo(Article, {
-      foreignKey: 'articleId',
       onDelete: 'CASCADE'
     });
   };

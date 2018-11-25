@@ -1,4 +1,5 @@
 import models from '../models';
+import extractId from './extractId';
 
 const { Comment, CommentReply } = models;
 
@@ -12,10 +13,11 @@ const getCommentsCount = async (arr) => {
   const comments = arr.map(articleId => Comment.findAll({
     where: { articleId }
   }));
-  const commentReplies = arr.map(articleId => CommentReply.findAll({
-    where: { articleId }
-  }));
   const commentCount = await Promise.all(comments);
+  const replies = commentCount.map(comment => extractId(comment));
+  const commentReplies = replies.map(commentId => CommentReply.findAll({
+    where: { commentId }
+  }));
   const replyCount = await Promise.all(commentReplies);
   const commentCountArray = commentCount.map(x => x.length);
   const replyCountArray = replyCount.map(x => x.length);
