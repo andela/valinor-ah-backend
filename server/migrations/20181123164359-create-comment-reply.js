@@ -1,13 +1,13 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable(
-    'CommentReplies', {
+  up: (queryInterface, Sequelize) => queryInterface
+    .createTable('CommentReplies', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      reply: {
+      body: {
         type: Sequelize.STRING
       },
       commentId: {
@@ -28,15 +28,6 @@ export default {
           key: 'id'
         }
       },
-      articleId: {
-        type: Sequelize.INTEGER,
-        onDelete: 'CASCADE',
-        allowNull: false,
-        references: {
-          model: 'Articles',
-          key: 'id'
-        }
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -45,7 +36,6 @@ export default {
         allowNull: false,
         type: Sequelize.DATE
       }
-    }
-  ),
+    }),
   down: queryInterface => queryInterface.dropTable('CommentReplies')
 };

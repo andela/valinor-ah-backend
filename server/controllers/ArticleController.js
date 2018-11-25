@@ -133,7 +133,7 @@ class ArticleController {
           as: 'replies',
           attributes: [
             'id',
-            'reply',
+            'body',
             'createdAt',
             'updatedAt'
           ],

@@ -10,8 +10,7 @@ import validateAccess from '../../middlewares/validateAccess';
 const comments = express.Router();
 
 const {
-  validateArticleCommentInput,
-  validateCommentReplyInput
+  validateArticleCommentInput
 } = ArticleCommentValidation;
 const {
   addCommentOnArticle,
@@ -33,9 +32,9 @@ comments.post(
 
 // post a comment on a comment
 comments.post(
-  '/articles/:articleId/comments/:commentId',
+  '/articles/comments/:commentId',
   verifyToken,
-  validateCommentReplyInput,
+  validateArticleCommentInput,
   validateResourceId,
   addCommentToComment
 );

@@ -12,7 +12,11 @@ export default {
     dialect: 'postgres',
   },
   test: {
-    use_env_variable: 'DB_DATABASE_TEST_URL',
+    username: 'postgres',
+    password: '',
+    database: 'valinor_backend_test',
+    host: '127.0.0.1',
+    port: '5432',
     dialect: 'postgres',
   },
   production: {

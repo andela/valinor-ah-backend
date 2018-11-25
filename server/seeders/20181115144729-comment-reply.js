@@ -1,33 +1,29 @@
 export default {
   up: queryInterface => queryInterface.bulkInsert('CommentReplies', [{
-    reply: 'Plagiarism is bad',
+    body: 'Plagiarism is bad',
     userId: 1,
     commentId: 1,
-    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    reply: 'User Agreement is bad',
+    body: 'User Agreement is bad',
     userId: 1,
     commentId: 1,
-    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    reply: 'Policy is bad',
+    body: 'Policy is bad',
     userId: 1,
     commentId: 1,
-    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    reply: 'Policy is bad',
+    body: 'Policy is bad',
     userId: 1,
     commentId: 3,
-    articleId: 2,
     createdAt: new Date(),
     updatedAt: new Date()
   }], {}),

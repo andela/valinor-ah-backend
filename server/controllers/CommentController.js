@@ -70,22 +70,15 @@ class CommentController {
      * @param {object} next
      * @returns {object} returns an object of comment
    */
-  static async addCommentToComment(req, res, next) {
+  static async addCommentToComment(req, res) {
     const { id } = req.userData;
-    const { articleId, commentId } = req.params;
-    const { reply } = req.body;
-    let result;
+    const { commentId } = req.params;
+    const { body } = req.body;
+    let reply;
     let commenter;
     try {
-      const comment = await Comment.findByPk(commentId);
-      if (comment.articleId !== +articleId) {
-        const err = new Error('this comment does not belong to this article');
-        err.status = 400;
-        return next(err);
-      }
-      result = await CommentReply.create({
-        reply,
-        articleId,
+      reply = await CommentReply.create({
+        body,
         commentId,
         userId: id
       });
@@ -105,11 +98,11 @@ class CommentController {
     } catch (error) {
       return error;
     }
-    result.dataValues.commenter = commenter;
+    reply.dataValues.commenter = commenter;
     return res.status(201).json({
       status: 'success',
       message: 'reply successfully added',
-      comment: result,
+      reply,
     });
   }
 
