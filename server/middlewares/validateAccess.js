@@ -26,7 +26,7 @@ const validateAccess = arrayOfPermissions => async (req, res, next) => {
     if (arrayOfPermissions.indexOf(data) !== -1) hasAccess = true;
     if (!hasAccess) {
       return errorResponse(
-        '', res, 'you dont have permission to perform this operation', 403
+        '', res, 'you do not have permission to perform this operation', 403
       );
     }
 
@@ -52,7 +52,7 @@ const validateAccess = arrayOfPermissions => async (req, res, next) => {
     req.isOwner = isOwner;
     if (!isAdmin && !isOwner) {
       return errorResponse(
-        '', res, 'you dont have permission to perform this operation', 403
+        '', res, 'you do not have permission to perform this operation', 403
       );
     }
     return next();

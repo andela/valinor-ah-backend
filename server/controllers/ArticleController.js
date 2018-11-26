@@ -6,12 +6,12 @@ import readingTime from 'reading-time';
 import models from '../models';
 import cleanupArticlesResponse from '../helpers/cleanupArticlesResponse';
 import addMetaToArticle from '../helpers/addMetaToArticle';
+import addTagsToArticle from '../helpers/addTagsToArticle';
 
 const {
   Article,
   User,
   ArticleLike,
-  Tag,
   ArticleTag,
   Comment,
   ReportHistory,
@@ -248,22 +248,29 @@ class ArticleController {
       description,
       body,
       tags,
-      categoryName
     } = req.body;
+
+    let { categoryName, status } = req.body;
+    // if no category provided, default to others
+    if (!categoryName) categoryName = 'others';
+    // if no status is provided, default to draft
+    if (!status) status = 'draft';
+
+
     const userId = req.userData.id;
     // creata a unique slug
     const slug = `${slugify(title.toLowerCase())}-${uniqueSlug()}`;
     // calculate the reading time
     const stats = readingTime(body);
 
-    let article;
-    let user;
+    let article, user;
     try {
-      // find or create  the category
+      // find or create the category
       const [category] = await Category.findOrCreate({
         where: { categoryName },
-        defaults: { categoryName: 'others' }
+        defaults: { categoryName }
       });
+
       // create an article
       article = await Article.create({
         title,
@@ -271,22 +278,34 @@ class ArticleController {
         description,
         body,
         readTime: stats.time,
+        status,
         userId,
         categoryId: category.id
       });
+
+      // get user
       user = await User.findByPk(userId);
+
+      // add tags to the article
+      const err = addTagsToArticle(tags, article.id);
+      if (err) {
+        throw err;
+      }
     } catch (err) {
       next(err);
     }
+    // get user details
     const {
       fullName, email, avatarUrl, bio, roleId
     } = user;
-    // article successfully created
+
     if (article) {
+      // article successfully created
       const articleData = article.dataValues;
       articleData.tags = tags;
       res.status(201).json({
         status: 'success',
+        message: 'article successfully created',
         article: {
           ...articleData,
           author: {
@@ -298,28 +317,63 @@ class ArticleController {
           }
         }
       });
+    }
+  }
 
-      if (tags) {
-        // loop through tags and find/create tags and add to articleTags table
-        tags.forEach(async (tagName) => {
-          let tagData;
-          try {
-            // find or add entry to tag table
-            [tagData] = await Tag.findOrCreate({
-              where: { tagName },
-              defaults: { tagName }
-            });
-            // add entry to article tag table
-            await ArticleTag.create({
-              tagId: tagData.dataValues.id,
-              articleId: article.dataValues.id,
-            });
-          } catch (err) {
-            next(err);
+  /**
+   * controller to edit an article
+   * @param {object} req - express request object
+   * @param {object} res - express response object
+   * @param {object} next - express next object
+   * @returns {void}
+   */
+  static async editArticle(req, res, next) {
+    const updateData = req.body;
+    const { articleId } = req.params;
+
+    // function to update the article
+    const updateArticle = async () => {
+      let article, articleData, rowCount, user;
+      try {
+        // update the article
+        [rowCount, article] = await Article.update(updateData, {
+          where: { id: articleId },
+          returning: true,
+        });
+        if (updateData.tags) {
+          // delete the tags
+          await ArticleTag.destroy({ where: { articleId } });
+          // add new tags
+          const err = addTagsToArticle(updateData.tags, article.id);
+          if (err) {
+            throw err;
           }
+        }
+        // get user
+        user = await User.findByPk(req.userData.id);
+        // get user details
+        const {
+          fullName, email, avatarUrl, bio, roleId
+        } = user;
+
+        // add tags and author info to article data
+        articleData = article[0].dataValues;
+        articleData.tags = updateData.tags;
+        articleData.author = {
+          fullName, email, avatarUrl, bio, roleId
+        };
+      } catch (error) {
+        return next(error);
+      }
+      if (rowCount > 0) {
+        return res.status(200).json({
+          status: 'success',
+          message: `${rowCount} article updated successfully`,
+          article: articleData,
         });
       }
-    }
+    };
+    updateArticle();
   }
 
   /**

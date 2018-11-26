@@ -7,16 +7,19 @@ import validateResourceId from '../../middlewares/validateResourceId';
 import queryGenerator from '../../middlewares/QueryGenerator';
 import addReadingStats from '../../middlewares/addReadingStats';
 import TagController from '../../controllers/TagController';
+import validateAccess from '../../middlewares/validateAccess';
 
 const articles = express.Router();
 const { getAllArticleTags } = TagController;
 const {
   validateReportArticle,
   validateArticleInput,
+  validateArticleUpdate,
   validateQuery
 } = ArticleValidation;
 const {
   createArticle,
+  editArticle,
   getAnArticle,
   fetchAllCategories,
   fetchAllArticles,
@@ -39,6 +42,16 @@ articles.post(
   verifyToken,
   validateArticleInput,
   createArticle
+);
+
+// update an article
+articles.patch(
+  '/articles/:articleId',
+  verifyToken,
+  validateResourceId,
+  validateArticleUpdate,
+  validateAccess(['USER', 'AUTHOR']),
+  editArticle
 );
 
 articles.get(
