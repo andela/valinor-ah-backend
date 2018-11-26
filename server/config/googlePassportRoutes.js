@@ -25,7 +25,6 @@ const googlePassportRoutes = {
     ]
   }),
   callback: () => passport.authenticate('google', {
-    successRedirect: '/',
     failureRedirect: '/login'
   }),
 };

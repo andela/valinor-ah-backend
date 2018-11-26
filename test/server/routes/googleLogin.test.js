@@ -38,6 +38,7 @@ describe('Test Google login route', function google() {
 
 describe('Test google callback function', () => {
   it('should return undefined if successful', (done) => {
+    profile.id = '976249283701273023';
     const result = googleCallback(accessToken, refreshToken, profile, done);
     should.equal(result, undefined);
   });

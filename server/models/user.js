@@ -22,7 +22,7 @@ export default (sequelize, DataTypes) => {
     },
     googleId: {
       allowNull: true,
-      type: DataTypes.BIGINT,
+      type: DataTypes.STRING,
     },
     bio: {
       allowNull: true,
