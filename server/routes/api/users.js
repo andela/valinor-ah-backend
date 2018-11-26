@@ -25,7 +25,8 @@ const {
   updateProfile,
   getSingleProfile,
   getUserProfiles,
-  fetchAuthors
+  fetchAuthors,
+  socialEnd
 } = UserController;
 const {
   followAuthor,
@@ -64,7 +65,11 @@ router.get('/users/authors', fetchAuthors);
 router.get('/auth/facebook', facebookPassportRoutes.authenticate());
 
 // facebook callback route
-router.get('/auth/facebook/callback', facebookPassportRoutes.callback());
+router.get(
+  '/auth/facebook/callback',
+  facebookPassportRoutes.callback(),
+  socialEnd
+);
 
 // update profile route
 router.patch(
@@ -83,7 +88,7 @@ router.get('/auth/twitter/callback', twitterPassportRoutes.callback());
 router.get('/auth/google', googlePassportRoutes.authenticate());
 
 // google callback route
-router.get('/auth/google/callback', googlePassportRoutes.callback());
+router.get('/auth/google/callback', googlePassportRoutes.callback(), socialEnd);
 
 // get all user profiles
 router.get('/users', verifyToken, confirmUser, getUserProfiles);

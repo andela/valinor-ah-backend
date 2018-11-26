@@ -47,7 +47,7 @@ export default {
     },
     googleId: {
       allowNull: true,
-      type: Sequelize.BIGINT,
+      type: Sequelize.STRING,
     },
     bio: {
       allowNull: true,

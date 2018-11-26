@@ -3,21 +3,8 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import dotenv from 'dotenv';
 
 import facebookCallback from '../helpers/facebookCallback';
-import models from '../models';
-
-const { User } = models;
 
 dotenv.config();
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  User.findByPk(id).then((user) => {
-    done(null, user);
-  });
-});
 
 const facebookOptions = {
   clientID: process.env.FACEBOOK_APP_ID,
@@ -29,11 +16,10 @@ passport.use(new FacebookStrategy(facebookOptions, facebookCallback));
 
 const facebookPassportRoutes = {
   authenticate: () => passport.authenticate('facebook', {
-    session: true,
+    session: false,
     scope: ['email']
   }),
   callback: () => passport.authenticate('facebook', {
-    successRedirect: '/',
     failureRedirect: '/login'
   })
 };

@@ -26,7 +26,7 @@ const googleCallback = (accessToken, refreshToken, profile, done) => {
 
   User.findOrCreate({
     where: {
-      [Op.or]: [{ email }, { googleId: id }],
+      [Op.or]: [{ email }, { googleId: `${id}` }],
     },
     defaults: {
       fullName: `${givenName} ${familyName}`,
@@ -35,8 +35,9 @@ const googleCallback = (accessToken, refreshToken, profile, done) => {
       googleId: id,
       confirmEmail: true,
     }
-  }).spread((user) => {
+  }).spread((user, created) => {
     const userValues = user.get({ plain: true });
+    userValues.created = created;
     return done(null, userValues);
   });
 };

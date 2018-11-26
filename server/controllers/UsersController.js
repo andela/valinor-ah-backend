@@ -405,6 +405,39 @@ class UsersController {
       authors
     });
   }
+
+  /**
+   * @description - This method returns a token and
+   * user object for social login
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static socialEnd(req, res) {
+    const {
+      id,
+      fullName,
+      email,
+      created
+    } = req.user;
+    const user = {
+      id,
+      fullName,
+      email
+    };
+    user.token = createToken(id, '90d');
+    if (created) {
+      return res.status(201).json({
+        message: 'New account created successfully',
+        user
+      });
+    }
+    return res.status(200).json({
+      message: 'Log in successful',
+      user
+    });
+  }
 }
 
 export default UsersController;
