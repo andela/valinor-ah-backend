@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
+import checkToken from '../helpers/checkToken';
+
 dotenv.config();
 
 const secret = process.env.JWT_SECRET;
@@ -25,7 +27,7 @@ export const createToken = (id, lifeSpan) => {
  * @param {object} next - express next to pass to next middleware
  * @returns {void}
  */
-export const verifyToken = (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   const token = req.headers.authorization || req.query.token;
   if (!token) {
     return res.status(401).json({
@@ -42,6 +44,8 @@ export const verifyToken = (req, res, next) => {
     }
   );
   if (!decoded.message) {
+    const check = await checkToken(decoded.id);
+    if (check instanceof Error) return next(check);
     req.userData = decoded;
     return next();
   }

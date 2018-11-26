@@ -149,8 +149,8 @@ describe('Testing Login feature -Integration testing', () => {
       chai.request(app)
         .get(`${loginUrl}?token=${unregisteredUserToken}`)
         .end((err, res) => {
-          res.status.should.eql(404);
-          res.body.errors.message[0].should.eql('User not found');
+          res.status.should.eql(401);
+          res.body.errors.message.should.eql('Please sign up');
           done();
         });
     });
@@ -204,11 +204,12 @@ describe('Verify user email via link', () => {
       chai.request(app)
         .get(`/api/v1/users/verify?token=${token2}`)
         .end((err, res) => {
-          res.should.have.status(404);
+          res.should.have.status(401);
           res.body.should.deep.equal({
             errors: {
-              message: ['user does not exist']
-            }
+              message: 'Please sign up'
+            },
+            status: 'failure'
           });
           done();
         });
@@ -415,12 +416,12 @@ describe('Update user profile', () => {
 
     // check return status and body
     it('should return status 404', () => {
-      resData.status.should.equal(404);
+      resData.status.should.equal(401);
     });
     it('return body containing a descriptive failure message', () => {
       resData.body.status.should.equal('failure');
       resData.body.errors.message.should
-        .equal('Sorry, that user was not found');
+        .equal('Please sign up');
     });
   });
 });
@@ -515,18 +516,9 @@ describe('Test fetch all authors route', () => {
 
 describe('Testing automatic upgrade role functionality', () => {
   const data = {};
-  it('should signup a user', (done) => {
-    chai.request(app)
-      .post('/api/v1/users/signup')
-      .send({
-        fullName: 'Petit jackson',
-        email: 'petitjackson@whowa.com',
-      })
-      .end((err, res) => {
-        data.id = res.body.user.id;
-        data.token = res.body.user.token;
-        done();
-      });
+  before(() => {
+    data.id = 4;
+    data.token = createToken(data.id, '1h');
   });
   it('user should create first article', (done) => {
     chai.request(app)
