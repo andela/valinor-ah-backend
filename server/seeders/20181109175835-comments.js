@@ -27,6 +27,13 @@ export default {
     articleId: 2,
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    body: 'This comment belongs to the delete comments tests',
+    userId: 4,
+    articleId: 2,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Comments', null, {})

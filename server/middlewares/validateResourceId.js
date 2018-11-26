@@ -30,7 +30,6 @@ const validateResourceId = async (req, res, next) => {
       notFoundError.status = 404;
       return next(notFoundError);
     }
-
     switch (type) {
       case 'article': req.articleData = resource;
         break;

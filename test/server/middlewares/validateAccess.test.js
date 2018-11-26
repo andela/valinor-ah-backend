@@ -10,7 +10,7 @@ describe('Unit tests on verify admin middleware', () => {
     async () => {
       const req = {
         userData: {
-          id: 4
+          id: 5
         },
         articleData: {
           userId: 1

@@ -240,6 +240,33 @@ class CommentController {
       comment,
     });
   }
+
+  /**
+  * @description This method deletes a comment on an article
+  * @param {object} req - exporess request object
+  * @param {object} res - express response object
+  * @param {object} next - express next object
+  * @returns {object} returns an object of comment
+  */
+  static async deleteComment(req, res, next) {
+    const { commentId } = req.params;
+    let rowCount;
+
+    try {
+      rowCount = await Comment.destroy({
+        where: { id: commentId }
+      });
+    } catch (err) {
+      return next(err);
+    }
+
+    if (rowCount > 0) {
+      return res.status(200).json({
+        status: 'success',
+        message: 'Comment has been deleted'
+      });
+    }
+  }
 }
 
 export default CommentController;
