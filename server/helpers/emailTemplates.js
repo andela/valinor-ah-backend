@@ -64,4 +64,27 @@ const loginLinkMessage = (loginUrl, token) => {
   };
 };
 
-export { loginLinkMessage, verifyEmailMessage };
+const deleteAccountMessage = (token) => {
+  const message = {
+    subject: 'Delete you Author\'s Haven account',
+    body:
+    `<div>
+      <p>Click
+        <a href=
+          "${process.env.API_BASE_URL}/users/account/delete?token=${token}">
+          <strong>here</strong>
+        </a>
+         to delete your account.
+         <p>If this action was not initiated by you, click
+            <a href="fakeloguseroutofaccounts">
+              <strong>here</strong>
+            </a>
+         </p>
+      </p>
+    </div>
+    `
+  };
+  return message;
+};
+
+export { loginLinkMessage, verifyEmailMessage, deleteAccountMessage };

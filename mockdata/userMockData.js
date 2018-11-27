@@ -43,7 +43,7 @@ export const userDataWithEmptyFields = {
   fullName: '',
 };
 export const userDataWithAnExistingEmail = {
-  email: 'solomon.sulaiman@andela.com',
+  email: 'johnmike@andela.com',
   fullName: 'Augustine Ezinwa',
 };
 export const userDataWithInvalidDataTypes = {

@@ -1,5 +1,6 @@
 import chaiHttp from 'chai-http';
 import chai from 'chai';
+import uniqueSlug from 'unique-slug';
 
 import models from '../../../server/models';
 import app from '../../../app';
@@ -8,8 +9,9 @@ import { createToken } from '../../../server/middlewares/tokenUtils';
 const should = chai.should();
 const { User } = models;
 chai.use(chaiHttp);
-const signupUrl = '/api/v1/users/signup';
-const loginUrl = '/api/v1/users/login';
+const usersBaseUrl = '/api/v1/users';
+const signupUrl = `${usersBaseUrl}/signup`;
+const loginUrl = `${usersBaseUrl}/login`;
 
 const updateData = {
   fullName: 'Tani Morgana',
@@ -58,7 +60,7 @@ describe('/users/signup', () => {
         res.should.have.status(201);
         res.body.should.be.a('object');
         userData.id = 6;
-        userData.token = createToken(6, '1h');
+        userData.token = createToken(userData.id, '1h');
         done();
       });
   });
@@ -189,7 +191,7 @@ describe('Verify user email via link', () => {
     'should verify a user',
     (done) => {
       chai.request(app)
-        .get(`/api/v1/users/verify?token=${token}`)
+        .get(`${usersBaseUrl}/verify?token=${token}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.status.should.deep.equal('success');
@@ -202,7 +204,7 @@ describe('Verify user email via link', () => {
     'should fail to verify an unregistered user',
     (done) => {
       chai.request(app)
-        .get(`/api/v1/users/verify?token=${token2}`)
+        .get(`${usersBaseUrl}/verify?token=${token2}`)
         .end((err, res) => {
           res.should.have.status(401);
           res.body.should.deep.equal({
@@ -219,7 +221,7 @@ describe('Verify user email via link', () => {
     'should fail to verify an already verified user',
     (done) => {
       chai.request(app)
-        .get(`/api/v1/users/verify?token=${token}`)
+        .get(`${usersBaseUrl}/verify?token=${token}`)
         .end((err, res) => {
           res.should.have.status(403);
           res.body.should.deep.equal({
@@ -235,13 +237,13 @@ describe('Verify user email via link', () => {
 
 // GET USERS PROFILES TEST SUTE
 describe('Get all user Profiles', () => {
-  const token = createToken(5, '1h');
+  const unverifiedToken = createToken(2, '1h');
   describe('with an unconfirmed email', () => {
     const result = {};
     before((done) => {
       chai.request(app)
-        .get('/api/v1/users')
-        .set('authorization', token)
+        .get(`${usersBaseUrl}`)
+        .set('authorization', unverifiedToken)
         .end((err, res) => {
           result.status = res.status;
           result.body = res.body;
@@ -259,11 +261,12 @@ describe('Get all user Profiles', () => {
   });
 
   describe('with confirmed email', () => {
+    const confirmedToken = createToken(1, '1h');
     const result = {};
     before((done) => {
       // confirm the user's email
       chai.request(app)
-        .get(`/api/v1/users/verify?token=${userData.token}`)
+        .get(`${usersBaseUrl}/verify?token=${confirmedToken}`)
         .end(() => {
           done();
         });
@@ -296,7 +299,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${userData.id}`)
+        .patch(`${usersBaseUrl}/${userData.id}`)
         .send(updateData)
         .end((err, res) => {
           resData.status = res.status;
@@ -320,7 +323,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${userData.id - 1}`)
+        .patch(`${usersBaseUrl}/${userData.id - 1}`)
         .set('authorization', userData.token)
         .send(updateData)
         .end((err, res) => {
@@ -346,7 +349,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${userData.id}`)
+        .patch(`${usersBaseUrl}/${userData.id}`)
         .set('authorization', userData.token)
         .send(updateData)
         .end((err, res) => {
@@ -376,7 +379,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${userData.id}`)
+        .patch(`${usersBaseUrl}/${userData.id}`)
         .set('authorization', userData.token)
         .send(invalidUpdateData)
         .end((err, res) => {
@@ -404,7 +407,7 @@ describe('Update user profile', () => {
     const resData = {};
     before((done) => {
       chai.request(app)
-        .patch(`/api/v1/users/${fakeId}`)
+        .patch(`${usersBaseUrl}/${fakeId}`)
         .set('authorization', fakeToken)
         .send(updateData)
         .end((err, res) => {
@@ -433,7 +436,7 @@ describe('Get user profile', () => {
     before((done) => {
       // get my profile
       chai.request(app)
-        .get(`/api/v1/users/${userData.id}`)
+        .get(`${usersBaseUrl}/${userData.id}`)
         .set('authorization', userData.token)
         .end((err, res) => {
           result.status = res.status;
@@ -454,9 +457,9 @@ describe('Get user profile', () => {
   describe('for another user\'s profile', () => {
     const result = {};
     before((done) => {
-      // get my profile
+      // get another user\'s profile
       chai.request(app)
-        .get(`/api/v1/users/${userData.id - 1}`)
+        .get(`${usersBaseUrl}/${userData.id - 1}`)
         .set('authorization', userData.token)
         .end((err, res) => {
           result.status = res.status;
@@ -515,7 +518,11 @@ describe('Test fetch all authors route', () => {
 });
 
 describe('Testing automatic upgrade role functionality', () => {
-  const data = { token: createToken(4) };
+  const data = {};
+  before(() => {
+    data.id = 4;
+    data.token = createToken(data.id, '1h');
+  });
   it('user should create first article', (done) => {
     chai.request(app)
       .post('/api/v1/articles')
@@ -595,5 +602,219 @@ describe('Testing automatic upgrade role functionality', () => {
         res.body.article.author.roleId.should.be.eql(2);
         done();
       });
+  });
+});
+
+// DELETE / DEACTIVATE A USER ACCOUNT
+// DONT ADD TESTS THAT REQUIRE userData BELOW THIS
+describe('Delete or Deactivate a user account', () => {
+  const deleteData = {};
+  deleteData.id = 5;
+  deleteData.token = createToken(deleteData.id, '1h');
+  describe('self-deactivate a user account', () => {
+    const result = {};
+    before((done) => {
+      // deactivate my account
+      chai.request(app)
+        .patch(`${usersBaseUrl}/${deleteData.id}/account/deactivate`)
+        .set('authorization', deleteData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+
+    it('should have a success response body', () => {
+      result.body.status.should.be.equal('success');
+      result.body.message.should.be
+        .equal('you have successfully deactivated your account');
+    });
+  });
+
+  describe('self-deactivate an already deactivated user account', () => {
+    const result = {};
+    before((done) => {
+      // deactivate my account
+      chai.request(app)
+        .patch(`${usersBaseUrl}/${deleteData.id}/account/deactivate`)
+        .set('authorization', deleteData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 409', () => {
+      result.status.should.be.equal(409);
+    });
+
+    it('should have a success response body', () => {
+      result.body.status.should.be.equal('failure');
+      result.body.errors.message.should.be
+        .equal('your account is already deactivated');
+    });
+  });
+
+  describe('self-activate a user account', () => {
+    const result = {};
+    before((done) => {
+      // activate my account
+      chai.request(app)
+        .patch(`${usersBaseUrl}/${deleteData.id}/account/activate`)
+        .set('authorization', deleteData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+
+    it('should have a success response body', () => {
+      result.body.status.should.be.equal('success');
+      result.body.message.should.be
+        .equal('you have successfully activated your account');
+    });
+  });
+
+  describe('deactivate another user\'s account', () => {
+    const result = {};
+    before((done) => {
+      // dectivate another user's account
+      chai.request(app)
+        .patch(`${usersBaseUrl}/${deleteData.id - 1}/account/deactivate`)
+        .set('authorization', deleteData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 403', () => {
+      result.status.should.be.equal(403);
+    });
+
+    it('should have a descriptive error response body', () => {
+      result.body.status.should.be.equal('failure');
+      result.body.errors.message[0].should.be
+        .equal('you do not have permission to perform this operation');
+    });
+  });
+
+  describe('self delete my account', () => {
+    const result = {};
+    before((done) => {
+      // delete my account
+      chai.request(app)
+        .patch(`${usersBaseUrl}/${deleteData.id}/account/delete`)
+        .set('authorization', deleteData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+
+    it('should have a success response body', () => {
+      result.body.status.should.be.equal('success');
+      result.body.message.should.be
+        // eslint-disable-next-line max-len
+        .equal('delete link successfully sent to your email address, link expires in 15 minutes');
+    });
+  });
+
+  describe('pass normal token to delete email link', () => {
+    const result = {};
+    before((done) => {
+      // click delete link
+      chai.request(app)
+        .get(`${usersBaseUrl}/account/delete?token=${deleteData.token}`)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 403', () => {
+      result.status.should.be.equal(403);
+    });
+
+    it('should have a descriptive error response body', () => {
+      result.body.status.should.be.equal('failure');
+      result.body.errors.message.should.be.equal('invalid delete token');
+    });
+  });
+
+  describe('click delete email link', () => {
+    const result = {};
+    const deleteKey = `${deleteData.id}-${uniqueSlug('valinordelete')}`;
+    const deleteToken = createToken(deleteKey, '15m');
+    before((done) => {
+      // click delete link
+      chai.request(app)
+        .get(`${usersBaseUrl}/account/delete?token=${deleteToken}`)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+
+    it('should have a success response body', () => {
+      result.body.status.should.be.equal('success');
+      result.body.message.should.be
+        .equal('your account was successfully deleted');
+    });
+  });
+
+  describe('admin delete a user', () => {
+    const result = {};
+    // generate admin token
+    const adminData = {};
+    adminData.id = 3;
+    adminData.token = createToken(adminData.id, '1h');
+    const deleteId = 9;
+
+    before((done) => {
+      chai.request(app)
+        .patch(`${usersBaseUrl}/${deleteId}/account/delete`)
+        .set('authorization', adminData.token)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+
+    it('should have a status of 200', () => {
+      result.status.should.be.equal(200);
+    });
+
+    it('should have a success response body', () => {
+      result.body.status.should.be.equal('success');
+      result.body.message.should.be
+        // eslint-disable-next-line max-len
+        .equal(`you have successfully deleted the user account of id ${deleteId}`);
+    });
   });
 });

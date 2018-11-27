@@ -18,7 +18,6 @@ export const createToken = (id, lifeSpan) => {
   return jwt.sign({ id }, secret, { expiresIn: lifeSpan });
 };
 
-
 /**
  * This middleware protects a route from access without a token
  * sets the payload in res.locals
