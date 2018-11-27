@@ -54,8 +54,14 @@ export default {
       type: Sequelize.STRING
     },
     confirmEmail: {
-      allowNull: true,
-      type: Sequelize.BOOLEAN
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
+    },
+    status: {
+      allowNull: false,
+      type: Sequelize.STRING,
+      defaultValue: 'active'
     },
     articlesRead: {
       allowNull: true,

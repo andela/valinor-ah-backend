@@ -5,13 +5,15 @@ export default {
     roleId: 3,
     createdAt: new Date(),
     updatedAt: new Date(),
+    confirmEmail: false,
   },
   {
     fullName: 'John Mike',
     email: 'johnmike@andela.com',
     roleId: 3,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    confirmEmail: false,
   },
   {
     fullName: 'John Confirm',
@@ -23,6 +25,14 @@ export default {
   {
     fullName: 'freddie Krugger',
     email: 'freddie@example.com',
+    roleId: 3,
+    confirmEmail: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    fullName: 'ToBe Deleted',
+    email: 'deleted@example.com',
     roleId: 3,
     confirmEmail: true,
     createdAt: new Date(),

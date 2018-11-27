@@ -358,8 +358,8 @@ describe('Articles Controller Tests', () => {
           email: 'n.tani@whowa.com',
         })
         .end(() => {
-          userData.id = 5;
-          userData.token = createToken(5, '1h');
+          userData.id = 6;
+          userData.token = createToken(userData.id, '1h');
           done();
         });
     });
