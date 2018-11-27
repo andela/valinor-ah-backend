@@ -33,14 +33,15 @@ const facebookCallback = (accessToken, refreshToken, profile, done) => {
         confirmEmail: true
       }
     })
-    .spread((user) => {
+    .spread((user, created) => {
       const userInfo = {
         id: user.dataValues.id,
         fullName: user.dataValues.fullName,
         email: user.dataValues.email,
         confirmEmail: user.dataValues.confirmEmail,
         avatarUrl: user.dataValues.avatarUrl,
-        facebookId: user.dataValues.facebookId
+        facebookId: user.dataValues.facebookId,
+        created
       };
       return done(null, userInfo);
     });

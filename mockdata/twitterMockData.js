@@ -1,4 +1,4 @@
-export const profile = {
+export const profileInfo = {
   id: 12312309890,
   emails: [{
     value: 'tersoo@example.com'
@@ -10,5 +10,5 @@ export const profile = {
   }]
 };
 
-export const accessToken = '201934290-7d9fQUAPSFniOXmvcFRXqfHUTKSWeIg6JlY6Z4Vg';
+export const access = '201934290-7d9fQUAPSFniOXmvcFRXqfHUTKSWeIg6JlY6Z4Vg';
 export const tokenSecret = 'PeKbqpDgt6kjX98ptSZYueGRIDILe4tMmAbch95YlNwhK';

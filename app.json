@@ -1,6 +1,9 @@
 {
   "scripts": {},
   "env": {
+    "API_BASE_URL": {
+      "required": true
+    },
     "CLOUDINARY_CLOUD_NAME": {
       "required": true
     },
@@ -14,9 +17,6 @@
       "required": true
     },
     "FACEBOOK_APP_SECRET": {
-      "required": true
-    },
-    "GOOGLE_CALLBACK_URL_DEV": {
       "required": true
     },
     "GOOGLE_CLIENT_ID": {
@@ -38,9 +38,6 @@
       "required": true
     },
     "TWITTER_APP_SECRET": {
-      "required": true
-    },
-    "TWITTER_CALL_BACK_URL_DEV": {
       "required": true
     }
   },
