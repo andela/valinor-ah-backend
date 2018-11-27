@@ -29,9 +29,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     confirmEmail: {
-      allowNull: true,
+      allowNull: false,
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    status: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      defaultValue: 'active'
     },
     articlesRead: {
       allowNull: true,

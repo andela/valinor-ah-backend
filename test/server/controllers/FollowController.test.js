@@ -14,8 +14,8 @@ describe('FollowController Tests', () => {
         email: 'fishdonkey@jackson.com',
       })
       .end(() => {
-        userData.id = 7;
-        userData.token = createToken(7, '1h');
+        userData.id = 8;
+        userData.token = createToken(userData.id, '1h');
         done();
       });
   });

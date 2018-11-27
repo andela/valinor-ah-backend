@@ -1,12 +1,14 @@
 import { Op } from 'sequelize';
 import cloudinary from 'cloudinary';
+import uniqueSlug from 'unique-slug';
 
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
 import addMetaToAuthors from '../helpers/addMetaToAuthors';
 import {
   verifyEmailMessage,
-  loginLinkMessage
+  loginLinkMessage,
+  deleteAccountMessage,
 } from '../helpers/emailTemplates';
 import { createToken } from '../middlewares/tokenUtils';
 import cloudinaryConfig from '../config/cloudinaryConfig';
@@ -437,6 +439,153 @@ class UsersController {
       message: 'Log in successful',
       user
     });
+  }
+
+  /**
+   * @description - This method deactivates a user account
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static async modifyAccount(req, res, next) {
+    // profile id  and action
+    const { userId, action } = req.params;
+    const { isAdmin, isOwner } = req;
+
+    /**
+     * function to set account status
+     * @param {string} status - the account status to be set
+     * @returns {void}
+     */
+    const setAccountStatus = async (status) => {
+      // suffix for message
+      let suffix;
+      switch (status) {
+        case 'active':
+          suffix = 'activated';
+          break;
+        case 'inactive':
+          suffix = 'deactivated';
+          break;
+        default:
+      }
+
+      // check that account isnt already active or inactive
+      if (req.resourceUserData.status === status) {
+        const conflictError = new Error(`your account is already ${suffix}`);
+        conflictError.status = 409;
+        return next(conflictError);
+      }
+
+      // update the account status
+      let rowCount, user;
+      try {
+        [rowCount, user] = await User.update(
+          { status },
+          { where: { id: userId }, returning: true }
+        );
+      } catch (err) {
+        return next(err);
+      }
+
+      if (rowCount > 0) {
+        // return success message
+        return res.status(200).json({
+          status: 'success',
+          message: `you have successfully ${suffix} your account`,
+          accountStatus: user[0].status,
+        });
+      }
+    };
+
+    /**
+     * function to send delete account email
+     * @returns {void}
+     */
+    const sendDeleteEmail = async () => {
+      const user = await User.findByPk(userId, {
+        attributes: ['email'],
+        raw: true,
+      });
+      const deleteKey = `${userId}-${uniqueSlug('valinordelete')}`;
+      const deleteMessage = deleteAccountMessage(createToken(deleteKey, '15m'));
+      const error = sendEmail(user, deleteMessage);
+      if (!error) {
+        return res.status(200).json({
+          status: 'success',
+          // eslint-disable-next-line max-len
+          message: 'delete link successfully sent to your email address, link expires in 15 minutes'
+        });
+      }
+    };
+
+    // error for unknown action
+    // eslint-disable-next-line max-len
+    const unknownActionError = new Error('unknown action, you may only activate, deactivate or delete your account');
+
+    unknownActionError.status = 422;
+
+    // switch statment to activate or deactivate account
+    switch (action) {
+      case 'activate':
+        setAccountStatus('active');
+        break;
+      case 'deactivate':
+        setAccountStatus('inactive');
+        break;
+      case 'delete':
+        if (isAdmin && !isOwner) {
+          let rows;
+          try {
+            rows = await User.destroy({ where: { id: userId } });
+          } catch (err) {
+            next(err);
+          }
+          if (rows > 0) {
+            return res.status(200).json({
+              status: 'success',
+              message:
+                `you have successfully deleted the user account of id ${userId}`
+            });
+          }
+          break;
+        }
+        sendDeleteEmail();
+        break;
+      default:
+        return next(unknownActionError);
+    }
+  }
+
+  /**
+   * @description - This method delete a user account
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static async deleteAccount(req, res, next) {
+    const deleteKey = req.userData.id;
+    const [id, slug] = deleteKey.toString().split('-');
+    if (slug !== uniqueSlug('valinordelete')) {
+      const error = new Error('invalid delete token');
+      error.status = 403;
+      return next(error);
+    }
+
+    let deleteCount;
+    try {
+      deleteCount = await User.destroy({ where: { id } });
+    } catch (err) {
+      return next(err);
+    }
+    if (deleteCount > 0) {
+      return res.status(200).json({
+        status: 'success',
+        message: 'your account was successfully deleted'
+      });
+    }
   }
 }
 

@@ -185,7 +185,7 @@ describe('Unit tests on verify admin middleware', () => {
         id: 1
       },
       resourceUserData: {
-        userId: 1
+        id: 1
       }
     };
     let a;

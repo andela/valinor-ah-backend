@@ -8,6 +8,11 @@ const { User } = model;
  * @returns {void} - return null
  */
 async function checkToken(userId) {
+  // check if user Id is from delete token
+  if (userId.toString().includes('-')) {
+    [userId] = userId.split('-');
+  }
+
   let result;
   try {
     result = await User.findByPk(userId);

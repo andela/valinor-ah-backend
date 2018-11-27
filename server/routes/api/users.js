@@ -2,13 +2,14 @@ import express from 'express';
 
 import FollowController from '../../controllers/FollowController';
 import UserValidation from '../../middlewares/UserValidation';
-import UserController from '../../controllers/UsersController';
+import UsersController from '../../controllers/UsersController';
 import facebookPassportRoutes from '../../config/facebookPassportRoutes';
 import googlePassportRoutes from '../../config/googlePassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
 import twitterPassportRoutes from '../../config/twitterPassportRoutes';
 import confirmUser from '../../middlewares/confirmUser';
 import validateResourceId from '../../middlewares/validateResourceId';
+import validateAccess from '../../middlewares/validateAccess';
 
 const {
   validateUserSignUp,
@@ -26,16 +27,19 @@ const {
   getSingleProfile,
   getUserProfiles,
   fetchAuthors,
+  modifyAccount,
+  deleteAccount,
   socialEnd
-} = UserController;
+} = UsersController;
+
 const {
   followAuthor,
   displayFollowView
 } = FollowController;
 
-const router = express.Router();
+const users = express.Router();
 
-router.get('/', (req, res) => {
+users.get('/', (req, res) => {
   res.status(200)
     .json({
       message: 'Welcome to Author\'s Haven, the community of great authors',
@@ -44,69 +48,86 @@ router.get('/', (req, res) => {
 });
 
 // sign up route
-router.post(
+users.post(
   '/users/signup',
   validateUserSignUp, checkExistingEmail, signUp
 );
 
-// login with email link
-router.post('/users/login', validateUserLogin, userLoginStart);
+// login start
+users.post('/users/login', validateUserLogin, userLoginStart);
 
 // login with email link
-router.get('/users/login', verifyToken, userLoginEnd);
+users.get('/users/login', verifyToken, userLoginEnd);
 
 // verify users email
-router.get('/users/verify', verifyToken, verifyUser);
+users.get('/users/verify', verifyToken, verifyUser);
 
 // get authors
-router.get('/users/authors', fetchAuthors);
+users.get('/users/authors', fetchAuthors);
 
 // signup or login with facebook
-router.get('/auth/facebook', facebookPassportRoutes.authenticate());
+users.get('/auth/facebook', facebookPassportRoutes.authenticate());
 
 // facebook callback route
-router.get(
+users.get(
   '/auth/facebook/callback',
   facebookPassportRoutes.callback(),
   socialEnd
 );
 
 // update profile route
-router.patch(
+users.patch(
   '/users/:userId',
   verifyToken, validateResourceId, confirmUser, validateUserUpdate,
   updateProfile
 );
 
 // route for twitter authentication and login
-router.get('/auth/twitter', twitterPassportRoutes.authenticate());
+users.get('/auth/twitter', twitterPassportRoutes.authenticate());
 
 // handle the callback after twitter has authenticated the user
-router.get('/auth/twitter/callback', twitterPassportRoutes.callback());
+users.get('/auth/twitter/callback', twitterPassportRoutes.callback());
 
 // signup or login with google
-router.get('/auth/google', googlePassportRoutes.authenticate());
+users.get('/auth/google', googlePassportRoutes.authenticate());
 
 // google callback route
-router.get('/auth/google/callback', googlePassportRoutes.callback(), socialEnd);
+users.get('/auth/google/callback', googlePassportRoutes.callback(), socialEnd);
 
 // get all user profiles
-router.get('/users', verifyToken, confirmUser, getUserProfiles);
+users.get('/users', verifyToken, confirmUser, getUserProfiles);
 
 // get a single user profile
-router.get(
+users.get(
   '/users/:userId',
   verifyToken, validateResourceId, confirmUser, getSingleProfile,
 );
 
-router.post(
+// follow an author
+users.post(
   '/users/follow/:authorId',
   validateFollowUserUrl, verifyToken, followAuthor
 );
 
-router.get(
+// fetch followers and following
+users.get(
   '/users/follow/:userId',
-  validateFollowUserUrl, displayFollowView
+  validateResourceId, displayFollowView
 );
 
-export default router;
+// deactivate a user account
+users.patch(
+  '/users/:userId/account/:action',
+  verifyToken,
+  validateResourceId,
+  validateAccess(['ADMIN', 'USER', 'AUTHOR']),
+  modifyAccount
+);
+
+// delete account
+users.get(
+  '/users/account/delete',
+  verifyToken, deleteAccount
+);
+
+export default users;
