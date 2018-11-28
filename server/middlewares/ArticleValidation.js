@@ -200,6 +200,7 @@ class ArticleValidation {
     }
   }
 
+
   /**
    * This method validates the author query
    * @param {object} req - The request object
@@ -229,7 +230,6 @@ class ArticleValidation {
       'category parameter can only contain alphabets'
     ).optional({ checkFalsy: false }).isAlpha();
   }
-
 
   /**
     * @description - This method validates the article page queries.

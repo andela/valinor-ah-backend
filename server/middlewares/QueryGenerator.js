@@ -23,7 +23,7 @@ const queryGenerator = async (req, res, next) => {
     search,
     author,
     title,
-    tag
+    tag,
   } = req.query;
   const page = req.query.page || 1;
   const limit = req.query.limit || 10;
@@ -44,9 +44,11 @@ const queryGenerator = async (req, res, next) => {
           }],
     order: [
       ['id', 'DESC']
-    ]
+    ],
   };
   if (!search && !author && !title && !tag && categoryName === 'all') {
+    defaultQuery.where = {};
+    defaultQuery.where.status = 'publish';
     req.meta = defaultQuery;
     return next();
   }
@@ -80,10 +82,10 @@ const queryGenerator = async (req, res, next) => {
     const articleIds = getCorrelatingTags(allArticleId);
     query.id = articleIds;
   }
-
+  query.status = 'publish';
   const customQuery = {
     where: query,
-    ...defaultQuery
+    ...defaultQuery,
   };
   req.meta = customQuery;
   return next();

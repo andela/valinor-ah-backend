@@ -185,7 +185,7 @@ describe('Verify user email via link', () => {
   let token2;
   before(() => {
     token = createToken(1, '24h');
-    token2 = createToken(90, '24h');
+    token2 = createToken(80, '24h');
   });
   it(
     'should verify a user',
@@ -518,7 +518,8 @@ describe('Test fetch all authors route', () => {
 });
 
 describe('Testing automatic upgrade role functionality', () => {
-  const data = { token: createToken(4) };
+  const data = {};
+  data.token = createToken(7, '2m');
   it('user should create first article', (done) => {
     chai.request(app)
       .post('/api/v1/articles')

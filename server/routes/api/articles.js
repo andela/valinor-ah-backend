@@ -1,13 +1,12 @@
 import express from 'express';
-
 import { verifyToken } from '../../middlewares/tokenUtils';
 import ArticleController from '../../controllers/ArticleController';
 import ArticleValidation from '../../middlewares/ArticleValidation';
+import validateAccess from '../../middlewares/validateAccess';
 import validateResourceId from '../../middlewares/validateResourceId';
 import queryGenerator from '../../middlewares/QueryGenerator';
 import addReadingStats from '../../middlewares/addReadingStats';
 import TagController from '../../controllers/TagController';
-import validateAccess from '../../middlewares/validateAccess';
 
 const articles = express.Router();
 const { getAllArticleTags } = TagController;
@@ -25,6 +24,8 @@ const {
   fetchAllArticles,
   likeOrDislikeArticle,
   reportArticle,
+  deleteUserArticle,
+  fetchUserArticles
 } = ArticleController;
 
 // get all categories
@@ -54,6 +55,8 @@ articles.patch(
   editArticle
 );
 
+articles.get('/articles/myarticles', verifyToken, fetchUserArticles);
+
 articles.get(
   '/articles/:slug',
   getAnArticle,
@@ -68,6 +71,7 @@ articles.get(
   fetchAllArticles
 );
 
+
 // like or dislike articles
 articles.post(
   '/articles/:articleId/reaction/:action',
@@ -79,5 +83,13 @@ articles.post(
 // route to report articles
 articles.post('/articles/:articleId/reports',
   validateResourceId, verifyToken, validateReportArticle, reportArticle);
+
+articles.delete(
+  '/articles/:articleId',
+  verifyToken,
+  validateResourceId,
+  validateAccess(['ADMIN', 'USER', 'AUTHOR']),
+  deleteUserArticle
+);
 
 export default articles;

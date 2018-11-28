@@ -40,13 +40,13 @@ const validateAccess = arrayOfPermissions => async (req, res, next) => {
       resourceUserData,
       commentData
     } = req;
-    if (articleData && !isAdmin) {
+    if (articleData) {
       isOwner = articleData.userId === id;
     }
-    if (resourceUserData && !isAdmin) {
+    if (resourceUserData) {
       isOwner = resourceUserData.id === id;
     }
-    if (commentData && !isAdmin) {
+    if (commentData) {
       isOwner = commentData.userId === id;
     }
     req.isOwner = isOwner;

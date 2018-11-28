@@ -28,7 +28,7 @@ export default (sequelize, DataTypes) => {
     status: {
       allowNull: false,
       type: DataTypes.ENUM,
-      values: ['publish', 'draft', 'trash', 'under review'],
+      values: ['publish', 'draft', 'trash', 'under-review'],
       defaultValue: 'draft'
     }
   }, {

@@ -948,4 +948,109 @@ describe('Articles Controller Tests', () => {
         });
     });
   });
+
+  describe('Testing delete an article', () => {
+    userData.token = createToken(5, '3m');
+    it('user should be able to create an article', (done) => {
+      chai.request(app)
+        .post('/api/v1/articles')
+        .set('Authorization', userData.token)
+        .send({
+          title: 'The donkeys and the fishes',
+          body: 'How do I buy a donkey and a bird',
+          description: 'Story about my first donkey',
+          slug: 'fishe-s-40323',
+          categoryId: 1
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(201);
+          res.body.status.should.be.eql('success');
+          done();
+        });
+    });
+    it('article created should not be seen unless published', (done) => {
+      chai.request(app)
+        .get('/api/v1/articles/20')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(404);
+          res.body.status.should.be.eql('failure');
+          done();
+        });
+    });
+    it('user should be able to create another article', (done) => {
+      chai.request(app)
+        .post('/api/v1/articles')
+        .set('Authorization', userData.token)
+        .send({
+          title: 'The second donkeys and fishes',
+          body: 'How do I buy a donkey and a bird',
+          description: 'Story about my second donkey',
+          slug: 'fishe-s-40323',
+          categoryId: 1
+        })
+        .end((err, res) => {
+          res.status.should.be.eql(201);
+          res.body.status.should.be.eql('success');
+          done();
+        });
+    });
+    it('user should be able to commit an article to trash', (done) => {
+      chai.request(app)
+        .delete('/api/v1/articles/20')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be.eql('you have trashed this article');
+          done();
+        });
+    });
+    it('user should be able to see all his or her articles', (done) => {
+      chai.request(app)
+        .get('/api/v1/articles/myarticles')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.articles.length.should.be.eql(3);
+          done();
+        });
+    });
+    it('articles in trash should be invisible', (done) => {
+      chai.request(app)
+        .get('/api/v1/articles/20')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(404);
+          res.body.status.should.be.eql('failure');
+          res.body.errors.message[0].should.be.eql('Article not found');
+          done();
+        });
+    });
+    it(`user should be able to delete an article 
+    in trash peramanently`, (done) => {
+      chai.request(app)
+        .delete('/api/v1/articles/20')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.message.should.be.eql('you have deleted this article');
+          done();
+        });
+    });
+    it('user should be able to see all his or her articles', (done) => {
+      chai.request(app)
+        .get('/api/v1/articles/myarticles')
+        .set('Authorization', userData.token)
+        .end((err, res) => {
+          res.status.should.be.eql(200);
+          res.body.status.should.be.eql('success');
+          res.body.articles.length.should.be.eql(2);
+          res.body.articles[1].status.should.be.eql('draft');
+          done();
+        });
+    });
+  });
 });
