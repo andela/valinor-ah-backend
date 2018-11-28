@@ -23,8 +23,12 @@ export default (sequelize, DataTypes) => {
     }
   });
   Comment.associate = (models) => {
-    // associations can be defined here
-    const { Article, User, CommentLike } = models;
+    const {
+      Article,
+      User,
+      CommentLike,
+      CommentReply
+    } = models;
     Comment.belongsTo(Article, {
       foreignKey: 'articleId',
       onDelete: 'CASCADE'
@@ -36,6 +40,10 @@ export default (sequelize, DataTypes) => {
     });
     Comment.hasMany(CommentLike, {
       foreignKey: 'commentId',
+    });
+    Comment.hasMany(CommentReply, {
+      foreignKey: 'commentId',
+      as: 'replies',
     });
   };
   return Comment;

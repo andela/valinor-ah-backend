@@ -10,7 +10,14 @@ export default {
   {
     body: 'This actually good',
     userId: 1,
-    articleId: 3,
+    articleId: 2,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    body: 'This actually good',
+    userId: 1,
+    articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },

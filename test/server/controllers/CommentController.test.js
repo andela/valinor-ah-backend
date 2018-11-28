@@ -4,7 +4,7 @@ import chai from 'chai';
 import app from '../../../app';
 import { createToken } from '../../../server/middlewares/tokenUtils';
 
-chai.should();
+const should = chai.should();
 
 chai.use(chaiHttp);
 const signupUrl = '/api/v1/users/signup';
@@ -31,7 +31,7 @@ describe('Testing comment on articles', () => {
         done();
       });
   });
-  it('POST /article/:articleId/comments add new comment', () => {
+  it('POST /article/:articleId/comments add new comment', (done) => {
     chai.request(app)
       .post('/api/v1/articles/1/comments')
       .set('authorization', userData.token)
@@ -44,21 +44,40 @@ describe('Testing comment on articles', () => {
         res.body.comment.should.be.a('object');
         res.body.comment.body.should.be.a('string');
         res.body.comment.commentBy.should.be.a('object');
+        done();
       });
   });
-  it('POST /article/:articleId/comments should not add new comment', () => {
+  it('POST /article/:articleId/comments should not add new comment', (done) => {
     chai.request(app)
       .post('/api/v1/articles/1/comments')
       .set('authorization', userData.token)
       .send({
-        commentBody: 'Working as expected'
+        body: '   '
       })
       .end((err, res) => {
         res.should.have.status(422);
         res.body.should.be.a('object');
         res.body.errors.should.be.a('object');
+        done();
       });
   });
+  it(
+    'POST /article/:articleId/comments should not add new comment if no body',
+    (done) => {
+      chai.request(app)
+        .post('/api/v1/articles/1/comments')
+        .set('authorization', userData.token)
+        .send({
+          bosddy: 'ljasnd'
+        })
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.should.be.a('object');
+          res.body.errors.should.be.a('object');
+          done();
+        });
+    }
+  );
 });
 
 describe('Testing like or disliked comment', () => {
@@ -306,7 +325,7 @@ describe('edit a comment with no change', () => {
 });
 
 describe('Delete a comment', () => {
-  const token = createToken(4, '1m');
+  const token = createToken(1, '1m');
 
   it('should not delete a comment if a token is missing', (done) => {
     chai.request(app)
@@ -355,6 +374,23 @@ describe('Delete a comment', () => {
         res.status.should.eql(200);
         res.body.status.should.eql('success');
         res.body.message.should.eql('Comment has been deleted');
+        done();
+      });
+  });
+});
+
+describe('Commenting on a comment', () => {
+  it('should comment on a comment', (done) => {
+    chai.request(app)
+      .post(`${articleBaseUrl}/comments/1`)
+      .set('authorization', userData.token)
+      .send({
+        body: 'testing replying to a comment'
+      })
+      .end((err, res) => {
+        should.equal(res.status, 201);
+        should.equal(res.body.status, 'success');
+        should.equal(res.body.message, 'reply successfully added');
         done();
       });
   });

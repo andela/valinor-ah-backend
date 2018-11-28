@@ -49,7 +49,20 @@ class ArticleValidation {
    * @returns {void}
    */
   static validateBody(req) {
-    req.checkBody('body', 'please enter a body').exists();
+    req.checkBody(
+      'body',
+      'please provide a body'
+    ).exists();
+
+    if (req.body.body) {
+      req.checkBody(
+        'body',
+        'please provide a body'
+      ).custom((body) => {
+        const text = body.trim();
+        if (text !== '') return true;
+      });
+    }
   }
 
   /**
@@ -217,6 +230,7 @@ class ArticleValidation {
     ).optional({ checkFalsy: false }).isAlpha();
   }
 
+
   /**
     * @description - This method validates the article page queries.
     * @param {object} req - The request object to be validated.
@@ -246,6 +260,7 @@ class ArticleValidation {
     ArticleValidation.validateBody(req);
     sendFormattedError(req, res, next);
   }
+
 
   /**
     * @description - This method validates the article page queries.

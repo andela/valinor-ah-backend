@@ -4,7 +4,7 @@ import models from '../models';
 const { Op } = Sequelize;
 
 const {
-  User, Comment, CommentEvent, CommentLike,
+  User, Comment, CommentEvent, CommentLike, CommentReply
 } = models;
 
 /**
@@ -61,6 +61,49 @@ class CommentController {
           message: [err.message]
         }
       }));
+  }
+
+  /**
+   * @description This method add new comment on a comment
+     * @param {object} req
+     * @param {object} res
+     * @param {object} next
+     * @returns {object} returns an object of comment
+   */
+  static async addCommentToComment(req, res) {
+    const { id } = req.userData;
+    const { commentId } = req.params;
+    const { body } = req.body;
+    let reply;
+    let commenter;
+    try {
+      reply = await CommentReply.create({
+        body,
+        commentId,
+        userId: id
+      });
+      commenter = await User.findOne({
+        where: { id },
+        attributes: [
+          'id',
+          'fullName',
+          'avatarUrl',
+          'bio',
+          'following',
+          'followers',
+          'roleId',
+          'createdAt'
+        ]
+      });
+    } catch (error) {
+      return error;
+    }
+    reply.dataValues.commenter = commenter;
+    return res.status(201).json({
+      status: 'success',
+      message: 'reply successfully added',
+      reply,
+    });
   }
 
   /**
