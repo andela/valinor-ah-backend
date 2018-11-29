@@ -1,145 +1,1607 @@
 {
-    "swagger": "2.0",
-    "info": {
-      "description": "This is a documentation for the Authors Haven API. The api is located at https://",
-      "version": "0.0.1",
-      "title": "Authors Haven API",
-      "contact": {
-        "email": "abiodun.abudu@gmail.com"
-      },
-      "license": {
-        "name": "MIT",
-        "url": "https://github.com/swagger-api/swagger-ui/blob/master/LICENSE"
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Authors Haven API",
+    "description": "#### This is a documentation for the Authors Haven API. A social platform for the creative at heart\n",
+    "version": "1.0",
+    "contact": {
+      "email": "abiodun.abudu@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/swagger-api/swagger-ui/blob/master/LICENSE"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://valinor-ah-backend-staging.herokuapp.com/api/v1",
+      "description": "Staging server for testing"
+    },
+    {
+      "url": "https://valinor-ah-backend.herokuapp.com/api/v1",
+      "description": "Main production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "root",
+      "description": "The root path"
+    },
+    {
+      "name": "users",
+      "description": "The users of Author's Haven"
+    },
+    {
+      "name": "articles",
+      "description": "The articles in Author's Haven"
+    },
+    {
+      "name": "comments",
+      "description": "The comments of articles in Author's Haven"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
       }
     },
-    "host": "valinor-ah-backend-staging.herokuapp.com",
-    "basePath": "/api/v1",
-    "produces": ["application/json"],
-    "tags": [
-      {
-        "name": "root",
-        "description": "The root path"
+    "schemas": {
+      "SuccessMessage": {
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "message"
+        ]
       },
-      {
-        "name": "users",
-        "description": "The users of Author's Haven"
+      "SuccessMessageWithState": {
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "state": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "message",
+          "state"
+        ]
       },
-      {
-        "name": "articles",
-        "description": "The articles in Author's Haven"
+      "SuccessMessageWithResource": {
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "resource": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "status",
+          "message",
+          "resource"
+        ]
       },
-      {
-        "name": "comments",
-        "description": "The comments of articles in Author's Haven"
+      "UserProfile": {
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "avatarUrl": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "twitterUrl": {
+            "type": "string"
+          },
+          "facebookUrl": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "roleId": {
+            "type": "string"
+          }
+        }
       }
-    ],
-    "schemes": [
-      "https"
-    ],
-    "paths":{
-      "/users/signup": {
-          "post": {
-            "tags": [
-                "users"
-            ],
-            "description": "Create a new account for the user",
-            "parameters": [
-            {
-              "in": "body",
-              "name": "body",
-              "description": "User object that needs to be added",
-              "required": true,
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
+      },
+      "UnpermittedError": {
+        "description": "No permissions to perform that action"
+      },
+      "NotFoundError": {
+        "description": "Resource(user, article, comment) was not found"
+      },
+      "InvalidInputError": {
+        "description": "Invalid inputs"
+      },
+      "UnexpectedError": {
+        "description": "Unexpected error"
+      }
+    }
+  },
+  "paths": {
+    "/users/signup": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create a new account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                      "fullname": {
-                          "type": "string"
-                      },
-                      "email": {
-                          "type": "string"
-                      },
-                      "password": {
-                        "type": "string"
-                      }
+                  "fullName": {
+                    "type": "string",
+                    "example": "Abiodun Abudu"
                   },
-                  "example": {
-                        "fullname": "abiodun abudu",
-                        "email": "abiodun.abudu@andela.com",
-                        "password": "!Sulaiman124"
+                  "email": {
+                    "type": "string",
+                    "example": "abiodun.abudu@andela.com"
                   }
+                }
               }
             }
-          ],
-            "responses": {
-                 "201": {
-                    "description": "New user created successfully",
-                    "schema": {
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                                 "type": "string"
-                            },
-                            "message": {
-                                "type": "string"
-                            },
-                            "user": {
-                                "type": "object"
-                            }
-                          }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "New user created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
                     }
-                 }
+                  }
+                }
+              }
             }
+          },
+          "409": {
+            "description": "Email in use Error."
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Log in to an existing account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "abiodun.abudu@andela.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "you are logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "login successful"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "get user profiles",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "fetched all user profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserProfile"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The user ID"
+        }
+      ],
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "get a single user's profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "fetched a single user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
         }
       },
-      "/users/login": {
-          "post": {
-            "tags": [
-                "users"
-            ],
-            "description": "Log in an existing user",
-            "parameters": [
-            {
-              "in": "body",
-              "name": "body",
-              "description": "User object",
-              "required": true,
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "update your profile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                      "email": {
-                          "type": "string"
-                      },
-                      "password": {
-                        "type": "string"
-                      }
+                  "avatarUrl": {
+                    "type": "string",
+                    "example": "https://www.cloudinaryfakeurl.com/myavatar"
                   },
-                  "example": {
-                        "email": "abiodun.abudu@andela.com",
-                        "password": "!Sulaiman124"
+                  "fullName": {
+                    "type": "string",
+                    "example": "Abiodun Sulaiman"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "abiodun222@gmail.com"
+                  },
+                  "bio": {
+                    "type": "string",
+                    "example": "I am a bad guy. My nickname is sulenchyyy"
                   }
+                }
               }
             }
-          ],
-            "responses": {
-                 "200": {
-                    "description": "you are logged in",
-                    "schema": {
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                                 "type": "string"
-                            },
-                            "message": {
-                                "type": "string"
-                            },
-                            "user": {
-                                "type": "object"
-                            }
-                          }
-                    }
-                 }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          }
+        }
+      }
+    },
+    "/users/authors": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "get all author profiles",
+        "responses": {
+          "200": {
+            "description": "fetched all author profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserProfile"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/follow/{authorId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "authorId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The author ID"
+        }
+      ],
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "follow or unfollow an author",
+        "responses": {
+          "200": {
+            "description": "followed/unfollowed author successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithState"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/follow/{userId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The user ID"
+        }
+      ],
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "get follow details of a user",
+        "responses": {
+          "200": {
+            "description": "fetched details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "following": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    },
+                    "followers": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "items": {
+                    "$ref": "#/components/schemas/UserProfile"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/{userId}/account/{action}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The user ID"
+        },
+        {
+          "in": "path",
+          "name": "action",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "deactivate",
+              "activate",
+              "delete"
+            ]
+          },
+          "description": "The action required"
+        }
+      ],
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "modify your account",
+        "responses": {
+          "200": {
+            "description": "account modification successful"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "422": {
+            "description": "unknown action error"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/account/delete": {
+      "parameters": [
+        {
+          "in": "query",
+          "name": "token",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "delete token sent to email"
+        }
+      ],
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "delete your account",
+        "responses": {
+          "200": {
+            "description": "account successfully delete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          }
+        }
+      }
+    },
+    "/articles": {
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "create an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "This is the title of the article"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "This article is a test article"
+                  },
+                  "body": {
+                    "type": "string",
+                    "example": "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old."
+                  },
+                  "categoryName": {
+                    "type": "string",
+                    "example": "testing"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "publish",
+                      "draft"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "article successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The article ID"
+        }
+      ],
+      "patch": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "edit an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "This is the title of the article"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "This article is a test article"
+                  },
+                  "body": {
+                    "type": "string",
+                    "example": "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old."
+                  },
+                  "categoryName": {
+                    "type": "string",
+                    "example": "testing"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "publish",
+                      "draft"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "article successfully edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "get an article",
+        "responses": {
+          "200": {
+            "description": "article successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "delete an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "article successfully deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/categories": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "get all article categories",
+        "responses": {
+          "200": {
+            "description": "categories successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/tags": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "get all article tags",
+        "responses": {
+          "200": {
+            "description": "tags successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/myarticles": {
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "get all your articles",
+        "responses": {
+          "200": {
+            "description": "articles successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/category/{categoryName}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "categoryName",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "The category name of the articles or 'all' to fetch all"
+        },
+        {
+          "in": "query",
+          "name": "authorId",
+          "schema": {
+            "type": "integer"
+          },
+          "description": "author filter"
+        },
+        {
+          "in": "query",
+          "name": "tagId",
+          "schema": {
+            "type": "integer"
+          },
+          "description": "tag filter"
+        },
+        {
+          "in": "query",
+          "name": "limit",
+          "schema": {
+            "type": "integer"
+          },
+          "description": "pagination limit filter"
+        },
+        {
+          "in": "query",
+          "name": "page",
+          "schema": {
+            "type": "integer"
+          },
+          "description": "pagination page filter"
+        }
+      ],
+      "get": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "get and filter all articles",
+        "responses": {
+          "200": {
+            "description": "articles successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/reaction/{action}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the article"
+        },
+        {
+          "in": "path",
+          "name": "action",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "like",
+              "dislike"
+            ]
+          },
+          "description": "action to like or dislike"
+        }
+      ],
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "like/unlike or dislike/undislike an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "articles successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithState"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/reports": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the article"
+        }
+      ],
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "report an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "example": "This is the type of the report"
+                  },
+                  "reportBody": {
+                    "type": "string",
+                    "example": "This is the body of the report"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "report successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "bad request error"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/comments": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the article"
+        }
+      ],
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "add a comment to an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "example": "nice article man"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "comment successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/comments/{commentId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "commentId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the comment"
+        }
+      ],
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "add a reply to a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "example": "nice comment man"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "reply to comment successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/comment/{commentId}/reaction/{action}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the article"
+        },
+        {
+          "in": "path",
+          "name": "commentId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the comment"
+        },
+        {
+          "in": "path",
+          "name": "action",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "like",
+              "dislike"
+            ]
+          },
+          "description": "action to like or dislike"
+        }
+      ],
+      "post": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "like/unlike or dislike/undislike a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "comment successfully liked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithState"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/comments/{commentId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "commentId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the comment"
+        }
+      ],
+      "patch": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "edit a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "comment successfully edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "409": {
+            "description": "no changes were made in update"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "get a comment and its history",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "comment successfully edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "comments"
+        ],
+        "summary": "like/unlike or dislike/undislike a comment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "comment successfully edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/rating": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the article"
+        }
+      ],
+      "post": {
+        "tags": [
+          "articles"
+        ],
+        "summary": "add a rating to an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "rating": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5,
+                    "example": 4
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "rating successfully added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/reports": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "get all reports(ADMIN ONLY)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "reports received successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/report-types": {
+      "post": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "add a report type(ADMIN ONLY)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "report type added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnpermittedError"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidInputError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/bookmarks/{articleId}": {
+      "parameters": [
+        {
+          "in": "path",
+          "name": "articleId",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "The id of the article"
+        }
+      ],
+      "post": {
+        "tags": [
+          "bookmarks"
+        ],
+        "summary": "bookmark an article",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "article bookmarked successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithState"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
+        }
+      }
+    },
+    "/users/bookmarks": {
+      "get": {
+        "tags": [
+          "bookmarks"
+        ],
+        "summary": "get all my bookmarks",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "retrieved all bookmarks successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessageWithResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "default": {
+            "$ref": "#/components/responses/UnexpectedError"
+          }
         }
       }
     }
+  }
 }
