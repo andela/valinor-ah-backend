@@ -7,6 +7,7 @@ import validator from 'express-validator';
 import passport from 'passport';
 import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
+import cors from 'cors';
 import swaggerDocument from './swagger.json';
 import routes from './server/routes';
 
@@ -24,6 +25,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(validator());
+app.use(cors());
 
 app.use(
   '/api-docs',
