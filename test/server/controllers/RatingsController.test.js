@@ -38,8 +38,8 @@ describe('Articles Controller Tests', () => {
           res.body.status.should.eql('failure');
           res.body.errors.message.should
             .eql('invalid id, article id must be a number');
+          done();
         });
-      done();
     });
 
     it('should not not save rating from unauithorized user', (done) => {

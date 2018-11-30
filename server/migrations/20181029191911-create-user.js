@@ -53,6 +53,11 @@ export default {
       allowNull: true,
       type: Sequelize.STRING
     },
+    notification: {
+      allowNull: false,
+      type: Sequelize.BOOLEAN,
+      defaultValue: true
+    },
     confirmEmail: {
       allowNull: false,
       type: Sequelize.BOOLEAN,

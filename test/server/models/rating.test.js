@@ -22,8 +22,8 @@ describe('Test rating model - Unit tests', () => {
             rating.dataValues.userId.should.be.eql(1);
             rating.dataValues.articleId.should.be.eql(1);
             rating.dataValues.rating.should.be.eql(5);
+            done();
           });
-        done();
       });
   });
 
@@ -31,7 +31,7 @@ describe('Test rating model - Unit tests', () => {
     Rating.create(ratingWithInvalidData)
       .catch((err) => {
         err.name.should.eql('SequelizeDatabaseError');
+        done();
       });
-    done();
   });
 });

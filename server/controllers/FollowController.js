@@ -1,6 +1,14 @@
+import dotenv from 'dotenv';
 import models from '../models';
 import errorResponse from '../helpers/errorResponse';
 import getFollowViews from '../helpers/getfollowViews';
+import NotificationController from './NotificationController';
+import sendEmail from '../helpers/sendEmail';
+
+const { addNewNotificationEvent } = NotificationController;
+let type;
+
+dotenv.config();
 
 const { User, Article, Follow } = models;
 
@@ -51,6 +59,28 @@ class FollowController {
             })
               .spread((followed, status) => {
                 if (status) {
+                  // TODO 1: notify the author with authorId via email that
+                  //         follower with followerId follows him/her
+                  sendEmail(
+                    author,
+                    {
+                      subject: 'New Follower',
+                      body: `You have new follower. 
+                      Check it out at ${process.env.API_BASE_URL}/users/${id}`
+                    }
+                  );
+                  // TODO 2: Also add a new entry to notification events
+                  type = 'Follow';
+                  addNewNotificationEvent(
+                    'follows',
+                    authorId,
+                    id,
+                    'You have a new follower/unfollower',
+                    `${process.env.API_BASE_URL}/users/${id}`,
+                    false,
+                    author,
+                    type
+                  );
                   return successResponse('you followed this author', true);
                 }
                 Follow.destroy({
@@ -60,6 +90,29 @@ class FollowController {
                 })
                   .then((unfollowed) => {
                     if (unfollowed) {
+                      // TODO 3: notify the author with authorId that
+                      // follower with followerId unfollows him/her
+                      sendEmail(
+                        author,
+                        {
+                          subject: 'Follower unfollow',
+                          body: `A follower unfollows you. 
+                            Check it out at 
+                            ${process.env.API_BASE_URL}/users/${id}`
+                        }
+                      );
+                      // TODO 4: Also add a new entry to notification events
+                      type = 'Unfollow';
+                      addNewNotificationEvent(
+                        'unfollows',
+                        authorId,
+                        id,
+                        'Someone unfollowed you',
+                        `${process.env.API_BASE_URL}/users/${id}`,
+                        false,
+                        author,
+                        type
+                      );
                       return successResponse(
                         'you unfollowed this author',
                         false

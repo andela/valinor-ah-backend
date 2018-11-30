@@ -132,8 +132,8 @@ describe('Testing Login feature -Integration testing', () => {
           res.status.should.eql(401);
           res.body.status.should.eql('unauthorized');
           res.body.message.should.eql('invalid token!');
+          done();
         });
-      done();
     });
 
     it('should show error if token is missing', (done) => {
@@ -143,8 +143,8 @@ describe('Testing Login feature -Integration testing', () => {
           res.status.should.eql(401);
           res.body.status.should.eql('unauthorized');
           res.body.message.should.eql('please provide a token');
+          done();
         });
-      done();
     });
 
     it('should show error if user is not found', (done) => {
@@ -237,7 +237,7 @@ describe('Verify user email via link', () => {
 
 // GET USERS PROFILES TEST SUTE
 describe('Get all user Profiles', () => {
-  const unverifiedToken = createToken(2, '1h');
+  const unverifiedToken = createToken(7, '1h');
   describe('with an unconfirmed email', () => {
     const result = {};
     before((done) => {

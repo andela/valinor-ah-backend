@@ -70,6 +70,20 @@ class UserValidation {
   }
 
   /**
+    * @description - This method validates notification Setting.
+    * @param {object} req - The request object to be validated.
+    * @param {object} res - Th response object to be validated.
+    * @param {object} next - The callback function to the next middleware.
+    * @returns {object} - The error object with message.
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateNotificationSetting(req, res, next) {
+    UserValidation.validateNotificationStatus(req);
+    UserValidation.sendFormattedError(req, res, next);
+  }
+
+  /**
     * @description - This method validates the avatarUrl
     * @param {object} req - The request object
     * @param {object} fieldName - The url field name
@@ -143,6 +157,21 @@ class UserValidation {
   static validateEmail(req) {
     req.checkBody('email', 'please enter email').exists();
     req.checkBody('email', 'please enter a valid email').isEmail();
+  }
+
+  /**
+    * @description - This method validates notification status
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateNotificationStatus(req) {
+    req.checkBody('notification', 'please enter notification status').exists();
+    req.checkBody(
+      'notification',
+      'Sorry, notification status is either true or false'
+    ).isBoolean();
   }
 
   /**

@@ -1,15 +1,15 @@
 
 export default {
   up: queryInterface => queryInterface.bulkInsert('ArticleLikes', [{
-    status: 'false',
+    status: true,
     userId: 1,
     articleId: 1,
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    status: 'true',
-    userId: 1,
+    status: true,
+    userId: 2,
     articleId: 2,
     createdAt: new Date(),
     updatedAt: new Date()
