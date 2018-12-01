@@ -13,11 +13,11 @@ class ArticleValidation {
    * @returns {void}
    */
   static validateTitle(req) {
-    req.checkBody('title', 'please enter a title').exists();
+    req.checkBody('title', 'please enter a title').exists().notEmpty();
   }
 
   /**
-   * This method validates the title
+   * This method validates the report type
    * @param {object} req - The request object
    * @returns {void}
    */
@@ -52,15 +52,14 @@ class ArticleValidation {
     req.checkBody(
       'body',
       'please provide a body'
-    ).exists();
+    ).exists().notEmpty();
 
     if (req.body.body) {
       req.checkBody(
         'body',
         'please provide a body'
       ).custom((body) => {
-        const text = body.trim();
-        if (text !== '') return true;
+        if (body.trim() !== '') return true;
       });
     }
   }

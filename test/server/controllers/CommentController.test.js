@@ -259,12 +259,13 @@ describe('edit a comment', () => {
   const editResult = {};
   const comment = {};
   before((done) => {
+    userData.token = createToken(1, '1m');
     // edit a comment
     chai.request(app)
       .patch('/api/v1/comments/5')
       .set('authorization', userData.token)
       .send({
-        update: 'I meant it is Working prefectly',
+        body: 'I meant it is Working prefectly',
       })
       .end((err, res) => {
         editResult.status = res.status;
@@ -305,7 +306,7 @@ describe('edit a comment with no change', () => {
       .patch('/api/v1/comments/5')
       .set('authorization', userData.token)
       .send({
-        update: 'I meant it is Working prefectly',
+        body: 'I meant it is Working prefectly',
       })
       .end((err, res) => {
         editNoChange.status = res.status;

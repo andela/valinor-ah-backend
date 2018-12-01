@@ -13,7 +13,7 @@ class ReportValidation {
    * @returns {void}
    */
   static validateTitle(req) {
-    req.checkBody('title', 'please enter a title').exists();
+    req.checkBody('title', 'please enter a title').exists().notEmpty();
   }
 
   /**
@@ -22,7 +22,9 @@ class ReportValidation {
    * @returns {void}
    */
   static validateDescription(req) {
-    req.checkBody('description', 'please enter a description').exists();
+    req.checkBody('description', 'please enter a description')
+      .exists()
+      .notEmpty();
   }
 
   /**

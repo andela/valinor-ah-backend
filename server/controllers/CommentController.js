@@ -249,7 +249,7 @@ class CommentController {
      * @returns {object} returns an object of comment
    */
   static async editComment(req, res, next) {
-    const { update } = req.body;
+    const { body } = req.body;
     const { commentId } = req.params;
     let rowCount;
     let comment;
@@ -257,14 +257,14 @@ class CommentController {
       comment = await Comment.findByPk(commentId, {
         raw: true,
       });
-      if (comment.body === update) {
+      if (comment.body === body) {
         // if no changes were made
         const noChangeError = new Error('you must make changes to update');
         noChangeError.status = 409;
         return next(noChangeError);
       }
       [rowCount] = await Comment.update(
-        { body: update },
+        { body },
         { where: { id: commentId } }
       );
     } catch (err) {

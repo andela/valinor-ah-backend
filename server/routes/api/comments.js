@@ -49,8 +49,14 @@ comments.post(
 );
 
 // edit a comment
-comments.patch('/comments/:commentId',
-  verifyToken, validateResourceId, editComment);
+comments.patch(
+  '/comments/:commentId',
+  verifyToken,
+  validateArticleCommentInput,
+  validateResourceId,
+  validateAccess(['USER', 'AUTHOR']),
+  editComment
+);
 
 // get a comment and its entire history
 comments.get('/comments/:commentId',
