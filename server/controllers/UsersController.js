@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import cloudinary from 'cloudinary';
 import uniqueSlug from 'unique-slug';
+import dotenv from 'dotenv';
 
 import models from '../models';
 import sendEmail from '../helpers/sendEmail';
@@ -14,6 +15,7 @@ import { createToken } from '../middlewares/tokenUtils';
 import cloudinaryConfig from '../config/cloudinaryConfig';
 
 cloudinary.config(cloudinaryConfig);
+dotenv.config();
 
 const { User } = models;
 
@@ -428,17 +430,20 @@ class UsersController {
       fullName,
       email
     };
-    user.token = createToken(id, '90d');
-    if (created) {
-      return res.status(201).json({
-        message: 'New account created successfully',
-        user
-      });
-    }
-    return res.status(200).json({
-      message: 'Log in successful',
-      user
-    });
+    const token = createToken(id, '90d');
+    user.token = token;
+    // return res.redirect(302, `${process.env.API_BASE}?token=${token}&id=${id}`);
+    return res.redirect(302, `http://localhost:8080?token=${token}&id=${id}$created=${created}$status=login`);
+    // if (created) {
+    //   return res.status(201).json({
+    //     message: 'New account created successfully',
+    //     user
+    //   });
+    // }
+    // return res.status(200).json({
+    //   message: 'Log in successful',
+    //   user
+    // });
   }
 
   /**
