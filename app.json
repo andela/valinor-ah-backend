@@ -4,6 +4,9 @@
     "API_BASE_URL": {
       "required": true
     },
+    "API_BASE": {
+      "required": true
+    },
     "CLOUDINARY_CLOUD_NAME": {
       "required": true
     },

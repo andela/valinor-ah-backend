@@ -428,17 +428,18 @@ class UsersController {
       fullName,
       email
     };
-    user.token = createToken(id, '90d');
-    if (created) {
-      return res.status(201).json({
-        message: 'New account created successfully',
-        user
-      });
-    }
-    return res.status(200).json({
-      message: 'Log in successful',
-      user
-    });
+    const token = createToken(id, '90d');
+    return res.redirect(302, `http://localhost:8080?token=${token}&id=${id}&created=${created}&status=login`);
+    // if (created) {
+    //   return res.status(201).json({
+    //     message: 'New account created successfully',
+    //     user
+    //   });
+    // }
+    // return res.status(200).json({
+    //   message: 'Log in successful',
+    //   user
+    // });
   }
 
   /**
