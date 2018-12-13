@@ -93,8 +93,7 @@ class UsersController {
 
         res.status(200).json({
           status: 'success',
-          message: 'email login link sent successfully',
-          token
+          message: 'email login link sent successfully'
         });
       })
       .catch(err => res.status(500).json({
@@ -409,39 +408,6 @@ class UsersController {
   }
 
   /**
-   * @description - This method returns a token and
-   * user object for social login
-   * @param {object} req The express request object
-   * @param {object} res The express response object
-   * @param {object} next The express next object
-   * @returns {void}
-   */
-  static socialEnd(req, res) {
-    const {
-      id,
-      fullName,
-      email,
-      created
-    } = req.user;
-    const user = {
-      id,
-      fullName,
-      email
-    };
-    user.token = createToken(id, '90d');
-    if (created) {
-      return res.status(201).json({
-        message: 'New account created successfully',
-        user
-      });
-    }
-    return res.status(200).json({
-      message: 'Log in successful',
-      user
-    });
-  }
-
-  /**
    * @description - This method deactivates a user account
    * @param {object} req The express request object
    * @param {object} res The express response object
@@ -586,6 +552,75 @@ class UsersController {
         message: 'your account was successfully deleted'
       });
     }
+  }
+
+  /**
+   * @description - This method returns a token and
+   * user object for social login
+   * @param {object} req The express request object
+   * @param {object} res The express response object
+   * @param {object} next The express next object
+   * @returns {void}
+   */
+  static async socialSignup(req, res, next) {
+    const {
+      socialType,
+      socialId,
+      email,
+      fullName,
+      avatarUrl
+    } = req.body;
+
+    let message, status, result;
+
+    try {
+      result = await User.findOrCreate({
+        where: {
+          [Op.or]: {
+            email, [`${socialType}Id`]: socialId
+          }
+        },
+        defaults: {
+          fullName,
+          email,
+          avatarUrl,
+          [`${socialType}Id`]: socialId,
+          confirmEmail: true
+        }
+      });
+    } catch (error) {
+      return next(error);
+    }
+
+    const created = result[1];
+    const user = result[0];
+
+    if (created) {
+      message = 'New user successfully created!';
+      status = 201;
+    } else {
+      message = 'User successfully logged in!';
+      status = 200;
+    }
+
+    const {
+      id,
+      roleId,
+    } = user;
+
+    const token = createToken(user.id);
+
+    return res.status(status).json({
+      message,
+      idk: user.id,
+      user: {
+        id,
+        fullName,
+        email,
+        roleId,
+        token
+      }
+    });
   }
 }
 

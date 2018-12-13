@@ -4,10 +4,7 @@ import FollowController from '../../controllers/FollowController';
 import UserValidation from '../../middlewares/UserValidation';
 import UsersController from '../../controllers/UsersController';
 import NotificationController from '../../controllers/NotificationController';
-import facebookPassportRoutes from '../../config/facebookPassportRoutes';
-import googlePassportRoutes from '../../config/googlePassportRoutes';
 import { verifyToken } from '../../middlewares/tokenUtils';
-import twitterPassportRoutes from '../../config/twitterPassportRoutes';
 import confirmUser from '../../middlewares/confirmUser';
 import validateResourceId from '../../middlewares/validateResourceId';
 import validateAccess from '../../middlewares/validateAccess';
@@ -18,7 +15,8 @@ const {
   validateUserLogin,
   validateUserUpdate,
   validateFollowUserUrl,
-  validateNotificationSetting
+  validateNotificationSetting,
+  validateSocialSignup
 } = UserValidation;
 const {
   signUp,
@@ -31,7 +29,7 @@ const {
   fetchAuthors,
   modifyAccount,
   deleteAccount,
-  socialEnd
+  socialSignup
 } = UsersController;
 
 const {
@@ -40,7 +38,6 @@ const {
 } = FollowController;
 
 const users = express.Router();
-// const router = express.Router();
 
 const { updateNotificationStatus } = NotificationController;
 
@@ -71,16 +68,6 @@ users.get('/users/verify', verifyToken, verifyUser);
 // get authors
 users.get('/users/authors', fetchAuthors);
 
-// signup or login with facebook
-users.get('/auth/facebook', facebookPassportRoutes.authenticate());
-
-// facebook callback route
-users.get(
-  '/auth/facebook/callback',
-  facebookPassportRoutes.callback(),
-  socialEnd
-);
-
 // update profile route
 users.patch(
   '/users/:userId',
@@ -88,17 +75,9 @@ users.patch(
   updateProfile
 );
 
-// route for twitter authentication and login
-users.get('/auth/twitter', twitterPassportRoutes.authenticate());
+// social signup
+users.post('/auth/social', validateSocialSignup, socialSignup);
 
-// handle the callback after twitter has authenticated the user
-users.get('/auth/twitter/callback', twitterPassportRoutes.callback());
-
-// signup or login with google
-users.get('/auth/google', googlePassportRoutes.authenticate());
-
-// google callback route
-users.get('/auth/google/callback', googlePassportRoutes.callback(), socialEnd);
 
 // get all user profiles
 users.get('/users', verifyToken, confirmUser, getUserProfiles);
