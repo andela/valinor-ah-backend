@@ -16,6 +16,11 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.TEXT,
     },
+    articleImage: {
+      allowNull: false,
+      type: DataTypes.STRING,
+      defaultValue: 'https://bit.ly/2CaG1ce'
+    },
     readTime: {
       allowNull: false,
       type: DataTypes.INTEGER,

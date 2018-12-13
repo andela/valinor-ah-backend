@@ -22,6 +22,11 @@ export default {
       type: Sequelize.TEXT,
       allowNull: false
     },
+    articleImage: {
+      allowNull: false,
+      type: Sequelize.STRING,
+      defaultValue: 'https://bit.ly/2CaG1ce'
+    },
     readTime: {
       type: Sequelize.INTEGER,
       allowNull: false

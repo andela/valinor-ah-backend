@@ -109,7 +109,6 @@ describe('Testing Login feature -Integration testing', () => {
           res.body.status.should.be.eql('success');
           res.body.message.should.be
             .eql('email login link sent successfully');
-          res.body.token.should.be.a('string');
           done();
         });
     });
@@ -813,5 +812,87 @@ describe('Delete or Deactivate a user account', () => {
         // eslint-disable-next-line max-len
         .equal(`you have successfully deleted the user account of id ${deleteId}`);
     });
+  });
+});
+
+describe('Testing social login controller', () => {
+  it('should create new user', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/social')
+      .send({
+        fullName: 'Christopher Akanmu',
+        email: 'christopher@gmail.com',
+        socialType: 'facebook',
+        socialId: '098739128742',
+        avatarUrl: 'https://yourimagehere.com'
+      })
+      .end((err, res) => {
+        res.should.have.status(201);
+        res.body.message.should.equal('New user successfully created!');
+        res.body.should.be.a('object');
+        done();
+      });
+  });
+  it('should log in user', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/social')
+      .send({
+        fullName: 'Christopher Akanmu',
+        email: 'christopher@gmail.com',
+        socialType: 'facebook',
+        socialId: '098739128742',
+        avatarUrl: 'https://yourimagehere.com'
+      })
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.message.should.equal('User successfully logged in!');
+        res.body.should.be.a('object');
+        done();
+      });
+  });
+  it('should fail in abscence of socialType', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/social')
+      .send({
+        fullName: 'Christopher Akanmu',
+        email: 'christopher@gmail.com',
+        socialId: '83004793602',
+        avatarUrl: 'https://yourimagehere.com'
+      })
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.deep.equal({
+          errors: {
+            socialType: [
+              'Please provide a social type e.g facebook',
+              'socialType cannot be empty',
+              'social type must be facebook, twitter or google'
+            ]
+          }
+        });
+        done();
+      });
+  });
+  it('should fail in abscence of socialId', (done) => {
+    chai.request(app)
+      .post('/api/v1/auth/social')
+      .send({
+        fullName: 'Christopher Akanmu',
+        email: 'christopher@gmail.com',
+        socialType: 'facebook',
+        avatarUrl: 'https://yourimagehere.com'
+      })
+      .end((err, res) => {
+        res.should.have.status(400);
+        res.body.should.deep.equal({
+          errors: {
+            socialId: [
+              'Please provide a socialId e.g 730184790124',
+              'SocialId cannot be empty'
+            ]
+          }
+        });
+        done();
+      });
   });
 });

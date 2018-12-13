@@ -200,6 +200,70 @@ class UserValidation {
   }
 
   /**
+    * @description - This method validates social type
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateSocialType(req) {
+    req.checkBody(
+      'socialType',
+      'Please provide a social type e.g facebook'
+    ).exists();
+    req.checkBody(
+      'socialType',
+      'socialType cannot be empty'
+    ).notEmpty();
+    req.checkBody(
+      'socialType',
+      'social type must be facebook, twitter or google'
+    ).custom((socialType) => {
+      if (
+        socialType === 'twitter'
+        || socialType === 'facebook'
+        || socialType === 'google'
+      ) return true;
+    });
+  }
+
+  /**
+    * @description - This method validates social id
+    * @param {object} req - The request object
+    * @returns {null} - returns nothing
+    * @memberOf UserValidation
+    * @static
+    */
+  static validateSocialId(req) {
+    req.checkBody(
+      'socialId',
+      'Please provide a socialId e.g 730184790124'
+    ).exists();
+    req.checkBody(
+      'socialId',
+      'SocialId cannot be empty'
+    ).notEmpty();
+  }
+
+  /**
+  * @description - This method validates the socialLogin
+  * @param {object} req - The request object
+  * @param {object} res - Th response object.
+  * @param {object} next - The callback function to the next middleware.
+  * @returns {null} - returns nothing
+  * @memberOf UserValidation
+  * @static
+  */
+  static validateSocialSignup(req, res, next) {
+    UserValidation.validateFullName(req);
+    UserValidation.validateEmail(req);
+    UserValidation.validateUrl(req, 'avatarUrl');
+    UserValidation.validateSocialType(req);
+    UserValidation.validateSocialId(req);
+    UserValidation.sendFormattedError(req, res, next, 400);
+  }
+
+  /**
     * @description - This method sends the error in the suggested json format.
     * @param {object} req - The request object to be validated.
     * @param {object} res - Th response object.

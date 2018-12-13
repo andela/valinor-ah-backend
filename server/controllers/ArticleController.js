@@ -288,6 +288,7 @@ class ArticleController {
       description,
       body,
       tags,
+      articleImage
     } = req.body;
 
     let { categoryName, status } = req.body;
@@ -318,6 +319,7 @@ class ArticleController {
         description,
         body,
         readTime: stats.time,
+        articleImage,
         status,
         userId,
         categoryId: category.id
