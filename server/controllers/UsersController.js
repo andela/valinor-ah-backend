@@ -85,8 +85,8 @@ class UsersController {
 
         const userId = userFound.id;
         const token = createToken(userId, lifeSpan);
-        const loginUrl = `${process.env.API_BASE_URL}/users/login?`
-      + `token=${token}`;
+        const loginUrl = `${process.env.FRONT_END_BASE_URL}/welcome?token=`
+        + `${token}`;
 
         // send email with link to login to user
         sendEmail(userFound, loginLinkMessage(loginUrl, token));
