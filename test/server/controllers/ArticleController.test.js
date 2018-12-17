@@ -1060,4 +1060,21 @@ describe('Articles Controller Tests', () => {
         });
     });
   });
+
+  describe('Fetch most popular articles', () => {
+    const result = {};
+    before((done) => {
+      chai.request(app)
+        .get(`${articleBaseUrl}/popular`)
+        .end((err, res) => {
+          result.status = res.status;
+          result.body = res.body;
+          done();
+        });
+    });
+
+    it('should fetch most popular article successfuly', () => {
+      result.status.should.be.equal(200);
+    });
+  });
 });

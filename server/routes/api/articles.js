@@ -25,7 +25,8 @@ const {
   likeOrDislikeArticle,
   reportArticle,
   deleteUserArticle,
-  fetchUserArticles
+  fetchUserArticles,
+  fetchPopularArticles,
 } = ArticleController;
 
 // get all categories
@@ -56,6 +57,11 @@ articles.patch(
 );
 
 articles.get('/articles/myarticles', verifyToken, fetchUserArticles);
+
+articles.get(
+  '/articles/popular',
+  fetchPopularArticles
+);
 
 articles.get(
   '/articles/:slug',

@@ -22,7 +22,8 @@ const {
   Bookmark,
   Category,
   ReportType,
-  CommentReply
+  CommentReply,
+  ReadingStats,
 } = models;
 const { Op } = Sequelize;
 /**
@@ -674,6 +675,86 @@ class ArticleController {
       });
     }
     return errorResponse('', res, 'No articles found', 404);
+  }
+
+  /**
+    * @description This method fetches the most popular articles
+    * @param {object} req - The request object.
+    * @param {object} res - The response object.
+    * @param {object} next - The next object.
+    * @return {void}
+   */
+  static async fetchPopularArticles(req, res, next) {
+    let readArticles;
+    try {
+      readArticles = await ReadingStats.findAll({
+        group: ['articleId'],
+        attributes: [
+          'articleId',
+          [Sequelize.fn('COUNT', Sequelize.col('articleId')), 'readCount']
+        ],
+        raw: true
+      });
+    } catch (err) {
+      next(err);
+    }
+
+    // get the top 6 most read articles
+    const mostRead = readArticles
+      .sort((a, b) => (b.readCount - a.readCount))
+      .slice(0, 6);
+
+    // get ids of the top 6 most read articles
+    const sortedIds = mostRead.map(item => item.articleId);
+
+    // fetch the most read articles
+    let mostReadArticles;
+    try {
+      mostReadArticles = await Article.findAll({
+        where: {
+          id: {
+            [Op.or]: [...sortedIds]
+          }
+        },
+        attributes: [
+          'id',
+          'title',
+          'slug',
+          'description',
+          'articleImage',
+          'rating',
+          'createdAt'
+        ],
+        include: [
+          {
+            model: User,
+            as: 'author',
+            attributes: ['id', 'fullName', 'avatarUrl', 'roleId']
+          },
+          {
+            model: Category,
+            as: 'category',
+            attributes: ['id', 'categoryName']
+          }
+        ],
+      });
+    } catch (err) {
+      next(err);
+    }
+
+    // sort them in the original order
+    mostReadArticles.sort((a, b) => {
+      if (sortedIds.indexOf(a.id) > sortedIds.indexOf(b.id)) {
+        return +1;
+      }
+      return -1;
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'most popular articles retrieved successfully',
+      articles: mostReadArticles,
+    });
   }
 }
 

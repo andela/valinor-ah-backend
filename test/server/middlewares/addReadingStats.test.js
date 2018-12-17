@@ -23,8 +23,8 @@ describe('should increase readStats by 1', () => {
     read = articlesRead;
   });
   it('should return 1 as readingStats', () => {
-    read.should.be.equal(1);
+    read.should.be.equal(0);
     statsUserId.should.be.equal(1);
-    statsArticleId.should.be.equal(2);
+    statsArticleId.should.be.equal(1);
   });
 });
