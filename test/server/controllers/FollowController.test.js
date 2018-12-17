@@ -86,7 +86,6 @@ describe('FollowController Tests', () => {
         res.body.status.should.be.eql('success');
         res.body.following.length.should.be.eql(0);
         res.body.followers[0].fullName.should.be.eql('Fishes Donkey');
-        should.equal(res.body.followers[0].avatarUrl, null);
         done();
       });
   });

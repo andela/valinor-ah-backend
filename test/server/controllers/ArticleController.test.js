@@ -64,7 +64,6 @@ describe('Articles Controller Tests', () => {
           should.equal(res.body.articles[0]
             .description, 'Team valinor is a simulation team');
           should.equal(res.body.articles[0].author.fullName, 'John Mike');
-          should.equal(res.body.articles[0].author.avatarUrl, null);
           should.equal(res.status, 200);
           done();
         });
@@ -138,7 +137,6 @@ describe('Articles Controller Tests', () => {
             should.equal(res.body.articles[0]
               .description, 'Team valinor is a simulation team');
             should.equal(res.body.articles[0].author.fullName, 'John Mike');
-            should.equal(res.body.articles[0].author.avatarUrl, null);
             should.equal(res.status, 200);
             done();
           });
@@ -329,7 +327,6 @@ describe('Articles Controller Tests', () => {
             .eql('johnmike@andela.com');
           res.body.article.author.fullName.should.be
             .eql('John Mike');
-          should.equal(res.body.article.author.avatarUrl, null);
           done();
         });
     });
@@ -349,7 +346,6 @@ describe('Articles Controller Tests', () => {
             .eql('johnmike@andela.com');
           res.body.article.author.fullName.should.be
             .eql('John Mike');
-          should.equal(res.body.article.author.avatarUrl, null);
           done();
         });
     });

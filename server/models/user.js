@@ -11,6 +11,7 @@ export default (sequelize, DataTypes) => {
     avatarUrl: {
       allowNull: true,
       type: DataTypes.STRING,
+      defaultValue: 'https://bit.ly/2UT01ax',
     },
     facebookId: {
       allowNull: true,

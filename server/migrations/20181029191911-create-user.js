@@ -35,7 +35,8 @@ export default {
     },
     avatarUrl: {
       allowNull: true,
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      defaultValue: 'https://bit.ly/2UT01ax',
     },
     facebookId: {
       allowNull: true,
