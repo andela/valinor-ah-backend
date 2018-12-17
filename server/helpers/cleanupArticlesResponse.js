@@ -8,6 +8,7 @@ const cleanupArticlesResponse = (rows) => {
   for (let x = 0; x < rows.length; x += 1) {
     const {
       id,
+      articleImage,
       title,
       slug,
       description,
@@ -22,7 +23,7 @@ const cleanupArticlesResponse = (rows) => {
       likes,
       dislikes,
       comments,
-      commentsCount
+      commentsCount,
     } = rows[x].dataValues;
     const {
       fullName,
@@ -35,6 +36,7 @@ const cleanupArticlesResponse = (rows) => {
     } = author;
     const newObj = {
       id,
+      articleImage,
       title,
       slug,
       description,

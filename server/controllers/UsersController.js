@@ -612,7 +612,6 @@ class UsersController {
 
     return res.status(status).json({
       message,
-      idk: user.id,
       user: {
         id,
         fullName,
