@@ -23,7 +23,7 @@ const verifyEmailMessage = (token) => {
     `<div style="height: 20em, background-color: #E6FFED; 
       border: 1px solid black; padding: 0.5em;">
         <p>
-          <a href="${process.env.API_BASE_URL}/users/verify?token=${token}">
+          <a href="${process.env.FRONT_END_BASE_URL}VerifyPage?token=${token}">
           <strong>
             CLICK HERE!
           </strong>
