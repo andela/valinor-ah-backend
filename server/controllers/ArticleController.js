@@ -136,7 +136,25 @@ class ArticleController {
       }, {
         model: Comment,
         as: 'comments',
+        attributes: [
+          'id',
+          'body',
+          'inlineComment',
+          'createdAt',
+          'updatedAt'
+        ],
         include: [{
+          model: User,
+          as: 'author',
+          attributes: [
+            'id',
+            'fullName',
+            'avatarUrl',
+            'following',
+            'followers'
+          ]
+        },
+        {
           model: CommentReply,
           as: 'replies',
           attributes: [
@@ -152,11 +170,8 @@ class ArticleController {
               'id',
               'fullName',
               'avatarUrl',
-              'bio',
-              'location',
               'following',
               'followers',
-              'createdAt'
             ]
           }]
         }]
